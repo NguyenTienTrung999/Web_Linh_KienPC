@@ -1,0 +1,19 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer utilities {
+    .glass-panel {
+        @apply bg-tech-card/80 backdrop-blur-lg border border-tech-border;
+    }
+    
+    .text-gradient {
+        @apply bg-clip-text text-transparent bg-gradient-to-r from-tech-primary to-orange-500;
+    }
+}
+
+@layer base {
+    body {
+        @apply bg-tech-dark text-tech-text font-sans antialiased;
+    }
+}
