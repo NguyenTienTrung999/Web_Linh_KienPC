@@ -11,9 +11,36 @@
         @apply bg-clip-text text-transparent bg-gradient-to-r from-tech-primary to-orange-500;
     }
 }
-
-@layer base {
-    body {
-        @apply bg-tech-dark text-tech-text font-sans antialiased;
+@layer components {
+    .product-card-shadow {
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    .product-card-shadow:hover {
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+    .section-header-slash {
+        position: relative;
+        padding-left: 20px;
+    }
+    .section-header-slash::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 4px;
+        background-color: #2badee;
+        transform: skewX(-20deg);
     }
 }
+
+@layer utilities {
+    .no-scrollbar::-webkit-scrollbar {
+        display: none;
+    }
+    .no-scrollbar {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+}
+

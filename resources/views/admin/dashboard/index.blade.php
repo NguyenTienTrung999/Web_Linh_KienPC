@@ -10,7 +10,7 @@
             <p class="text-slate-500 text-sm">Cập nhật lúc {{ now()->format('h:i A, d/m/Y') }}</p>
         </div>
         <button class="bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 shadow-sm shadow-primary/20">
-            <span class="material-symbols-outlined text-sm">download</span>
+            <i class="fa-solid fa-download text-xs"></i>
             Xuất báo cáo
         </button>
     </div>
@@ -20,9 +20,9 @@
         <div class="bg-white dark:bg-slate-900 p-6 rounded-lg border border-slate-200 dark:border-slate-800 shadow-sm">
             <div class="flex justify-between items-start mb-4">
                 <div class="p-2 bg-primary/10 rounded-lg text-primary">
-                    <span class="material-symbols-outlined">payments</span>
+                    <i class="fa-solid fa-money-bill-wave"></i>
                 </div>
-                <span class="text-emerald-500 text-xs font-semibold flex items-center">+12.5% <span class="material-symbols-outlined text-xs">trending_up</span></span>
+                <span class="text-emerald-500 text-xs font-semibold flex items-center gap-1">+12.5% <i class="fa-solid fa-arrow-trend-up text-[10px]"></i></span>
             </div>
             <p class="text-slate-500 text-sm font-medium">Doanh thu tháng</p>
             <h3 class="text-2xl font-bold mt-1">250.000.000đ</h3>
@@ -34,9 +34,9 @@
         <div class="bg-white dark:bg-slate-900 p-6 rounded-lg border border-slate-200 dark:border-slate-800 shadow-sm">
             <div class="flex justify-between items-start mb-4">
                 <div class="p-2 bg-amber-100 dark:bg-amber-900/30 rounded-lg text-amber-600">
-                    <span class="material-symbols-outlined">shopping_bag</span>
+                    <i class="fa-solid fa-bag-shopping"></i>
                 </div>
-                <span class="text-rose-500 text-xs font-semibold flex items-center">-2.4% <span class="material-symbols-outlined text-xs">trending_down</span></span>
+                <span class="text-rose-500 text-xs font-semibold flex items-center gap-1">-2.4% <i class="fa-solid fa-arrow-trend-down text-[10px]"></i></span>
             </div>
             <p class="text-slate-500 text-sm font-medium">Đơn hàng mới</p>
             <h3 class="text-2xl font-bold mt-1">1,240</h3>
@@ -48,9 +48,9 @@
         <div class="bg-white dark:bg-slate-900 p-6 rounded-lg border border-slate-200 dark:border-slate-800 shadow-sm">
             <div class="flex justify-between items-start mb-4">
                 <div class="p-2 bg-indigo-100 dark:bg-indigo-900/30 rounded-lg text-indigo-600">
-                    <span class="material-symbols-outlined">person_add</span>
+                    <i class="fa-solid fa-user-plus"></i>
                 </div>
-                <span class="text-emerald-500 text-xs font-semibold flex items-center">+5.1% <span class="material-symbols-outlined text-xs">trending_up</span></span>
+                <span class="text-emerald-500 text-xs font-semibold flex items-center gap-1">+5.1% <i class="fa-solid fa-arrow-trend-up text-[10px]"></i></span>
             </div>
             <p class="text-slate-500 text-sm font-medium">Khách hàng mới</p>
             <h3 class="text-2xl font-bold mt-1">850</h3>
@@ -187,7 +187,7 @@
                         </td>
                         <td class="px-6 py-4 text-right">
                             <button class="p-1 hover:bg-slate-100 dark:hover:bg-slate-800 rounded text-slate-400">
-                                <span class="material-symbols-outlined text-xl">visibility</span>
+                                <i class="fa-solid fa-eye text-lg"></i>
                             </button>
                         </td>
                     </tr>
@@ -201,7 +201,7 @@
                         </td>
                         <td class="px-6 py-4 text-right">
                             <button class="p-1 hover:bg-slate-100 dark:hover:bg-slate-800 rounded text-slate-400">
-                                <span class="material-symbols-outlined text-xl">visibility</span>
+                                <i class="fa-solid fa-eye text-lg"></i>
                             </button>
                         </td>
                     </tr>
@@ -215,7 +215,7 @@
                         </td>
                         <td class="px-6 py-4 text-right">
                             <button class="p-1 hover:bg-slate-100 dark:hover:bg-slate-800 rounded text-slate-400">
-                                <span class="material-symbols-outlined text-xl">visibility</span>
+                                <i class="fa-solid fa-eye text-lg"></i>
                             </button>
                         </td>
                     </tr>

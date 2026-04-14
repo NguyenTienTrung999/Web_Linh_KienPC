@@ -10,7 +10,7 @@
         <p class="text-slate-500 mt-1">Quản lý kho hàng và thông tin sản phẩm của bạn.</p>
     </div>
     <a href="{{ route('admin.products.create') }}" class="bg-primary text-white px-6 py-2.5 rounded-xl font-semibold flex items-center gap-2 hover:bg-primary/90 transition-shadow shadow-lg shadow-primary/20">
-        <span class="material-symbols-outlined">add</span>
+        <i class="fa-solid fa-plus text-sm"></i>
         Thêm sản phẩm
     </a>
 </div>
@@ -21,7 +21,7 @@
     <div class="p-4 border-b border-slate-100 dark:border-slate-800 space-y-4">
         <form action="{{ route('admin.products.index') }}" method="GET" class="flex flex-wrap items-center gap-4">
             <div class="flex-1 min-w-[300px] relative">
-                <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">search</span>
+                <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
                 <input name="search" value="{{ request('search') }}" class="w-full pl-10 pr-4 py-2.5 border border-slate-200 dark:border-slate-700 dark:bg-slate-800 rounded-xl focus:ring-primary focus:border-primary" placeholder="Tìm theo tên sản phẩm..." type="text"/>
             </div>
             
@@ -37,7 +37,7 @@
             </div>
             
             <button type="submit" class="flex items-center gap-2 px-4 py-2.5 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
-                <span class="material-symbols-outlined text-slate-500">search</span>
+                <i class="fa-solid fa-magnifying-glass text-slate-500 text-sm"></i>
                 <span>Tìm</span>
             </button>
         </form>
@@ -83,8 +83,15 @@
                                 {{ $product->category ? $product->category->name : 'N/A' }}
                             </span>
                         </td>
-                        <td class="px-6 py-4 font-semibold text-slate-900 dark:text-slate-100">
-                            {{ number_format($product->price, 0, ',', '.') }}₫
+                        <td class="px-6 py-4">
+                            @if($product->sale_price)
+                                <div class="flex flex-col">
+                                    <span class="font-bold text-slate-900 dark:text-white">{{ number_format($product->sale_price, 0, ',', '.') }}₫</span>
+                                    <span class="text-[10px] text-slate-400 line-through">{{ number_format($product->price, 0, ',', '.') }}₫</span>
+                                </div>
+                            @else
+                                <span class="font-semibold text-slate-900 dark:text-slate-100">{{ number_format($product->price, 0, ',', '.') }}₫</span>
+                            @endif
                         </td>
                         <td class="px-6 py-4 text-sm {{ $product->stock_quantity <= 0 ? 'text-red-500 font-medium' : '' }}">
                             {{ $product->stock_quantity }}
@@ -105,13 +112,13 @@
                         <td class="px-6 py-4 text-right">
                             <div class="flex items-center justify-end gap-2">
                                 <a href="{{ route('admin.products.edit', $product) }}" class="p-2 text-slate-400 hover:text-primary transition-colors">
-                                    <span class="material-symbols-outlined text-xl">edit</span>
+                                    <i class="fa-solid fa-pen-to-square text-lg"></i>
                                 </a>
                                 <form action="{{ route('admin.products.destroy', $product) }}" method="POST" class="inline-block" onsubmit="return confirm('Bạn có chắc chắn muốn xóa sản phẩm này?');">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="p-2 text-slate-400 hover:text-red-500 transition-colors">
-                                        <span class="material-symbols-outlined text-xl">delete</span>
+                                        <i class="fa-solid fa-trash-can text-lg"></i>
                                     </button>
                                 </form>
                             </div>

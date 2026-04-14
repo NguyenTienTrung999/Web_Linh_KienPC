@@ -18,7 +18,7 @@
 <div class="space-y-2">
 <label class="text-sm font-semibold text-slate-700 dark:text-slate-300">Họ và tên</label>
 <div class="relative">
-<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xl">person</span>
+<i class="fa-solid fa-user absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-lg"></i>
 <input name="name" value="{{ old('name') }}" required autofocus class="w-full pl-11 pr-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all text-slate-900 dark:text-white" placeholder="Nguyễn Văn A" type="text"/>
 </div>
 @error('name')
@@ -30,7 +30,7 @@
 <div class="space-y-2">
 <label class="text-sm font-semibold text-slate-700 dark:text-slate-300">Email</label>
 <div class="relative">
-<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xl">mail</span>
+<i class="fa-solid fa-envelope absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-lg"></i>
 <input name="email" value="{{ old('email') }}" required class="w-full pl-11 pr-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all text-slate-900 dark:text-white" placeholder="Nhập email của bạn" type="email"/>
 </div>
 @error('email')
@@ -42,7 +42,7 @@
 <div class="space-y-2">
 <label class="text-sm font-semibold text-slate-700 dark:text-slate-300">Mật khẩu</label>
 <div class="relative">
-<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xl">lock</span>
+<i class="fa-solid fa-lock absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-lg"></i>
 <input name="password" required class="w-full pl-11 pr-12 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all text-slate-900 dark:text-white" placeholder="Tạo mật khẩu (tối thiểu 8 ký tự)" type="password"/>
 </div>
 @error('password')
@@ -54,7 +54,7 @@
 <div class="space-y-2">
 <label class="text-sm font-semibold text-slate-700 dark:text-slate-300">Xác nhận mật khẩu</label>
 <div class="relative">
-<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xl">lock_clock</span>
+<i class="fa-solid fa-shield-halved absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-lg"></i>
 <input name="password_confirmation" required class="w-full pl-11 pr-12 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all text-slate-900 dark:text-white" placeholder="Nhập lại mật khẩu" type="password"/>
 </div>
 </div>
@@ -62,7 +62,7 @@
 <!-- Register Button -->
 <button class="w-full py-3.5 mt-2 bg-primary hover:bg-primary/90 text-white font-bold rounded-lg shadow-lg shadow-primary/20 transition-all flex items-center justify-center gap-2" type="submit">
 <span>Tạo tài khoản</span>
-<span class="material-symbols-outlined text-lg">person_add</span>
+<i class="fa-solid fa-user-plus text-sm"></i>
 </button>
 </form>
 

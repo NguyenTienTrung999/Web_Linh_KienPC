@@ -37,7 +37,12 @@ class HomeController extends Controller
             $q->where('name', 'like', '%loa%')->orWhere('name', 'like', '%speaker%');
         })->latest()->take(4)->get();
 
-        return view('home', compact('categories', 'keyboards', 'mice', 'monitors', 'headphones', 'speakers'));
+        $flashSales = Product::whereNotNull('sale_price')->where('sale_price', '>', 0)->latest()->take(12)->get();
+
+        $bestSellers = Product::inRandomOrder()->take(8)->get();
+        $featuredProducts = Product::where('is_featured', true)->latest()->get();
+
+        return view('home', compact('categories', 'flashSales', 'bestSellers', 'featuredProducts', 'keyboards', 'mice', 'monitors', 'headphones', 'speakers'));
     }
 
     /**

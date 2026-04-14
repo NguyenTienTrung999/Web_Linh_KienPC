@@ -9,7 +9,7 @@
 <aside class="w-full lg:w-64 flex flex-col gap-2">
 <div class="p-4 mb-4 bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 flex items-center gap-3">
 <div class="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center text-primary">
-<span class="material-symbols-outlined text-2xl">verified_user</span>
+<i class="fa-solid fa-user-check text-xl"></i>
 </div>
 <div>
 <p class="font-bold text-sm">Nguyễn Văn A</p>
@@ -18,26 +18,26 @@
 </div>
 <nav class="flex flex-col gap-1">
 <a class="flex items-center gap-3 px-4 py-3 rounded-lg bg-primary text-white font-medium shadow-md shadow-primary/20" href="#">
-<span class="material-symbols-outlined text-xl">person</span>
+<i class="fa-solid fa-user text-lg"></i>
 <span class="text-sm">Thông tin cá nhân</span>
 </a>
 <a class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 font-medium transition-all group" href="#">
-<span class="material-symbols-outlined text-xl group-hover:text-primary">package</span>
+<i class="fa-solid fa-box text-lg group-hover:text-primary"></i>
 <span class="text-sm group-hover:text-primary">Đơn hàng của tôi</span>
 </a>
 <a class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 font-medium transition-all group" href="#">
-<span class="material-symbols-outlined text-xl group-hover:text-primary">location_on</span>
+<i class="fa-solid fa-location-dot text-lg group-hover:text-primary"></i>
 <span class="text-sm group-hover:text-primary">Sổ địa chỉ</span>
 </a>
 <a class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 font-medium transition-all group" href="#">
-<span class="material-symbols-outlined text-xl group-hover:text-primary">notifications</span>
+<i class="fa-solid fa-bell text-lg group-hover:text-primary"></i>
 <span class="text-sm group-hover:text-primary">Thông báo</span>
 </a>
 <div class="my-2 border-t border-slate-200 dark:border-slate-800"></div>
 <form method="POST" action="{{ route('logout') }}">
     @csrf
     <button type="submit" class="w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-red-50 text-red-500 font-medium transition-all">
-        <span class="material-symbols-outlined text-xl">logout</span>
+        <i class="fa-solid fa-right-from-bracket text-lg"></i>
         <span class="text-sm">Đăng xuất</span>
     </button>
 </form>
@@ -53,7 +53,7 @@
 <img alt="Large Avatar" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDjJushzwzh1KSVe3CyT2ldeurTKFIkKSllBIdfTH1-CxahlyFqpBORL7n1sYpGCkOGsw1hMKvRMjXJ_XxLAsFl2uiSchlV_V3ASDENuwIJh2xbkVu0o-MruLyubV-hqpwgGuFzinY0NvJZcx433ep0UorrftcMniUphk5RoqU_6doBDzXG9P0uI49iEhg2zt5X6f12bov9QiWZwA8lqO1bMqvca43n2g8b36BMMSNhxfDO65obVfMzSYryoBCOh7F1d7Tkbl-sW10"/>
 </div>
 <button class="absolute bottom-0 right-0 size-10 bg-primary text-white rounded-full flex items-center justify-center shadow-lg border-2 border-white dark:border-slate-900 hover:scale-105 transition-transform">
-<span class="material-symbols-outlined text-xl">photo_camera</span>
+<i class="fa-solid fa-camera text-lg"></i>
 </button>
 </div>
 <div class="text-center md:text-left flex-1">

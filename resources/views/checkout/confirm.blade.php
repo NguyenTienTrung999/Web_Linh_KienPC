@@ -8,7 +8,7 @@
 <!-- Success Hero Section -->
 <div class="flex flex-col items-center justify-center py-10 px-4 bg-white dark:bg-slate-900 rounded-xl shadow-sm mb-6 border border-slate-100 dark:border-slate-800">
 <div class="mb-6 flex items-center justify-center size-20 rounded-full bg-primary/10 text-primary">
-<span class="material-symbols-outlined text-6xl">check_circle</span>
+<i class="fa-solid fa-circle-check text-5xl"></i>
 </div>
 <h1 class="text-slate-900 dark:text-slate-100 tracking-tight text-3xl font-bold leading-tight text-center pb-2">Đặt hàng thành công!</h1>
 <h2 class="text-primary text-lg font-semibold leading-tight tracking-[-0.015em] text-center pb-4">Mã đơn hàng: #TF-123456</h2>
@@ -20,7 +20,7 @@
 <!-- Order Summary -->
 <div class="bg-white dark:bg-slate-900 p-6 rounded-xl shadow-sm border border-slate-100 dark:border-slate-800">
 <h3 class="text-slate-900 dark:text-slate-100 text-lg font-bold mb-4 flex items-center gap-2">
-<span class="material-symbols-outlined text-primary">shopping_cart</span>
+<i class="fa-solid fa-cart-shopping text-primary"></i>
                             Tóm tắt đơn hàng
                         </h3>
 <div class="space-y-4">
@@ -63,7 +63,7 @@
 <!-- Shipping Info -->
 <div class="bg-white dark:bg-slate-900 p-6 rounded-xl shadow-sm border border-slate-100 dark:border-slate-800">
 <h3 class="text-slate-900 dark:text-slate-100 text-lg font-bold mb-4 flex items-center gap-2">
-<span class="material-symbols-outlined text-primary">local_shipping</span>
+<i class="fa-solid fa-truck text-primary"></i>
                             Thông tin vận chuyển
                         </h3>
 <div class="space-y-4">
@@ -83,7 +83,7 @@
 <div>
 <p class="text-xs uppercase tracking-wider text-slate-500 dark:text-slate-400 font-bold">Thời gian dự kiến</p>
 <p class="text-sm text-slate-900 dark:text-slate-100 font-medium flex items-center gap-1">
-<span class="material-symbols-outlined text-sm">calendar_today</span>
+<i class="fa-solid fa-calendar-day text-xs"></i>
                                     Giao hàng từ 2-3 ngày làm việc
                                 </p>
 </div>
@@ -93,11 +93,11 @@
 <!-- Actions -->
 <div class="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
 <a href="{{ route('home') }}" class="flex items-center justify-center gap-2 px-8 py-3 rounded-lg bg-primary text-white font-bold transition-opacity hover:opacity-90 min-w-[200px]">
-<span class="material-symbols-outlined">shopping_bag</span>
+<i class="fa-solid fa-bag-shopping"></i>
                         Tiếp tục mua sắm
                     </a>
 <a href="{{ route('profile.index') }}" class="flex items-center justify-center gap-2 px-8 py-3 rounded-lg bg-slate-200 dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-bold transition-colors hover:bg-slate-300 dark:hover:bg-slate-700 min-w-[200px]">
-<span class="material-symbols-outlined">history</span>
+<i class="fa-solid fa-clock-rotate-left"></i>
                         Xem lịch sử đơn hàng
                     </a>
 </div>
@@ -105,7 +105,7 @@
 <div class="mt-12 rounded-xl overflow-hidden h-48 relative border border-slate-100 dark:border-slate-800">
 <div class="absolute inset-0 bg-primary/5 flex items-center justify-center">
 <div class="text-center">
-<span class="material-symbols-outlined text-primary text-4xl mb-2">map</span>
+<i class="fa-solid fa-map-location-dot text-primary text-4xl mb-2"></i>
 <p class="text-sm text-slate-500 dark:text-slate-400">Theo dõi hành trình đơn hàng của bạn</p>
 </div>
 </div>

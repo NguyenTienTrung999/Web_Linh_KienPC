@@ -18,25 +18,24 @@ class StoreController extends Controller
             $query->where('name', 'like', '%' . $request->search . '%');
         }
 
-        // Filter Categories (allow array if clicking multiple filters, but we handle single logic usually)
+        // Filter Categories
         if ($request->has('categories') && is_array($request->categories)) {
             $query->whereIn('category_id', $request->categories);
         }
 
-        // Range Price
+        // Range Price - Consideration of sale_price
         if ($request->has('min_price') && $request->min_price != '') {
-            $query->where('price', '>=', $request->min_price);
+            $query->whereRaw('COALESCE(sale_price, price) >= ?', [$request->min_price]);
         }
         if ($request->has('max_price') && $request->max_price != '') {
-            $query->where('price', '<=', $request->max_price);
+            $query->whereRaw('COALESCE(sale_price, price) <= ?', [$request->max_price]);
         }
 
-        // Sort logic
+        // Sort logic - Consideration of sale_price
         $sort = $request->get('sort', 'latest');
         match ($sort) {
-            'price_asc' => $query->orderBy('price', 'asc'),
-            'price_desc' => $query->orderBy('price', 'desc'),
-            'top_rated' => $query->latest(), // placeholder since we don't have ratings yet
+            'price_asc' => $query->orderByRaw('COALESCE(sale_price, price) asc'),
+            'price_desc' => $query->orderByRaw('COALESCE(sale_price, price) desc'),
             default => $query->latest(),
         };
 

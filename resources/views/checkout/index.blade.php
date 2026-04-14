@@ -7,9 +7,9 @@
 <!-- Breadcrumbs -->
 <div class="flex items-center gap-2 mb-8 text-sm font-medium">
 <a class="text-primary hover:underline" href="{{ route('cart.index') }}">Giỏ hàng</a>
-<span class="text-slate-400 material-symbols-outlined text-xs">chevron_right</span>
+<i class="fa-solid fa-chevron-right text-[10px] text-slate-400"></i>
 <span class="text-slate-900 dark:text-white">Thanh toán</span>
-<span class="text-slate-400 material-symbols-outlined text-xs">chevron_right</span>
+<i class="fa-solid fa-chevron-right text-[10px] text-slate-400"></i>
 <span class="text-slate-400">Hoàn tất</span>
 </div>
 <div class="flex flex-col lg:flex-row gap-8">
@@ -22,7 +22,7 @@
 <!-- Shipping Info Section -->
 <section class="bg-white dark:bg-slate-800/50 p-6 rounded-xl border border-primary/10 shadow-sm">
 <div class="flex items-center gap-3 mb-6">
-<span class="material-symbols-outlined text-primary">local_shipping</span>
+<i class="fa-solid fa-truck text-primary"></i>
 <h2 class="text-lg font-bold text-slate-900 dark:text-white uppercase tracking-wider">Thông tin giao hàng</h2>
 </div>
 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -47,7 +47,7 @@
 <!-- Shipping Method Section -->
 <section class="bg-white dark:bg-slate-800/50 p-6 rounded-xl border border-primary/10 shadow-sm">
 <div class="flex items-center gap-3 mb-6">
-<span class="material-symbols-outlined text-primary">speed</span>
+<i class="fa-solid fa-bolt text-primary"></i>
 <h2 class="text-lg font-bold text-slate-900 dark:text-white uppercase tracking-wider">Phương thức vận chuyển</h2>
 </div>
 <div class="space-y-3">
@@ -76,25 +76,25 @@
 <!-- Payment Method Section -->
 <section class="bg-white dark:bg-slate-800/50 p-6 rounded-xl border border-primary/10 shadow-sm">
 <div class="flex items-center gap-3 mb-6">
-<span class="material-symbols-outlined text-primary">payments</span>
+<i class="fa-solid fa-money-bill-wave text-primary"></i>
 <h2 class="text-lg font-bold text-slate-900 dark:text-white uppercase tracking-wider">Phương thức thanh toán</h2>
 </div>
 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
 <label class="flex flex-col items-center justify-center p-4 rounded-lg border border-slate-200 dark:border-slate-700 hover:border-primary transition-all cursor-pointer group">
 <input class="hidden peer" name="payment" type="radio"/>
-<span class="material-symbols-outlined text-3xl mb-2 text-slate-400 group-hover:text-primary transition-colors">account_balance</span>
+<i class="fa-solid fa-building-columns text-3xl mb-2 text-slate-400 group-hover:text-primary transition-colors"></i>
 <span class="text-sm font-semibold">Chuyển khoản</span>
 <div class="peer-checked:bg-primary absolute inset-0 border-2 border-transparent peer-checked:border-primary rounded-lg pointer-events-none"></div>
 </label>
 <label class="flex flex-col items-center justify-center p-4 rounded-lg border border-slate-200 dark:border-slate-700 hover:border-primary transition-all cursor-pointer group">
 <input class="hidden peer" name="payment" type="radio"/>
-<span class="material-symbols-outlined text-3xl mb-2 text-slate-400 group-hover:text-primary transition-colors">credit_card</span>
+<i class="fa-solid fa-credit-card text-3xl mb-2 text-slate-400 group-hover:text-primary transition-colors"></i>
 <span class="text-sm font-semibold">Thẻ tín dụng</span>
 <div class="peer-checked:bg-primary absolute inset-0 border-2 border-transparent peer-checked:border-primary rounded-lg pointer-events-none"></div>
 </label>
 <label class="flex flex-col items-center justify-center p-4 rounded-lg border border-slate-200 dark:border-slate-700 hover:border-primary transition-all cursor-pointer group">
 <input checked="" class="hidden peer" name="payment" type="radio"/>
-<span class="material-symbols-outlined text-3xl mb-2 text-primary">payments</span>
+<i class="fa-solid fa-hand-holding-dollar text-3xl mb-2 text-primary"></i>
 <span class="text-sm font-semibold">Thanh toán COD</span>
 <div class="absolute inset-0 border-2 border-primary rounded-lg pointer-events-none"></div>
 </label>
@@ -149,7 +149,7 @@
 </div>
 <!-- Action Button -->
 <a href="{{ route('checkout.confirm') }}" class="w-full bg-primary hover:bg-primary/90 text-white font-bold py-4 rounded-lg flex items-center justify-center gap-2 transition-all shadow-lg shadow-primary/20">
-<span class="material-symbols-outlined">verified_user</span>
+<i class="fa-solid fa-circle-check"></i>
                                 HOÀN TẤT ĐẶT HÀNG
                             </a>
 <p class="text-[10px] text-center text-slate-400 mt-4 leading-relaxed">

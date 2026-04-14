@@ -17,7 +17,7 @@
 <div class="space-y-2">
 <label class="text-sm font-semibold text-slate-700 dark:text-slate-300">Email / Tên đăng nhập</label>
 <div class="relative">
-<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xl">person</span>
+<i class="fa-solid fa-user absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-lg"></i>
 <input name="email" class="w-full pl-11 pr-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all text-slate-900 dark:text-white" placeholder="Nhập email hoặc tên đăng nhập" type="text" required autofocus/>
 </div>
 @error('email')
@@ -28,10 +28,10 @@
 <div class="space-y-2">
 <label class="text-sm font-semibold text-slate-700 dark:text-slate-300">Mật khẩu</label>
 <div class="relative">
-<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xl">lock</span>
+<i class="fa-solid fa-lock absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-lg"></i>
 <input name="password" class="w-full pl-11 pr-12 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all text-slate-900 dark:text-white" placeholder="Nhập mật khẩu" type="password" required/>
 <button class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-primary" type="button">
-<span class="material-symbols-outlined text-xl">visibility</span>
+<i class="fa-solid fa-eye text-lg"></i>
 </button>
 </div>
 @error('password')
@@ -49,7 +49,7 @@
 <!-- Login Button -->
 <button class="w-full py-3.5 bg-primary hover:bg-primary/90 text-white font-bold rounded-lg shadow-lg shadow-primary/20 transition-all flex items-center justify-center gap-2" type="submit">
 <span>Đăng nhập</span>
-<span class="material-symbols-outlined text-lg">arrow_forward</span>
+<i class="fa-solid fa-arrow-right text-sm"></i>
 </button>
 </form>
 <!-- Divider -->

@@ -7,7 +7,7 @@
     <div class="flex flex-col gap-2 mb-8">
         <nav class="flex items-center gap-2 text-sm text-slate-500">
             <a class="hover:text-primary" href="{{ route('home') }}">Trang chủ</a>
-            <span class="material-symbols-outlined text-xs">chevron_right</span>
+            <i class="fa-solid fa-chevron-right text-[10px]"></i>
             <span class="text-slate-900 dark:text-slate-100 font-medium">Giỏ hàng</span>
         </nav>
         <h1 class="text-3xl font-extrabold text-slate-900 dark:text-slate-100">Giỏ hàng của bạn <span class="text-primary font-normal text-xl ml-2">(3 sản phẩm)</span></h1>
@@ -35,7 +35,7 @@
                                     <div>
                                         <p class="font-bold text-slate-900 dark:text-slate-100">Pro Audio Headphones</p>
                                         <p class="text-sm text-slate-500">Midnight Black</p>
-                                        <button class="mt-2 text-xs text-red-500 hover:text-red-600 flex items-center gap-1 font-medium"><span class="material-symbols-outlined text-sm">delete</span> Xóa</button>
+                                        <button class="mt-2 text-xs text-red-500 hover:text-red-600 flex items-center gap-1 font-medium"><i class="fa-solid fa-trash-can text-[10px]"></i> Xóa</button>
                                     </div>
                                 </div>
                             </td>
@@ -43,11 +43,11 @@
                                 <div class="flex items-center justify-center">
                                     <div class="flex items-center border border-slate-200 dark:border-slate-700 rounded-lg overflow-hidden bg-white dark:bg-slate-900">
                                         <button class="px-3 py-1 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400">
-                                            <span class="material-symbols-outlined text-sm">remove</span>
+                                            <i class="fa-solid fa-minus text-[10px]"></i>
                                         </button>
                                         <span class="px-4 py-1 text-sm font-semibold border-x border-slate-200 dark:border-slate-700">1</span>
                                         <button class="px-3 py-1 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400">
-                                            <span class="material-symbols-outlined text-sm">add</span>
+                                            <i class="fa-solid fa-plus text-[10px]"></i>
                                         </button>
                                     </div>
                                 </div>
@@ -64,7 +64,7 @@
                                     <div>
                                         <p class="font-bold text-slate-900 dark:text-slate-100">Smart Watch Series 7</p>
                                         <p class="text-sm text-slate-500">Arctic White</p>
-                                        <button class="mt-2 text-xs text-red-500 hover:text-red-600 flex items-center gap-1 font-medium"><span class="material-symbols-outlined text-sm">delete</span> Xóa</button>
+                                        <button class="mt-2 text-xs text-red-500 hover:text-red-600 flex items-center gap-1 font-medium"><i class="fa-solid fa-trash-can text-[10px]"></i> Xóa</button>
                                     </div>
                                 </div>
                             </td>
@@ -72,11 +72,11 @@
                                 <div class="flex items-center justify-center">
                                     <div class="flex items-center border border-slate-200 dark:border-slate-700 rounded-lg overflow-hidden bg-white dark:bg-slate-900">
                                         <button class="px-3 py-1 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400">
-                                            <span class="material-symbols-outlined text-sm">remove</span>
+                                            <i class="fa-solid fa-minus text-[10px]"></i>
                                         </button>
                                         <span class="px-4 py-1 text-sm font-semibold border-x border-slate-200 dark:border-slate-700">2</span>
                                         <button class="px-3 py-1 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400">
-                                            <span class="material-symbols-outlined text-sm">add</span>
+                                            <i class="fa-solid fa-plus text-[10px]"></i>
                                         </button>
                                     </div>
                                 </div>
@@ -93,7 +93,7 @@
                                     <div>
                                         <p class="font-bold text-slate-900 dark:text-slate-100">Mechanical Keyboard</p>
                                         <p class="text-sm text-slate-500">Clicky Blue Switches</p>
-                                        <button class="mt-2 text-xs text-red-500 hover:text-red-600 flex items-center gap-1 font-medium"><span class="material-symbols-outlined text-sm">delete</span> Xóa</button>
+                                        <button class="mt-2 text-xs text-red-500 hover:text-red-600 flex items-center gap-1 font-medium"><i class="fa-solid fa-trash-can text-[10px]"></i> Xóa</button>
                                     </div>
                                 </div>
                             </td>
@@ -101,11 +101,11 @@
                                 <div class="flex items-center justify-center">
                                     <div class="flex items-center border border-slate-200 dark:border-slate-700 rounded-lg overflow-hidden bg-white dark:bg-slate-900">
                                         <button class="px-3 py-1 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400">
-                                            <span class="material-symbols-outlined text-sm">remove</span>
+                                            <i class="fa-solid fa-minus text-[10px]"></i>
                                         </button>
                                         <span class="px-4 py-1 text-sm font-semibold border-x border-slate-200 dark:border-slate-700">1</span>
                                         <button class="px-3 py-1 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400">
-                                            <span class="material-symbols-outlined text-sm">add</span>
+                                            <i class="fa-solid fa-plus text-[10px]"></i>
                                         </button>
                                     </div>
                                 </div>
@@ -119,7 +119,7 @@
 
             <div class="flex flex-col sm:flex-row justify-between items-center gap-4 pt-6">
                 <a href="{{ route('home') }}" class="flex items-center gap-2 text-primary font-semibold hover:gap-3 transition-all">
-                    <span class="material-symbols-outlined">arrow_back</span> Tiếp tục mua sắm
+                    <i class="fa-solid fa-arrow-left text-sm"></i> Tiếp tục mua sắm
                 </a>
                 <button class="text-slate-500 hover:text-slate-900 dark:hover:text-slate-100 text-sm font-medium">Xóa toàn bộ giỏ hàng</button>
             </div>
@@ -156,13 +156,13 @@
                     </div>
                 </div>
 
-                <button class="w-full bg-primary text-white py-4 rounded-xl font-bold text-lg hover:shadow-lg hover:shadow-primary/30 transition-all flex items-center justify-center gap-2">Tiến hành thanh toán <span class="material-symbols-outlined">arrow_forward</span></button>
+                <button class="w-full bg-primary text-white py-4 rounded-xl font-bold text-lg hover:shadow-lg hover:shadow-primary/30 transition-all flex items-center justify-center gap-2">Tiến hành thanh toán <i class="fa-solid fa-arrow-right text-sm"></i></button>
                 <p class="mt-4 text-center text-xs text-slate-400">Miễn phí trả hàng trong vòng 30 ngày. Giao hàng nhanh &amp; bảo mật.</p>
             </div>
 
             <div class="bg-primary/5 dark:bg-primary/10 rounded-xl p-6 border border-primary/20">
                 <div class="flex items-center gap-3 text-primary mb-2">
-                    <span class="material-symbols-outlined">verified</span>
+                    <i class="fa-solid fa-circle-check"></i>
                     <span class="font-bold">Quyền lợi thành viên</span>
                 </div>
                 <p class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">Bạn sẽ nhận được <strong class="text-primary">898 TechPoints</strong> cho đơn hàng này!</p>

@@ -8,7 +8,7 @@
 <div class="mb-8">
 <nav class="flex items-center gap-2 text-sm text-slate-500 mb-4">
 <a class="hover:text-primary" href="{{ route('home') }}">Trang chủ</a>
-<span class="material-symbols-outlined text-xs">chevron_right</span>
+<i class="fa-solid fa-chevron-right text-[10px]"></i>
 <span class="text-slate-900 dark:text-slate-200 font-medium">Cửa hàng</span>
 </nav>
 <h1 class="text-3xl font-bold text-slate-900 dark:text-white">Danh mục sản phẩm</h1>
@@ -25,7 +25,7 @@
     
     <div class="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800">
         <div class="flex items-center justify-between mb-6">
-            <h3 class="font-bold text-lg flex items-center gap-2"><span class="material-symbols-outlined text-primary">filter_list</span> Bộ lọc</h3>
+            <h3 class="font-bold text-lg flex items-center gap-2"><i class="fa-solid fa-filter text-primary"></i> Bộ lọc</h3>
             <a href="{{ route('store.index') }}" class="text-primary text-xs font-semibold hover:underline">Xóa tất cả</a>
         </div>
         
@@ -99,7 +99,7 @@
     </a>
     <div class="absolute top-3 right-3">
         <button class="bg-white/90 dark:bg-slate-900/90 p-2 rounded-full shadow-sm hover:text-primary">
-            <span class="material-symbols-outlined text-xl">favorite_border</span>
+            <i class="fa-regular fa-heart text-lg"></i>
         </button>
     </div>
     @if(now()->diffInDays($product->created_at) < 14)
@@ -115,16 +115,23 @@
     </p>
     
     <div class="flex items-center justify-between gap-4 mt-auto pt-4 border-t border-slate-100 dark:border-slate-800">
-        <span class="text-xl font-bold text-slate-900 dark:text-white">{{ number_format($product->price, 0, ',', '.') }}₫</span>
+        @if($product->sale_price)
+            <div class="flex flex-col">
+                <span class="text-xl font-bold text-primary">{{ number_format($product->sale_price, 0, ',', '.') }}₫</span>
+                <span class="text-xs text-slate-400 line-through">{{ number_format($product->price, 0, ',', '.') }}₫</span>
+            </div>
+        @else
+            <span class="text-xl font-bold text-slate-900 dark:text-white">{{ number_format($product->price, 0, ',', '.') }}₫</span>
+        @endif
         <a href="{{ route('cart.index') }}" class="bg-primary hover:bg-primary/90 text-white px-3 py-2 rounded-lg text-sm font-bold flex items-center gap-2 transition-colors">
-            <span class="material-symbols-outlined text-lg">add_shopping_cart</span>
+            <i class="fa-solid fa-cart-plus text-lg"></i>
         </a>
     </div>
     </div>
     </div>
 @empty
     <div class="col-span-full bg-white dark:bg-slate-900 p-12 text-center rounded-xl border border-slate-200 dark:border-slate-800">
-        <span class="material-symbols-outlined text-6xl text-slate-300 mb-4">search_off</span>
+        <i class="fa-solid fa-magnifying-glass text-6xl text-slate-300 mb-4 opacity-30"></i>
         <h3 class="font-bold text-xl mb-2 text-slate-900 dark:text-white">Không tìm thấy sản phẩm!</h3>
         <p class="text-slate-500">Thử thay đổi bộ lọc hoặc từ khóa tìm kiếm của bạn.</p>
         <a href="{{ route('store.index') }}" class="mt-6 inline-block bg-primary text-white font-medium px-6 py-2 rounded-lg hover:bg-primary/90">Xóa tất cả bộ lọc</a>

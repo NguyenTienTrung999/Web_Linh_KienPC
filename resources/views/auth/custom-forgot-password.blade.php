@@ -9,9 +9,7 @@
 <div class="flex flex-col gap-3 mb-8">
 <div class="flex justify-center mb-2">
 <div class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center text-primary">
-<span class="material-symbols-outlined text-4xl">
-                                    lock_reset
-                                </span>
+<i class="fa-solid fa-unlock-keyhole text-3xl"></i>
 </div>
 </div>
 <h1 class="text-slate-900 dark:text-white text-3xl font-black leading-tight tracking-tight text-center">Quên mật khẩu?</h1>
@@ -29,9 +27,7 @@
                             </label>
 <div class="relative flex items-center">
 <div class="absolute left-4 text-slate-400">
-<span class="material-symbols-outlined text-xl">
-                                        mail
-                                    </span>
+<i class="fa-solid fa-envelope text-lg"></i>
 </div>
 <input name="email" required autofocus class="w-full h-14 pl-12 pr-4 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all" placeholder="example@email.com" type="email"/>
 </div>
@@ -42,9 +38,7 @@
 <span class="truncate">Gửi liên kết khôi phục</span>
 </button>
 <a href="{{ route('custom.login') }}" class="flex w-full items-center justify-center rounded-lg h-12 bg-transparent text-slate-600 dark:text-slate-400 text-sm font-semibold leading-normal hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
-<span class="material-symbols-outlined mr-2 text-lg">
-                                    login
-                                </span>
+<i class="fa-solid fa-right-to-bracket mr-2 text-base"></i>
 <span class="truncate">Quay lại đăng nhập</span>
 </a>
 </div>

@@ -7,7 +7,7 @@
     <div class="row justify-content-center">
         <div class="col-md-5">
             <div class="text-center mb-4">
-                <h2 class="fw-bold"><i class="bi bi-box-arrow-in-right me-2" style="color: var(--primary-light);"></i>Đăng nhập</h2>
+                <h2 class="fw-bold"><i class="fa-solid fa-right-to-bracket me-2 text-primary"></i>Đăng nhập</h2>
                 <p class="text-secondary">Đăng nhập để truy cập tài khoản của bạn</p>
             </div>
 
@@ -52,7 +52,7 @@
                     </div>
 
                     <button type="submit" class="btn btn-primary-custom w-100 mb-3">
-                        <i class="bi bi-box-arrow-in-right me-1"></i>Đăng nhập
+                        <i class="fa-solid fa-right-to-bracket me-1"></i>Đăng nhập
                     </button>
 
                     <p class="text-center text-secondary mb-0">
