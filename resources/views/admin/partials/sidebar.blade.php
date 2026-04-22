@@ -18,15 +18,15 @@
             <i class="fa-solid fa-boxes-stacked w-5 text-center"></i>
             <span class="text-sm">Sản phẩm</span>
         </a>
-        <a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors" href="#">
+        <a class="flex items-center gap-3 px-3 py-2 rounded-lg {{ request()->routeIs('admin.orders.*') ? 'bg-primary/10 text-primary font-medium' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors' }}" href="{{ route('admin.orders.index') }}">
             <i class="fa-solid fa-cart-shopping w-5 text-center"></i>
             <span class="text-sm">Đơn hàng</span>
         </a>
-        <a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors" href="#">
+        <a class="flex items-center gap-3 px-3 py-2 rounded-lg {{ request()->routeIs('admin.customers.*') ? 'bg-primary/10 text-primary font-medium' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors' }}" href="{{ route('admin.customers.index') }}">
             <i class="fa-solid fa-users w-5 text-center"></i>
             <span class="text-sm">Khách hàng</span>
         </a>
-        <a class="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors" href="#">
+        <a class="flex items-center gap-3 px-3 py-2 rounded-lg {{ request()->routeIs('admin.reports.*') ? 'bg-primary/10 text-primary font-medium' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors' }}" href="{{ route('admin.reports.index') }}">
             <i class="fa-solid fa-chart-simple w-5 text-center"></i>
             <span class="text-sm">Báo cáo</span>
         </a>

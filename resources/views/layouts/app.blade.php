@@ -9,7 +9,7 @@
     <!-- Fonts & Icons -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
     
     <!-- Stitch Tailwind Configuration -->
@@ -37,7 +37,10 @@
                         "surface-container": "#ffffff", "on-background": "#0f172a", "tertiary-fixed-dim": "#f87171",
                         "on-tertiary-container": "#991b1b", "inverse-primary": "#7dd3fc"
                     },
-                    fontFamily: { "headline": ["Inter"], "body": ["Inter"], "label": ["Inter"], "display": ["Inter", "sans-serif"] },
+                    fontFamily: { 
+                        "sans": ["'Be Vietnam Pro'", "sans-serif"],
+                        "display": ["'Be Vietnam Pro'", "sans-serif"],
+                    },
                     borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
                 },
             },
@@ -46,10 +49,13 @@
 
     
     <!-- Tailwind CSS (Vite via App) and configuration fallback -->
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-
-    <style>
-        body { font-family: 'Inter', sans-serif; }
+    @vite(['resources/css/app.css', 'resources/js/app.js'])    <style>
+        body, a, p, span, h1, h2, h3, h4, h5, h6, li, button, input, select, textarea, label { 
+            font-family: 'Be Vietnam Pro', sans-serif !important; 
+        }
+        h1, h2, h3, h4, h5, h6 { font-weight: 700 !important; }
+        button, .btn, [type="button"], [type="submit"] { font-weight: 600 !important; }
+        body, a, p, span, li, input, select, textarea, label { font-weight: 400 !important; }
         .slash-header::before {
             content: "";
             display: inline-block;
@@ -66,91 +72,144 @@
         }
     </style>
 </head>
-<body class="bg-background dark:bg-slate-900 text-on-surface dark:text-slate-100 antialiased font-['Inter']">
+<body class="bg-background dark:bg-slate-900 text-on-surface dark:text-slate-100 antialiased font-sans">
 
 <!-- Top NavBar from Stitch -->
-<header class="fixed top-0 w-full z-50 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-100 dark:border-slate-800 shadow-sm font-['Inter'] antialiased">
-    <nav class="flex justify-between items-center h-16 w-full max-w-[1400px] mx-auto px-4">
-        <a href="{{ route('home') }}" class="text-2xl font-black tracking-tighter text-slate-900 dark:text-white uppercase flex items-center gap-2">
-            <i class="fa-solid fa-terminal text-primary text-2xl"></i> TECHFLOW
-        </a>
-        
-        <!-- Navigation Links -->
-        <div class="hidden lg:flex items-center space-x-8">
-            <a class="{{ request()->routeIs('home') ? 'text-primary font-bold border-b-2 border-primary pb-1' : 'text-slate-600 dark:text-slate-400 font-medium hover:text-primary transition-colors' }}" href="{{ route('home') }}">Trang chủ</a>
-            <a class="{{ request()->routeIs('store.index') ? 'text-primary font-bold border-b-2 border-primary pb-1' : 'text-slate-600 dark:text-slate-400 font-medium hover:text-primary transition-colors' }}" href="{{ route('store.index') }}">Sản phẩm</a>
-            <a class="text-slate-600 dark:text-slate-400 font-medium hover:text-primary transition-colors" href="#">Danh mục</a>
-            <a class="text-slate-600 dark:text-slate-400 font-medium hover:text-primary transition-colors" href="#">Tin tức</a>
-            <a class="text-slate-600 dark:text-slate-400 font-medium hover:text-primary transition-colors" href="#">Liên hệ</a>
-        </div>
-        
-        <!-- Search & Actions -->
-        <div class="flex items-center gap-6">
-            <div class="hidden md:flex relative items-center">
-                <input class="bg-surface-container-high dark:bg-slate-800 border-none rounded-lg py-2 pl-4 pr-10 w-64 focus:ring-2 focus:ring-primary text-sm outline-none dark:text-white" placeholder="Tìm kiếm linh kiện..." type="text"/>
-                <i class="fa-solid fa-magnifying-glass absolute right-3 text-on-surface-variant dark:text-slate-400"></i>
+<!-- Header Section -->
+<header class="fixed top-0 w-full z-50 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 shadow-sm antialiased">
+    <!-- Top Row -->
+    <div class="h-[90px] border-b border-slate-100 dark:border-slate-800">
+        <div class="max-w-[1600px] mx-auto h-full px-4 flex items-center justify-between gap-8">
+            <!-- Logo -->
+            <a href="{{ route('home') }}" class="shrink-0 text-2xl font-black tracking-tighter text-slate-900 dark:text-white uppercase flex items-center gap-2">
+                <i class="fa-solid fa-terminal text-primary text-2xl"></i> TECHFLOW
+            </a>
+
+            <!-- Search Bar: 720px -->
+            <div class="hidden lg:flex flex-1 max-w-[720px] relative items-center">
+                <form action="{{ route('store.index') }}" method="GET" class="w-full relative">
+                    <input name="search" value="{{ request('search') }}" class="w-full bg-slate-100 dark:bg-slate-800 border-none rounded-full py-3.5 pl-6 pr-14 focus:ring-2 focus:ring-primary text-sm outline-none dark:text-white shadow-inner" placeholder="Bạn cần tìm linh kiện gì?" type="text"/>
+                    <button type="submit" class="absolute right-2 top-1/2 -translate-y-1/2 w-11 h-11 bg-primary text-white rounded-full flex items-center justify-center hover:bg-primary/90 transition-colors">
+                        <i class="fa-solid fa-magnifying-glass text-sm"></i>
+                    </button>
+                </form>
             </div>
-            
-            <div class="flex items-center gap-4">
-                <a href="{{ route('cart.index') }}" class="relative hover:opacity-80 transition-opacity scale-105 duration-200 block text-slate-700 dark:text-slate-300 hover:text-primary">
-                    <i class="fa-solid fa-cart-shopping text-lg"></i>
-                    <span class="absolute -top-2 -right-2 bg-primary text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">0</span>
+
+            <!-- Actions Side -->
+            <div class="flex items-center gap-6">
+                <!-- Phone Contact -->
+                <a href="tel:0329346849" class="hidden xl:flex items-center gap-3 group">
+                    <div class="w-11 h-11 bg-primary/10 text-primary rounded-full flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all duration-300">
+                        <i class="fa-solid fa-phone text-sm"></i>
+                    </div>
+                    <div class="flex flex-col">
+                        <span class="text-[11px] font-bold text-slate-400 uppercase leading-none mb-1">Liên hệ ngay</span>
+                        <span class="text-sm font-black text-slate-900 dark:text-white">0329346849</span>
+                    </div>
                 </a>
-                
+
+                <!-- Cart -->
+                <a href="{{ route('cart.index') }}" class="relative w-11 h-11 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-full flex items-center justify-center hover:bg-primary hover:text-white transition-all duration-300">
+                    <i class="fa-solid fa-cart-shopping text-sm"></i>
+                    <span id="cart-count" class="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full border-2 border-white dark:border-slate-900">{{ count(session('cart', [])) }}</span>
+                </a>
+
+                <!-- User Account -->
                 @guest
-                    <a href="{{ route('custom.login') }}" class="hover:opacity-80 transition-opacity scale-105 duration-200 block text-slate-700 dark:text-slate-300 hover:text-primary">
-                        <i class="fa-solid fa-user text-lg"></i>
+                    <a href="{{ route('custom.login') }}" class="flex items-center gap-2 text-slate-600 dark:text-slate-300 hover:text-primary transition-colors group">
+                        <div class="w-11 h-11 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all duration-300">
+                            <i class="fa-solid fa-user text-sm"></i>
+                        </div>
+                        <div class="hidden sm:flex flex-col">
+                            <span class="text-[10px] font-bold text-slate-400 uppercase leading-none">Tài khoản</span>
+                            <span class="text-xs font-bold text-slate-900 dark:text-white">Đăng nhập</span>
+                        </div>
                     </a>
                 @else
                     <div class="relative group">
-                        <button class="flex items-center hover:opacity-80 transition-opacity scale-105 duration-200 text-slate-700 dark:text-slate-300 hover:text-primary focus:outline-none">
-                            <i class="fa-solid fa-user text-lg"></i>
-                        </button>
-                        <div class="absolute right-0 top-full mt-2 w-48 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50 overflow-hidden">
-                            <div class="px-4 py-3 border-b border-slate-100 dark:border-slate-700">
-                                <p class="text-sm font-bold text-slate-900 dark:text-white">{{ Auth::user()->name }}</p>
+                        <button class="flex items-center gap-2 text-slate-600 dark:text-slate-300 hover:text-primary transition-colors focus:outline-none">
+                            <div class="w-11 h-11 bg-primary/10 text-primary rounded-full flex items-center justify-center">
+                                <i class="fa-solid fa-user text-sm"></i>
                             </div>
-                            <a href="{{ route('profile.index') }}" class="block px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 hover:text-primary">Hồ sơ của tôi</a>
-                            @if(Auth::user()->role === 'admin')
-                                <a href="{{ route('admin.dashboard') }}" class="block px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 hover:text-primary">Trang quản trị</a>
-                            @endif
-                            <form method="POST" action="{{ route('logout') }}" class="m-0 border-t border-slate-100 dark:border-slate-700">
+                            <div class="hidden sm:flex flex-col items-start">
+                                <span class="text-[10px] font-bold text-slate-400 uppercase leading-none">Xin chào</span>
+                                <span class="text-xs font-bold text-slate-900 dark:text-white line-clamp-1 max-w-[100px]">{{ Auth::user()->name }}</span>
+                            </div>
+                        </button>
+                        <div class="absolute right-0 top-full mt-2 w-56 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-2xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50 overflow-hidden transform translate-y-2 group-hover:translate-y-0">
+                            <div class="px-5 py-4 bg-slate-50 dark:bg-slate-700/50 border-b border-slate-100 dark:border-slate-600">
+                                <p class="text-xs font-bold text-slate-400 uppercase mb-1">Quản lý tài khoản</p>
+                                <p class="text-sm font-bold text-slate-900 dark:text-white truncate">{{ Auth::user()->email }}</p>
+                            </div>
+                            <div class="p-2">
+                                <a href="{{ route('profile.index') }}" class="flex items-center gap-3 px-3 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-primary hover:text-white rounded-lg transition-colors group">
+                                    <i class="fa-solid fa-id-card text-slate-400 group-hover:text-white"></i> Hồ sơ của tôi
+                                </a>
+                                @if(Auth::user()->role === 'admin')
+                                    <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-3 px-3 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-primary hover:text-white rounded-lg transition-colors group">
+                                        <i class="fa-solid fa-gauge text-slate-400 group-hover:text-white"></i> Trang quản trị
+                                    </a>
+                                @endif
+                                <a href="{{ route('order.tracking') }}" class="flex items-center gap-3 px-3 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-primary hover:text-white rounded-lg transition-colors group">
+                                    <i class="fa-solid fa-box text-slate-400 group-hover:text-white"></i> Đơn hàng của tôi
+                                </a>
+                            </div>
+                            <form method="POST" action="{{ route('logout') }}" class="m-0 border-t border-slate-100 dark:border-slate-700 p-2">
                                 @csrf
-                                <button type="submit" class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 font-medium">Đăng xuất</button>
+                                <button type="submit" class="w-full flex items-center gap-3 px-3 py-2 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg font-bold transition-colors">
+                                    <i class="fa-solid fa-right-from-bracket text-red-400"></i> Đăng xuất
+                                </button>
                             </form>
                         </div>
                     </div>
                 @endguest
             </div>
         </div>
-    </nav>
+    </div>
+
+    <!-- Bottom Row -->
+    <div class="h-[60px] bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 hidden md:block">
+        <div class="max-w-[1600px] mx-auto h-full px-4 flex items-start gap-10">
+            <!-- Category Menu Button -->
+            <a href="{{ route('store.index') }}" class="h-[48px] flex items-center gap-3 px-6 bg-primary text-white font-black uppercase text-xs tracking-widest hover:bg-primary/90 transition-all group rounded-xl mb-[12px]">
+                <i class="fa-solid fa-bars text-sm group-hover:rotate-90 transition-transform"></i>
+                Danh mục sản phẩm
+            </a>
+
+            <!-- Quick Category Links -->
+            <div class="flex items-center gap-8 h-[48px]">
+                <a href="{{ route('store.index', ['categories[]' => 2]) }}" class="text-xs font-bold uppercase tracking-widest text-slate-600 dark:text-slate-400 hover:text-primary transition-colors flex items-center gap-2">
+                    <i class="fa-solid fa-keyboard text-sm opacity-50"></i> Bàn phím
+                </a>
+                <a href="{{ route('store.index', ['categories[]' => 4]) }}" class="text-xs font-bold uppercase tracking-widest text-slate-600 dark:text-slate-400 hover:text-primary transition-colors flex items-center gap-2">
+                    <i class="fa-solid fa-volume-high text-sm opacity-50"></i> Loa
+                </a>
+                <a href="{{ route('store.index', ['categories[]' => 3]) }}" class="text-xs font-bold uppercase tracking-widest text-slate-600 dark:text-slate-400 hover:text-primary transition-colors flex items-center gap-2">
+                    <i class="fa-solid fa-headphones text-sm opacity-50"></i> Tai nghe
+                </a>
+                <a href="{{ route('store.index', ['categories[]' => 1]) }}" class="text-xs font-bold uppercase tracking-widest text-slate-600 dark:text-slate-400 hover:text-primary transition-colors flex items-center gap-2">
+                    <i class="fa-solid fa-mouse text-sm opacity-50"></i> Chuột
+                </a>
+                <div class="h-4 w-px bg-slate-200 dark:border-slate-700"></div>
+                <a href="{{ route('home') }}" class="text-xs font-bold uppercase tracking-widest text-slate-600 dark:text-slate-400 hover:text-primary transition-colors">Tin tức</a>
+                <a href="#" class="text-xs font-bold uppercase tracking-widest text-slate-600 dark:text-slate-400 hover:text-primary transition-colors">Liên hệ</a>
+            </div>
+        </div>
+    </div>
 </header>
 
-<!-- Alerts -->
-@if(session('success') || session('error'))
-<div class="pt-24 max-w-[1400px] mx-auto px-4 z-40 relative">
-    @if(session('success'))
-        <div class="bg-green-500/10 border border-green-500/20 text-green-600 dark:text-green-400 px-4 py-3 rounded-lg flex items-center gap-3 shadow-sm mb-4">
-            <i class="fa-solid fa-circle-check"></i>
-            <p class="font-medium text-sm">{{ session('success') }}</p>
-        </div>
-    @endif
-    @if(session('error'))
-        <div class="bg-red-500/10 border border-red-500/20 text-red-600 dark:text-red-400 px-4 py-3 rounded-lg flex items-center gap-3 shadow-sm mb-4">
-            <i class="fa-solid fa-circle-exclamation"></i>
-            <p class="font-medium text-sm">{{ session('error') }}</p>
-        </div>
-    @endif
-</div>
-@endif
 
 <!-- Main Content -->
-<main class="min-h-screen {{ request()->routeIs('home') ? 'pt-16' : 'pt-24 max-w-[1400px] mx-auto px-4 pb-16' }}">
+<main class="min-h-screen pt-[150px] md:pt-[150px]">
+    <div class="{{ request()->routeIs('home') ? '' : 'px-4 pb-16' }}">
+        @yield('content')
+    </div>
+</main>
     @yield('content')
 </main>
 
 <!-- Footer from Stitch -->
-<footer class="bg-slate-50 dark:bg-slate-950 w-full pt-16 pb-8 font-['Inter'] text-sm">
+<footer class="bg-slate-50 dark:bg-slate-950 w-full pt-16 pb-8 font-sans text-sm">
     <div class="grid grid-cols-2 md:grid-cols-4 gap-8 px-6 lg:px-12 max-w-[1400px] mx-auto">
         <div>
             <div class="flex items-center gap-2 mb-6">
@@ -166,7 +225,7 @@
         <div>
             <div class="text-[11px] font-black uppercase tracking-widest text-slate-900 dark:text-white mb-6">Hỗ trợ</div>
             <ul class="space-y-4">
-                <li><a class="text-slate-500 dark:text-slate-400 hover:text-primary transition-all duration-300 hover:underline decoration-primary underline-offset-4" href="#">Hướng dẫn mua hàng</a></li>
+                <li><a class="text-slate-500 dark:text-slate-400 hover:text-primary transition-all duration-300 hover:underline decoration-primary underline-offset-4" href="{{ route('order.tracking') }}">Tra cứu đơn hàng</a></li>
                 <li><a class="text-slate-500 dark:text-slate-400 hover:text-primary transition-all duration-300 hover:underline decoration-primary underline-offset-4" href="#">Chính sách bảo hành</a></li>
                 <li><a class="text-slate-500 dark:text-slate-400 hover:text-primary transition-all duration-300 hover:underline decoration-primary underline-offset-4" href="#">Trả góp 0%</a></li>
             </ul>
@@ -200,7 +259,107 @@
     </div>
 </footer>
 
+<!-- Global AJAX Logic -->
+<script>
+    function showToast(message, type = 'success') {
+        const toastContainer = document.getElementById('toast-container') || createToastContainer();
+        const toast = document.createElement('div');
+        let bgClass = 'bg-emerald-500/90';
+        if (type === 'error') bgClass = 'bg-red-500/90';
+        if (type === 'warning') bgClass = 'bg-amber-500/90';
+
+        toast.className = `transform translate-x-full opacity-0 transition-all duration-300 ${bgClass} text-white px-6 py-4 rounded-xl shadow-2xl flex items-center gap-4 z-[100] min-w-[300px] border border-white/20 backdrop-blur-md pointer-events-auto`;
+        
+        let iconClass = 'fa-circle-check';
+        if (type === 'error') iconClass = 'fa-circle-exclamation';
+        if (type === 'warning') iconClass = 'fa-triangle-exclamation';
+
+        toast.innerHTML = `
+            <i class="fa-solid ${iconClass} text-xl"></i>
+            <div class="flex-1">
+                <p class="font-bold text-sm tracking-wide">${message}</p>
+            </div>
+            <button onclick="this.parentElement.remove()" class="text-white/70 hover:text-white transition-colors">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        `;
+        toastContainer.appendChild(toast);
+        
+        // Animate in
+        setTimeout(() => {
+            toast.classList.remove('translate-x-full', 'opacity-0');
+        }, 10);
+        
+        // Animate out
+        setTimeout(() => {
+            if (toast.parentElement) {
+                toast.classList.add('opacity-0', 'translate-x-4');
+                setTimeout(() => toast.remove(), 300);
+            }
+        }, 3000);
+    }
+
+    function createToastContainer() {
+        const container = document.createElement('div');
+        container.id = 'toast-container';
+        container.className = 'fixed top-20 right-4 flex flex-col gap-3 z-[100] pointer-events-none';
+        // Enable pointer events for toast itself but not container
+        container.style.pointerEvents = 'none';
+        document.body.appendChild(container);
+        return container;
+    }
+
+    // Auto-show session toasts
+    document.addEventListener('DOMContentLoaded', () => {
+        @if(session('success'))
+            showToast("{{ session('success') }}", 'success');
+        @endif
+        @if(session('error') || $errors->any())
+            @if($errors->any())
+                showToast("Vui lòng kiểm tra lại thông tin!", 'error');
+            @else
+                showToast("{{ session('error') }}", 'error');
+            @endif
+        @endif
+    });
+
+    async function addToCart(productId, quantity = 1, redirect = false) {
+        try {
+            const response = await fetch(`/cart/add/${productId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify({ quantity })
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                // Update header count
+                const cartCount = document.getElementById('cart-count');
+                if (cartCount) cartCount.innerText = data.cartCount;
+                
+                showToast(data.message);
+                
+                if (redirect) {
+                    window.location.href = '{{ route('cart.index') }}';
+                }
+            } else {
+                // If the item already exists or other failure
+                showToast(data.message, 'warning');
+            }
+        } catch (error) {
+            console.error('Error adding to cart:', error);
+            showToast('Không thể kết nối tới máy chủ!', 'error');
+        }
+    }
+</script>
+
 <!-- Alpine.js (Optional if needed for other components) -->
 <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    @yield('scripts')
 </body>
 </html>

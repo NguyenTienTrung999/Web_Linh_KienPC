@@ -1,59 +1,107 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Dự án Web Bán Linh Kiện Máy Tính (Laravel)
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Chào mừng bạn đến với dự án Website bán linh kiện máy tính. Đây là hướng dẫn chi tiết để bạn có thể cài đặt và chạy dự án trên máy cá nhân sau khi clone từ Git.
 
-## About Laravel
+## 📋 Yêu cầu hệ thống
+Trước khi bắt đầu, hãy đảm bảo máy bạn đã cài đặt:
+- **PHP** >= 8.2
+- **Composer** (Quản lý thư viện PHP)
+- **Node.js & NPM** (Quản lý thư viện Javascript/CSS)
+- **MySQL** hoặc **MariaDB** (Cơ sở dữ liệu)
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## 🚀 Các bước cài đặt
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+### 1. Clone dự án
+Mở terminal và chạy lệnh:
+```bash
+git clone <url_cua_repo>
+cd Web_Linh_KienMayTinh
+```
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### 2. Cài đặt các thư viện (Dependencies)
+Cài đặt thư viện PHP:
+```bash
+composer install
+```
 
-## Learning Laravel
+Cài đặt thư viện Javascript:
+```bash
+npm install
+```
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+### 3. Khởi tạo Cơ sở dữ liệu (Database)
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+#### 3.1. Tạo Database trống
+Trước khi cấu hình, bạn cần tạo một Database trống trong MySQL. Bạn có thể dùng một trong các cách sau:
+- **Cách 1 (Dùng lệnh):** Mở terminal MySQL và chạy: `CREATE DATABASE WebLinhKien;`
+- **Cách 2 (Dùng phpMyAdmin):** Truy cập `http://localhost/phpmyadmin`, chọn **New**, nhập tên `WebLinhKien` và nhấn **Create**.
+- **Cách 3 (Dùng MySQL Workbench):** Nhấn chuột phải vào danh sách Schemas chọn **Create Schema**, đặt tên `WebLinhKien` và nhấn **Apply**.
 
-## Laravel Sponsors
+#### 3.2. Cấu hình môi trường (.env)
+Tạo file `.env` từ file mẫu:
+```bash
+cp .env.example .env
+```
+Mở file `.env` và cập nhật các thông số sau để kết nối với Database vừa tạo:
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306        # Lưu ý: Đổi thành 3307 nếu bạn dùng cổng khác
+DB_DATABASE=WebLinhKien
+DB_USERNAME=root    # Username mặc định của XAMPP/Laragon
+DB_PASSWORD=        # Password mặc định thường để trống
+```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+### 4. Thiết lập dữ liệu (Chọn 1 trong 2 cách)
 
-### Premium Partners
+**Cách 1: Chạy Migration (Dành cho người mới bắt đầu)**
+Lệnh này sẽ tự động tạo bảng và nạp dữ liệu mẫu (Sản phẩm, Danh mục):
+```bash
+php artisan key:generate
+php artisan migrate --seed
+```
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+**Cách 2: Import file .sql (Nếu bạn đã có file backup dữ liệu thật)**
+Nếu bạn có file `Web_LinhKien-Database.sql`, hãy dùng MySQL Workbench hoặc phpMyAdmin để **Import** file này trực tiếp vào database `WebLinhKien`. Sau đó chỉ cần chạy lệnh tạo key:
+```bash
+php artisan key:generate
+```
 
-## Contributing
+### 5. Hoàn thiện cài đặt
+Tạo link liên kết Storage để hiển thị hình ảnh:
+```bash
+php artisan storage:link
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## 💻 Cách chạy ứng dụng
 
-## Code of Conduct
+Mở 2 terminal song song:
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+**Terminal 1: Chạy server Laravel**
+```bash
+php artisan serve
+```
+Ứng dụng sẽ chạy tại: [http://127.0.0.1:8000](http://127.0.0.1:8000)
 
-## Security Vulnerabilities
+**Terminal 2: Chạy Vite**
+```bash
+npm run dev
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+---
 
-## License
+## 🔐 Tài khoản dùng thử (Default Accounts)
+Sau khi chạy lệnh `php artisan db:seed`, bạn có thể đăng nhập bằng các tài khoản sau:
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+### 🛡️ Trang Admin (`/admin/dashboard`)
+- **Email:** `admin@example.com`
+- **Password:** `password`
+
+### 👤 Trang Người dùng (User)
+- **Email:** `user@example.com`
+- **Password:** `password`
+
+## 🛠️ Công nghệ sử dụng
+- **Backend:** Laravel 11.x / 12.x
+- **Frontend:** Blade, Tailwind CSS, Vite, Alpine.js
+- **Database:** MySQL

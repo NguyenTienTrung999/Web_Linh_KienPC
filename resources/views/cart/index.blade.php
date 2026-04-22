@@ -10,10 +10,14 @@
             <i class="fa-solid fa-chevron-right text-[10px]"></i>
             <span class="text-slate-900 dark:text-slate-100 font-medium">Giỏ hàng</span>
         </nav>
-        <h1 class="text-3xl font-extrabold text-slate-900 dark:text-slate-100">Giỏ hàng của bạn <span class="text-primary font-normal text-xl ml-2">(3 sản phẩm)</span></h1>
+        <h1 class="text-3xl font-extrabold text-slate-900 dark:text-slate-100">
+            Giỏ hàng của bạn 
+            <span class="text-primary font-normal text-xl ml-2 cart-count-total">({{ count($cart) }} sản phẩm)</span>
+        </h1>
     </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
+    @if(count($cart) > 0)
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-10" id="cart-content">
         <div class="lg:col-span-2 space-y-6">
             <div class="overflow-x-auto">
                 <table class="w-full text-left border-collapse">
@@ -26,102 +30,47 @@
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
-                        <tr class="group">
+                        @foreach($cart as $id => $details)
+                        <tr class="group cart-item" data-id="{{ $id }}">
                             <td class="py-6 px-2">
                                 <div class="flex items-center gap-4">
                                     <div class="h-20 w-20 rounded-xl bg-white dark:bg-slate-800 p-2 border border-slate-100 dark:border-slate-700 flex-shrink-0">
-                                        <div class="h-full w-full bg-center bg-no-repeat bg-contain" data-alt="Premium wireless noise cancelling headphones" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAcT5APK6cXMrGN4Vue4qmBn4zedmvXZC5J_7ZG6a5r09_oAUE6GJlQkWd8eQ7yBGQdlcVf_I5vB_3tFDvSM9iCcGUCGOpc0tg_i9XE_Civ7mrFdqA0k8bTWTzd_g2swy86UwfJpESIQi01T6I4ehRcDqm2U5D0l4_rjnhh_a-ennVEkJ4UrpLll8o_YkfSbZIbeS5UJQnB7gZp0EejsF_c2UUq36uVBipw6xSGStY3lVTec7MiUb3-8GAl-bvGdgjHIQvOEODMhrM");'></div>
+                                        <img src="{{ $details['image'] ? asset('storage/' . $details['image']) : 'https://placehold.co/200x200?text=No+Image' }}" class="h-full w-full object-contain">
                                     </div>
                                     <div>
-                                        <p class="font-bold text-slate-900 dark:text-slate-100">Pro Audio Headphones</p>
-                                        <p class="text-sm text-slate-500">Midnight Black</p>
-                                        <button class="mt-2 text-xs text-red-500 hover:text-red-600 flex items-center gap-1 font-medium"><i class="fa-solid fa-trash-can text-[10px]"></i> Xóa</button>
+                                        <p class="font-bold text-slate-900 dark:text-slate-100">{{ $details['name'] }}</p>
+                                        <button onclick="removeFromCart({{ $id }})" class="mt-2 text-xs text-red-500 hover:text-red-600 flex items-center gap-1 font-medium">
+                                            <i class="fa-solid fa-trash-can text-[10px]"></i> Xóa
+                                        </button>
                                     </div>
                                 </div>
                             </td>
                             <td class="py-6 px-2">
                                 <div class="flex items-center justify-center">
                                     <div class="flex items-center border border-slate-200 dark:border-slate-700 rounded-lg overflow-hidden bg-white dark:bg-slate-900">
-                                        <button class="px-3 py-1 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400">
+                                        <button onclick="updateQuantity({{ $id }}, -1)" class="px-3 py-1 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400">
                                             <i class="fa-solid fa-minus text-[10px]"></i>
                                         </button>
-                                        <span class="px-4 py-1 text-sm font-semibold border-x border-slate-200 dark:border-slate-700">1</span>
-                                        <button class="px-3 py-1 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400">
+                                        <span class="px-4 py-1 text-sm font-semibold border-x border-slate-200 dark:border-slate-700 item-quantity">{{ $details['quantity'] }}</span>
+                                        <button onclick="updateQuantity({{ $id }}, 1)" class="px-3 py-1 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400">
                                             <i class="fa-solid fa-plus text-[10px]"></i>
                                         </button>
                                     </div>
                                 </div>
                             </td>
-                            <td class="py-6 px-2 text-right text-slate-600 dark:text-slate-400">$299.00</td>
-                            <td class="py-6 px-2 text-right font-bold text-slate-900 dark:text-slate-100">$299.00</td>
+                            <td class="py-6 px-2 text-right text-slate-900 dark:text-slate-100 font-bold whitespace-nowrap">{{ number_format($details['price'], 0, ',', '.') }}đ</td>
+                            <td class="py-6 px-2 text-right font-bold text-primary text-[16px] item-total">{{ number_format($details['price'] * $details['quantity'], 0, ',', '.') }}đ</td>
                         </tr>
-                        <tr class="group">
-                            <td class="py-6 px-2">
-                                <div class="flex items-center gap-4">
-                                    <div class="h-20 w-20 rounded-xl bg-white dark:bg-slate-800 p-2 border border-slate-100 dark:border-slate-700 flex-shrink-0">
-                                        <div class="h-full w-full bg-center bg-no-repeat bg-contain" data-alt="Minimalist smart watch with silicone band" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDT89Yffd9TsUmkAiOgWpx_deMdamxB3oPC64fLhcyDRAYCAlOjSjOYcktG9vIf-HjzNbL7Fg-FXkCjfjHVX0r2DwQyCBxa3dpYbYRKudTrjhr65ad4IUqCShV_jQDLIU1qFOfWw03Z0eZkba7dtJp90jkeU9ZH1gaULuz_Yj9aTmvni9k0Mj0E402Mi3M-1BUucLLJAwFpYSWGYy5nJVHyO8x6WmJaBO_c4_pvx0RyNbgSUkrujMl4ME0oblTEIP3_11y9q9OyxCU");'></div>
-                                    </div>
-                                    <div>
-                                        <p class="font-bold text-slate-900 dark:text-slate-100">Smart Watch Series 7</p>
-                                        <p class="text-sm text-slate-500">Arctic White</p>
-                                        <button class="mt-2 text-xs text-red-500 hover:text-red-600 flex items-center gap-1 font-medium"><i class="fa-solid fa-trash-can text-[10px]"></i> Xóa</button>
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="py-6 px-2">
-                                <div class="flex items-center justify-center">
-                                    <div class="flex items-center border border-slate-200 dark:border-slate-700 rounded-lg overflow-hidden bg-white dark:bg-slate-900">
-                                        <button class="px-3 py-1 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400">
-                                            <i class="fa-solid fa-minus text-[10px]"></i>
-                                        </button>
-                                        <span class="px-4 py-1 text-sm font-semibold border-x border-slate-200 dark:border-slate-700">2</span>
-                                        <button class="px-3 py-1 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400">
-                                            <i class="fa-solid fa-plus text-[10px]"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="py-6 px-2 text-right text-slate-600 dark:text-slate-400">$199.50</td>
-                            <td class="py-6 px-2 text-right font-bold text-slate-900 dark:text-slate-100">$399.00</td>
-                        </tr>
-                        <tr class="group">
-                            <td class="py-6 px-2">
-                                <div class="flex items-center gap-4">
-                                    <div class="h-20 w-20 rounded-xl bg-white dark:bg-slate-800 p-2 border border-slate-100 dark:border-slate-700 flex-shrink-0">
-                                        <div class="h-full w-full bg-center bg-no-repeat bg-contain" data-alt="Mechanical compact keyboard" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAIXyUfL6f9zoKtHqwTYcJiqdPWpEgLr-i28mHiPtqIbOp6Lmq3Mo_5OjGO7rpn_nxWMx1TErHXsL8EwfyK5sE_Ao0bAv9aOr9-qU3KLXaDTrRUUyAOu0NwnAGmQhbg76JIlJC4pXm1XsvGTgWhpB_UOUAywlJ16fsY5SyXrJgTl2X-nTXm7aEZ1VLXqPEbKhsDzY0HCorBRXtmQEC_FtLeRw2qd46sfELwqy-QntO1pKbHFcR9lqJYCuE5DeIE5gUslGvN6cLppRA");'></div>
-                                    </div>
-                                    <div>
-                                        <p class="font-bold text-slate-900 dark:text-slate-100">Mechanical Keyboard</p>
-                                        <p class="text-sm text-slate-500">Clicky Blue Switches</p>
-                                        <button class="mt-2 text-xs text-red-500 hover:text-red-600 flex items-center gap-1 font-medium"><i class="fa-solid fa-trash-can text-[10px]"></i> Xóa</button>
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="py-6 px-2">
-                                <div class="flex items-center justify-center">
-                                    <div class="flex items-center border border-slate-200 dark:border-slate-700 rounded-lg overflow-hidden bg-white dark:bg-slate-900">
-                                        <button class="px-3 py-1 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400">
-                                            <i class="fa-solid fa-minus text-[10px]"></i>
-                                        </button>
-                                        <span class="px-4 py-1 text-sm font-semibold border-x border-slate-200 dark:border-slate-700">1</span>
-                                        <button class="px-3 py-1 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400">
-                                            <i class="fa-solid fa-plus text-[10px]"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="py-6 px-2 text-right text-slate-600 dark:text-slate-400">$120.00</td>
-                            <td class="py-6 px-2 text-right font-bold text-slate-900 dark:text-slate-100">$120.00</td>
-                        </tr>
+                        @endforeach
                     </tbody>
                 </table>
             </div>
 
             <div class="flex flex-col sm:flex-row justify-between items-center gap-4 pt-6">
-                <a href="{{ route('home') }}" class="flex items-center gap-2 text-primary font-semibold hover:gap-3 transition-all">
+                <a href="{{ route('store.index') }}" class="flex items-center gap-2 text-primary font-semibold hover:gap-3 transition-all">
                     <i class="fa-solid fa-arrow-left text-sm"></i> Tiếp tục mua sắm
                 </a>
-                <button class="text-slate-500 hover:text-slate-900 dark:hover:text-slate-100 text-sm font-medium">Xóa toàn bộ giỏ hàng</button>
+                <button onclick="clearCart()" class="text-slate-500 hover:text-slate-900 dark:hover:text-slate-100 text-sm font-medium">Xóa toàn bộ giỏ hàng</button>
             </div>
         </div>
 
@@ -132,19 +81,19 @@
                 <div class="space-y-4 mb-6">
                     <div class="flex justify-between text-slate-600 dark:text-slate-400">
                         <span>Tạm tính</span>
-                        <span class="font-medium text-slate-900 dark:text-slate-100">$818.00</span>
+                        <span class="font-medium text-slate-900 dark:text-slate-100 cart-subtotal">{{ number_format($total, 0, ',', '.') }}đ</span>
                     </div>
                     <div class="flex justify-between text-slate-600 dark:text-slate-400">
                         <span>Phí vận chuyển dự tính</span>
-                        <span class="font-medium text-slate-900 dark:text-slate-100">$15.00</span>
+                        <span class="font-medium text-slate-900 dark:text-slate-100">0đ</span>
                     </div>
                     <div class="flex justify-between text-slate-600 dark:text-slate-400">
-                        <span>Thuế dự tính</span>
-                        <span class="font-medium text-slate-900 dark:text-slate-100">$65.44</span>
+                        <span>Thuế dự tính (10%)</span>
+                        <span class="font-medium text-slate-900 dark:text-slate-100 cart-tax">{{ number_format($total * 0.1, 0, ',', '.') }}đ</span>
                     </div>
                     <div class="pt-4 border-t border-slate-100 dark:border-slate-800 flex justify-between">
                         <span class="text-lg font-bold">Tổng cộng</span>
-                        <span class="text-xl font-extrabold text-primary">$898.44</span>
+                        <span class="text-[16px] font-bold text-primary cart-total-price">{{ number_format($total * 1.1, 0, ',', '.') }}đ</span>
                     </div>
                 </div>
 
@@ -156,52 +105,131 @@
                     </div>
                 </div>
 
-                <button class="w-full bg-primary text-white py-4 rounded-xl font-bold text-lg hover:shadow-lg hover:shadow-primary/30 transition-all flex items-center justify-center gap-2">Tiến hành thanh toán <i class="fa-solid fa-arrow-right text-sm"></i></button>
+                <a href="{{ route('checkout.index') }}" class="w-full bg-primary text-white py-4 rounded-xl font-bold text-lg hover:shadow-lg hover:shadow-primary/30 transition-all flex items-center justify-center gap-2">Tiến hành thanh toán <i class="fa-solid fa-arrow-right text-sm"></i></a>
                 <p class="mt-4 text-center text-xs text-slate-400">Miễn phí trả hàng trong vòng 30 ngày. Giao hàng nhanh &amp; bảo mật.</p>
             </div>
-
-            <div class="bg-primary/5 dark:bg-primary/10 rounded-xl p-6 border border-primary/20">
-                <div class="flex items-center gap-3 text-primary mb-2">
-                    <i class="fa-solid fa-circle-check"></i>
-                    <span class="font-bold">Quyền lợi thành viên</span>
-                </div>
-                <p class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">Bạn sẽ nhận được <strong class="text-primary">898 TechPoints</strong> cho đơn hàng này!</p>
-            </div>
         </div>
     </div>
-
-    <div class="mt-20 pt-10 border-t border-slate-200 dark:border-slate-800">
-        <h3 class="text-xl font-bold mb-8">Có thể bạn cũng thích</h3>
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
-            <div class="group cursor-pointer">
-                <div class="aspect-square rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 mb-3 overflow-hidden">
-                    <div class="h-full w-full bg-center bg-no-repeat bg-cover group-hover:scale-105 transition-transform duration-500" data-alt="High-end tablet on desk" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBkS_ji1FwuOa-aaJCBelzq-3MR6sX42jl1oMO4JV0hS-X0fK0lnjJJd80Ip5thf7MxXhDpDyRv9h8qxFU9NBTX7hArFbz1haOTtHF1_KoE9FVx0SJQIzu0zR37NUG-Bc8XYlHzmfy6Ufy94rSGU1mNu7ipxKAXn5TrWyozkjs64xGJe-UgmBgj2tzol5_CCGn8B3xqKmsknruXklkaZn_jNZi9dsRLiYVAwSSZGpiXo_JJiosdII31j489XMBVTSNqlU_CIeYOLYY");'></div>
-                </div>
-                <h4 class="font-bold text-sm mb-1 group-hover:text-primary">Ultra Tab 12.9</h4>
-                <p class="text-slate-500 text-sm">$799.00</p>
-            </div>
-            <div class="group cursor-pointer">
-                <div class="aspect-square rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 mb-3 overflow-hidden">
-                    <div class="h-full w-full bg-center bg-no-repeat bg-cover group-hover:scale-105 transition-transform duration-500" data-alt="Compact wireless earbuds charging case" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAuJCgmiN9Mxd2BcZz1ooZF9ax89a4BUjqEx5TWvcNEc_JkHI5aUDotfO6fZ4bOeFijiBzdi417VfM2WiuuK2RCuM9ANO5QVd3BzgYoMX3rHENbrybvm2P8X1sLXno4yzGYxcpcK1LlAnXjOxer_AJZR1O-zDMt4rCtCTeYi4h0YNBPr7aKdrXn-kcn4X4NeNSfK8PdX15F3fU5Yw3UmZKuAfh_o1t4e-sVy9j58RUjXdAaNHdIeM6LwXu7An7olDJSnv1nHG_1Y5c");'></div>
-                </div>
-                <h4 class="font-bold text-sm mb-1 group-hover:text-primary">Pods Elite</h4>
-                <p class="text-slate-500 text-sm">$159.00</p>
-            </div>
-            <div class="group cursor-pointer">
-                <div class="aspect-square rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 mb-3 overflow-hidden">
-                    <div class="h-full w-full bg-center bg-no-repeat bg-cover group-hover:scale-105 transition-transform duration-500" data-alt="External solid state drive" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDY4AhPOiRIYB5j2qrC4TRYLi60QkYo8DBNZzBAyUkVZSQmP4Dh3fe2BEQFMEEHjSp5QU1isUmnwjphtXKwhY4DWMFcSQEMKGyaBGJIoNVS_tqyWLt0Xyrw9dmPfXwt13N9g4At2uGR4EUPHs604TbtriUtnDVHsDnD70t-7-tqcqz02Gmu0y30DJsyUw51Ygkt6VwCEvezOZS2Lvp9cE-3w-Jk-jG8uBARRJYWsRYX-ps6c8gE0fT9WY2Z4n-OAc3dbnNuo2UpXt0");'></div>
-                </div>
-                <h4 class="font-bold text-sm mb-1 group-hover:text-primary">SpeedDrive 1TB SSD</h4>
-                <p class="text-slate-500 text-sm">$89.00</p>
-            </div>
-            <div class="group cursor-pointer">
-                <div class="aspect-square rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 mb-3 overflow-hidden">
-                    <div class="h-full w-full bg-center bg-no-repeat bg-cover group-hover:scale-105 transition-transform duration-500" data-alt="Smartphone protective case" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBVuVcFGaAspYb_-4ryJp9Dza3tnZeVMBlxxkeG1lT_Q7_XybNbDZ2_82DwfYvuc1uBBg5krFnmGS78Hi3nXte5EQA-niJt2aOlFHAXUi11lgZVjMwge2P2YraCDdnboiyOuMIA1ZUnpzjOmUxhU7ILzT4Rxf_bZpOizVv81G6J96DRB5KVFH3q7L1hHHoPTAo5GQ60bXw2yMjzcmAnD3RbwkxyE7hUwZtY3aR56PO4JhudMaTJmbxERDrQAiXjm7VQSgsceyH_AXc");'></div>
-                </div>
-                <h4 class="font-bold text-sm mb-1 group-hover:text-primary">Shield Case Pro</h4>
-                <p class="text-slate-500 text-sm">$35.00</p>
-            </div>
+    @else
+    <div class="text-center py-20 bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800">
+        <div class="w-24 h-24 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-6">
+            <i class="fa-solid fa-cart-shopping text-4xl text-slate-300"></i>
         </div>
+        <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-2">Giỏ hàng trống!</h2>
+        <p class="text-slate-500 mb-8 max-w-sm mx-auto">Bạn chưa thêm sản phẩm nào vào giỏ hàng. Hãy bắt đầu chọn những thiết bị công nghệ ưng ý nhất nhé!</p>
+        <a href="{{ route('store.index') }}" class="inline-flex items-center gap-2 bg-primary text-white px-8 py-3 rounded-xl font-bold hover:shadow-lg transition-all">
+            Đến Cửa Hàng <i class="fa-solid fa-arrow-right"></i>
+        </a>
     </div>
+    @endif
 </main>
+
+<script>
+    async function updateQuantity(productId, change) {
+        const row = document.querySelector(`.cart-item[data-id="${productId}"]`);
+        const quantitySpan = row.querySelector('.item-quantity');
+        let newQuantity = parseInt(quantitySpan.innerText) + change;
+        
+        if (newQuantity < 1) return;
+
+        try {
+            const response = await fetch(`/cart/update/${productId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify({ quantity: newQuantity })
+            });
+
+            const data = await response.json();
+            if (data.success) {
+                quantitySpan.innerText = newQuantity;
+                row.querySelector('.item-total').innerText = data.itemTotal;
+                updateTotals(data.cartTotal);
+            }
+        } catch (error) {
+            console.error('Error updating quantity:', error);
+            showToast('Không thể cập nhật số lượng!', 'error');
+        }
+    }
+
+    async function removeFromCart(productId) {
+        if (!confirm('Bạn có chắc chắn muốn xóa sản phẩm này?')) return;
+
+        try {
+            const response = await fetch(`/cart/remove/${productId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            });
+
+            const data = await response.json();
+            if (data.success) {
+                const row = document.querySelector(`.cart-item[data-id="${productId}"]`);
+                row.remove();
+                
+                // Update header count
+                const cartCountHeader = document.getElementById('cart-count');
+                if (cartCountHeader) cartCountHeader.innerText = data.cartCount;
+                
+                // Update total label
+                document.querySelector('.cart-count-total').innerText = `(${data.cartCount} sản phẩm)`;
+
+                if (data.cartCount === 0) {
+                    location.reload(); // Quick way to show empty state
+                } else {
+                    updateTotals(data.cartTotal);
+                }
+                
+                showToast(data.message);
+            }
+        } catch (error) {
+            console.error('Error removing item:', error);
+            showToast('Không thể xóa sản phẩm!', 'error');
+        }
+    }
+
+    async function clearCart() {
+        if (!confirm('Xóa toàn bộ sản phẩm khỏi giỏ hàng?')) return;
+
+        try {
+            const response = await fetch(`/cart/clear`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            });
+
+            const data = await response.json();
+            if (data.success) {
+                location.reload();
+            }
+        } catch (error) {
+            console.error('Error clearing cart:', error);
+            showToast('Không thể xóa giỏ hàng!', 'error');
+        }
+    }
+
+    function updateTotals(cartTotalStr) {
+        // Simple numeric parsing for the string (e.g. "1.200.000đ")
+        const subtotal = parseInt(cartTotalStr.replace(/\./g, ''));
+        const tax = subtotal * 0.1;
+        const total = subtotal + tax;
+
+        document.querySelector('.cart-subtotal').innerText = cartTotalStr;
+        document.querySelector('.cart-tax').innerText = formatCurrency(tax);
+        document.querySelector('.cart-total-price').innerText = formatCurrency(total);
+    }
+
+    function formatCurrency(amount) {
+        return new Intl.NumberFormat('vi-VN').format(Math.round(amount)) + 'đ';
+    }
+</script>
 @endsection

@@ -3,31 +3,59 @@
 @section('title', 'Chi tiết sản phẩm')
 
 @section('content')
-<main class="flex-1 px-4 md:px-20 py-8 max-w-[1440px] mx-auto w-full">
+<main class="flex-1 px-4 md:px-20 py-8 max-w-[1600px] mx-auto w-full">
 <!-- Product Section -->
 <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-16">
 <!-- Gallery Column -->
-<div class="flex flex-col gap-4">
-<div class="aspect-square bg-white dark:bg-slate-800 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700">
-<div id="main-image" class="w-full h-full bg-center bg-no-repeat bg-cover transition-all duration-300" data-alt="{{ $product->name }}" style='background-image: url("{{ $product->image ? asset("storage/" . $product->image) : 'https://placehold.co/800x800?text=No+Image' }}");'>
-</div>
-</div>
+<style>
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    .active-thumb { border-color: #2badee !important; transform: scale(0.95); opacity: 0.8; }
+    #thumb-scroll { cursor: grab; user-select: none; -webkit-user-drag: none; }
+    #thumb-scroll.dragging { cursor: grabbing; scroll-behavior: auto !important; }
+    #thumb-scroll .thumb-item { -webkit-user-drag: none; }
+</style>
 
-@if($product->gallery && is_array($product->gallery) && count($product->gallery) > 0)
-<div class="grid grid-cols-4 gap-4">
-    @if($product->image)
-    <div class="aspect-square rounded-lg border-2 border-transparent hover:border-primary overflow-hidden cursor-pointer transition-colors" onclick="document.getElementById('main-image').style.backgroundImage = 'url({{ asset('storage/' . $product->image) }})'">
-        <div class="w-full h-full bg-center bg-no-repeat bg-cover" style='background-image: url("{{ asset('storage/' . $product->image) }}");'></div>
-    </div>
-    @endif
-    @foreach($product->gallery as $galImage)
-    <div class="aspect-square rounded-lg border-2 border-transparent hover:border-primary overflow-hidden cursor-pointer transition-colors" onclick="document.getElementById('main-image').style.backgroundImage = 'url({{ asset('storage/' . $galImage) }})'">
-        <div class="w-full h-full bg-center bg-no-repeat bg-cover" style='background-image: url("{{ asset('storage/' . $galImage) }}");'></div>
-    </div>
-    @endforeach
-</div>
-@endif
+<!-- Gallery Column -->
+<div class="flex flex-col gap-4 overflow-hidden">
+    <!-- Main Image Container -->
+    <div class="relative group aspect-square bg-white dark:bg-slate-800 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 shadow-sm">
+        <div id="main-image" class="w-full h-full bg-center bg-no-repeat bg-cover transition-all duration-500" 
+             style='background-image: url("{{ $product->image ? asset("storage/" . $product->image) : 'https://placehold.co/800x800?text=No+Image' }}");'>
+        </div>
+        
+        <!-- Navigation Buttons -->
+        @php 
+            $allImages = [];
+            if($product->image) $allImages[] = asset('storage/' . $product->image);
+            if($product->gallery && is_array($product->gallery)) {
+                foreach($product->gallery as $gal) $allImages[] = asset('storage/' . $gal);
+            }
+        @endphp
 
+        @if(count($allImages) > 1)
+        <button onclick="prevImage()" class="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-slate-900/10 hover:bg-slate-900/40 text-white/50 hover:text-white transition-all backdrop-blur-sm opacity-0 group-hover:opacity-100 flex items-center justify-center z-10 border border-white/10">
+            <i class="fa-solid fa-chevron-left text-lg"></i>
+        </button>
+        <button onclick="nextImage()" class="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-slate-900/10 hover:bg-slate-900/40 text-white/50 hover:text-white transition-all backdrop-blur-sm opacity-0 group-hover:opacity-100 flex items-center justify-center z-10 border border-white/10">
+            <i class="fa-solid fa-chevron-right text-lg"></i>
+        </button>
+        @endif
+    </div>
+
+    <!-- Thumbnails Scrollable -->
+    <div class="relative">
+        <div id="thumb-scroll" class="flex gap-4 overflow-x-auto no-scrollbar snap-x snap-mandatory scroll-smooth pb-2 pt-1">
+            @foreach($allImages as $index => $imageUrl)
+            <div data-index="{{ $index }}" 
+                 class="thumb-item flex-shrink-0 w-[calc(25%-12px)] aspect-square rounded-lg border-2 {{ $index === 0 ? 'active-thumb' : 'border-transparent' }} overflow-hidden cursor-pointer transition-all snap-start shadow-sm hover:shadow-md" 
+                 onclick="changeImage({{ $index }})">
+                <div class="w-full h-full bg-center bg-no-repeat bg-cover hover:scale-110 transition-transform duration-300" 
+                     style='background-image: url("{{ $imageUrl }}");'></div>
+            </div>
+            @endforeach
+        </div>
+    </div>
 </div>
 <!-- Info Column -->
 <div class="flex flex-col justify-start gap-6">
@@ -47,13 +75,13 @@
 @if($product->sale_price)
     <div class="flex flex-col">
         <div class="flex items-center gap-3">
-            <p class="text-4xl font-black text-primary">{{ number_format($product->sale_price, 0, ',', '.') }}đ</p>
+            <p class="text-[16px] font-bold text-primary">{{ number_format($product->sale_price, 0, ',', '.') }}đ</p>
             <span class="px-2 py-1 bg-red-500 text-white text-[10px] font-black rounded shadow-sm group-hover:scale-110 transition-transform tracking-wider">-{{ round((($product->price - $product->sale_price) / $product->price) * 100) }}%</span>
         </div>
         <p class="text-slate-400 line-through text-base font-medium">Giá niêm yết: {{ number_format($product->price, 0, ',', '.') }}đ</p>
     </div>
 @else
-    <p class="text-3xl font-bold text-primary">{{ number_format($product->price, 0, ',', '.') }}₫</p>
+    <p class="text-[16px] font-bold text-primary">{{ number_format($product->price, 0, ',', '.') }}₫</p>
 @endif
 <span class="flex items-center gap-1 {{ $product->stock_quantity > 0 ? 'text-emerald-600' : 'text-red-500' }} font-medium text-sm">
     <i class="fa-solid fa-circle-check text-[14px]"></i> 
@@ -80,12 +108,12 @@
 <!-- Actions -->
 <div class="flex flex-col gap-4">
 <div class="flex gap-4">
-<a href="{{ route('cart.index') }}" class="flex-1 flex h-14 cursor-pointer items-center justify-center rounded-xl bg-primary text-white gap-2 text-base font-bold transition-all hover:bg-primary/90"><i class="fa-solid fa-cart-shopping"></i> Thêm vào giỏ hàng</a>
+<button type="button" onclick="addToCart({{ $product->id }})" class="flex-1 flex h-14 cursor-pointer items-center justify-center rounded-xl bg-primary text-white gap-2 text-base font-bold transition-all hover:bg-primary/90"><i class="fa-solid fa-cart-shopping"></i> Thêm vào giỏ hàng</button>
 <button class="flex h-14 px-6 cursor-pointer items-center justify-center rounded-xl border-2 border-primary text-primary bg-transparent font-bold transition-all hover:bg-primary/5">
 <i class="fa-solid fa-heart"></i>
 </button>
 </div>
-<a href="{{ route('checkout.index') }}" class="w-full flex h-14 cursor-pointer items-center justify-center rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 text-base font-bold transition-all hover:opacity-90">Mua ngay</a>
+<button type="button" onclick="addToCart({{ $product->id }}, 1, true)" class="w-full flex h-14 cursor-pointer items-center justify-center rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 text-base font-bold transition-all hover:opacity-90">Mua ngay</button>
 </div>
 <div class="flex items-center gap-6 mt-2 text-slate-500 text-sm">
 <div class="flex items-center gap-2">
@@ -138,11 +166,11 @@
 <h4 class="font-bold text-slate-900 dark:text-white group-hover:text-primary transition-colors">{{ $related->name }}</h4>
 @if($related->sale_price)
     <div class="flex items-center gap-2">
-        <p class="text-primary font-bold">{{ number_format($related->sale_price, 0, ',', '.') }}đ</p>
+        <p class="text-primary font-bold text-[16px]">{{ number_format($related->sale_price, 0, ',', '.') }}đ</p>
         <p class="text-slate-400 line-through text-[11px]">{{ number_format($related->price, 0, ',', '.') }}đ</p>
     </div>
 @else
-    <p class="text-slate-500 text-sm">{{ number_format($related->price, 0, ',', '.') }}₫</p>
+    <p class="text-primary font-bold text-[16px]">{{ number_format($related->price, 0, ',', '.') }}₫</p>
 @endif
 </a>
 @empty
@@ -153,4 +181,92 @@
 </div>
 </div>
 </main>
+@section('scripts')
+<script>
+    const images = @json($allImages);
+    let currentIndex = 0;
+
+    function changeImage(index) {
+        currentIndex = index;
+        const mainImage = document.getElementById('main-image');
+        const thumbnails = document.querySelectorAll('.thumb-item');
+        
+        // Update Main Image
+        mainImage.style.opacity = '0.5';
+        setTimeout(() => {
+            mainImage.style.backgroundImage = `url('${images[currentIndex]}')`;
+            mainImage.style.opacity = '1';
+        }, 150);
+
+        // Update Active Thumbnail
+        thumbnails.forEach((thumb, i) => {
+            if (i === currentIndex) {
+                thumb.classList.add('active-thumb');
+                // Scroll thumbnail into view
+                thumb.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+            } else {
+                thumb.classList.remove('active-thumb');
+            }
+        });
+    }
+
+    function prevImage() {
+        currentIndex = (currentIndex - 1 + images.length) % images.length;
+        changeImage(currentIndex);
+    }
+
+    function nextImage() {
+        currentIndex = (currentIndex + 1) % images.length;
+        changeImage(currentIndex);
+    }
+    
+    // Mouse drag scroll for thumbnails
+    const scrollContainer = document.getElementById('thumb-scroll');
+    if (scrollContainer) {
+        let isDown = false;
+        let startX;
+        let scrollLeft;
+        let hasMoved = false;
+
+        scrollContainer.addEventListener('mousedown', (e) => {
+            isDown = true;
+            hasMoved = false;
+            scrollContainer.classList.add('dragging');
+            startX = e.pageX - scrollContainer.offsetLeft;
+            scrollLeft = scrollContainer.scrollLeft;
+        });
+
+        scrollContainer.addEventListener('mouseleave', () => {
+            isDown = false;
+            scrollContainer.classList.remove('dragging');
+        });
+
+        scrollContainer.addEventListener('mouseup', () => {
+            isDown = false;
+            scrollContainer.classList.remove('dragging');
+        });
+
+        scrollContainer.addEventListener('mousemove', (e) => {
+            if (!isDown) return;
+            e.preventDefault();
+            const x = e.pageX - scrollContainer.offsetLeft;
+            const walk = (x - startX);
+            if (Math.abs(walk) > 5) {
+                hasMoved = true;
+                scrollContainer.scrollLeft = scrollLeft - walk;
+            }
+        });
+
+        // Prevent clicking a thumbnail if we were dragging
+        scrollContainer.querySelectorAll('.thumb-item').forEach(item => {
+            item.addEventListener('click', (e) => {
+                if (hasMoved) {
+                    e.preventDefault();
+                    e.stopImmediatePropagation();
+                }
+            }, true);
+        });
+    }
+</script>
+@endsection
 @endsection

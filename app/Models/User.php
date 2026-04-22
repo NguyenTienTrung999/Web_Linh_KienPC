@@ -26,6 +26,9 @@ class User extends Authenticatable
         'username',
         'phone',
         'address',
+        'birthday',
+        'gender',
+        'avatar',
     ];
 
     /**
@@ -81,5 +84,13 @@ class User extends Authenticatable
     public function wishlists()
     {
         return $this->hasMany(Wishlist::class);
+    }
+
+    /**
+     * Get the addresses for the user.
+     */
+    public function addresses()
+    {
+        return $this->hasMany(UserAddress::class);
     }
 }
