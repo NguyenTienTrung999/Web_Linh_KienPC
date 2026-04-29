@@ -30,12 +30,7 @@
         </div>
     </div>
 
-    @if(session('success'))
-    <div class="bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 px-4 py-3 rounded-xl text-sm font-bold flex items-center gap-3">
-        <i class="fa-solid fa-circle-check"></i>
-        {{ session('success') }}
-    </div>
-    @endif
+
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <!-- Left: Order Details & Status Update -->

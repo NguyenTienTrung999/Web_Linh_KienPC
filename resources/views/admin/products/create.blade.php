@@ -66,7 +66,14 @@
                 
                 <div class="space-y-2">
                     <label class="text-sm font-semibold text-slate-700 dark:text-slate-300">Thương hiệu</label>
-                    <input name="brand" value="{{ old('brand') }}" class="w-full bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-lg focus:ring-primary focus:border-primary" placeholder="Apple, Samsung..." type="text"/>
+                    <select name="brand_id" class="w-full bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-lg focus:ring-primary focus:border-primary">
+                        <option value="">-- Chọn thương hiệu --</option>
+                        @foreach($brands as $brand)
+                            <option value="{{ $brand->id }}" {{ old('brand_id') == $brand->id ? 'selected' : '' }}>
+                                {{ $brand->name }}
+                            </option>
+                        @endforeach
+                    </select>
                 </div>
                 
                 <div class="space-y-2">
@@ -204,6 +211,19 @@
                     </div>
                 </section>
                 
+                <!-- Warranty -->
+                <section class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden">
+                    <div class="p-6 border-b border-slate-200 dark:border-slate-800">
+                        <h3 class="text-base font-bold text-slate-900 dark:text-white">Bảo hành</h3>
+                    </div>
+                    <div class="p-6 space-y-4">
+                        <input name="warranty_period" class="w-full bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-lg focus:ring-primary focus:border-primary text-sm" placeholder="VD: 12 tháng, 2 năm..." type="text" value="{{ old('warranty_period') }}">
+                        <div class="flex flex-wrap gap-2 text-slate-500 text-xs mt-1">
+                            Nhập thời gian bảo hành cho sản phẩm.
+                        </div>
+                    </div>
+                </section>
+                
                 <!-- Action Box -->
                 <div class="p-6 bg-primary/5 rounded-xl border border-primary/20 space-y-4">
                     <p class="text-xs text-slate-600 dark:text-slate-400 italic">Kiểm tra lại tất cả các thông số trước khi lưu sản phẩm vào cơ sở dữ liệu.</p>
@@ -221,6 +241,30 @@
 </form>
 
 <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const descTextarea = document.querySelector('textarea[name="description"]');
+        if (descTextarea) {
+            descTextarea.addEventListener('input', function(e) {
+                if (e.inputType === 'insertText' && e.data === ';') {
+                    const start = this.selectionStart;
+                    this.value = this.value.substring(0, start) + '\n' + this.value.substring(start);
+                    this.selectionStart = this.selectionEnd = start + 1;
+                }
+            });
+            
+            descTextarea.addEventListener('paste', function(e) {
+                e.preventDefault();
+                let paste = (e.clipboardData || window.clipboardData).getData('text');
+                paste = paste.replace(/;/g, ';\n');
+                
+                const start = this.selectionStart;
+                const end = this.selectionEnd;
+                this.value = this.value.substring(0, start) + paste + this.value.substring(end);
+                this.selectionStart = this.selectionEnd = start + paste.length;
+            });
+        }
+    });
+
     let specIndex = {{ old('specs') ? count(old('specs')) : 1 }};
     
     function addSpecRow() {

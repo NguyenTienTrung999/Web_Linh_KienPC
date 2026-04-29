@@ -40,12 +40,17 @@ class OrderController extends Controller
     public function update(Request $request, Order $order)
     {
         $request->validate([
-            'status' => 'required|in:pending,processing,completed,cancelled',
+            'status' => 'required|in:pending,processing,shipping,completed,cancelled',
         ]);
 
         $order->update([
             'status' => $request->status
         ]);
+
+        // Send Notification to user if order belongs to a registered user
+        if ($order->user) {
+            $order->user->notify(new \App\Notifications\OrderStatusNotification($order, $request->status));
+        }
 
         return back()->with('success', 'Cập nhật trạng thái đơn hàng thành công!');
     }

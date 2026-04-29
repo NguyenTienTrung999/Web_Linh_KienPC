@@ -17,57 +17,142 @@
 
 <div class="flex flex-row gap-[12px] items-start">
 <!-- Sidebar Filters: 260px -->
-<aside class="w-[260px] shrink-0 space-y-8">
+<aside class="w-[260px] shrink-0">
 <form action="{{ route('store.index') }}" method="GET" id="filterForm">
     <!-- Preserve search term if it exists -->
     @if(request('search'))
         <input type="hidden" name="search" value="{{ request('search') }}">
     @endif
-    
-    <div class="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-300 dark:border-slate-700">
-        <div class="flex items-center justify-between mb-6">
-            <h3 class="font-bold text-lg flex items-center gap-2"><i class="fa-solid fa-filter text-primary"></i> Bộ lọc</h3>
-            <a href="{{ route('store.index') }}" class="text-primary text-xs font-semibold hover:underline">Xóa tất cả</a>
+    <!-- Preserve active categories -->
+    @if(request('categories'))
+        @foreach(request('categories') as $catId)
+            <input type="hidden" name="categories[]" value="{{ $catId }}">
+        @endforeach
+    @endif
+    <!-- Hidden inputs for price range -->
+    <input type="hidden" name="min_price" id="min_price" value="{{ request('min_price') }}">
+    <input type="hidden" name="max_price" id="max_price" value="{{ request('max_price') }}">
+    <!-- Sort preservation -->
+    <input type="hidden" name="sort" value="{{ request('sort', 'latest') }}">
+
+    <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-sm">
+        <!-- Title Header -->
+        <div class="bg-slate-50 dark:bg-slate-800/50 p-4 border-b border-slate-200 dark:border-slate-800 text-center">
+            <h3 class="font-black text-slate-900 dark:text-white text-sm uppercase tracking-widest">Lọc sản phẩm</h3>
         </div>
-        
-        <!-- Category Filter -->
-        <div class="mb-8">
-            <h4 class="text-sm font-bold uppercase tracking-wider text-slate-400 mb-4">Danh mục</h4>
-            <div class="space-y-3">
-                @foreach($categories as $cat)
-                <label class="flex items-center gap-3 cursor-pointer group">
-                    <input name="categories[]" value="{{ $cat->id }}" onchange="document.getElementById('filterForm').submit()" 
-                           {{ in_array($cat->id, request('categories', [])) ? 'checked' : '' }} 
-                           class="rounded border-slate-300 text-primary focus:ring-primary w-4 h-4" type="checkbox"/>
-                    <span class="text-sm text-slate-700 dark:text-slate-300 group-hover:text-primary">{{ $cat->name }} 
-                        <span class="text-xs text-slate-400 ml-1">({{ $cat->products_count }})</span>
-                    </span>
-                </label>
-                @endforeach
+
+        <div class="p-5 space-y-8">
+            <!-- Categories section -->
+            <div>
+                <h4 class="font-bold text-slate-900 dark:text-white mb-4 text-sm">Gaming Gear</h4>
+                <ul class="space-y-3">
+                    <li>
+                        <a href="{{ route('store.index') }}" 
+                           class="flex items-center gap-2 text-[13px] {{ !request('categories') ? 'text-primary font-bold' : 'text-slate-600 dark:text-slate-400 hover:text-primary' }} transition-colors">
+                            <span class="text-[10px] opacity-40">»</span>
+                            Tất cả sản phẩm
+                        </a>
+                    </li>
+                    @foreach($categories as $cat)
+                    <li>
+                        <a href="{{ route('store.index', ['categories' => [$cat->id]]) }}" 
+                           class="flex items-center gap-2 text-[13px] {{ in_array($cat->id, request('categories', [])) ? 'text-primary font-bold' : 'text-slate-600 dark:text-slate-400 hover:text-primary' }} transition-colors">
+                            <span class="text-[10px] opacity-40">»</span>
+                            {{ $cat->name }}
+                        </a>
+                    </li>
+                    @endforeach
+                </ul>
             </div>
-        </div>
-        
-        <!-- Price Range Filter -->
-        <div class="mb-8">
-            <h4 class="text-sm font-bold uppercase tracking-wider text-slate-400 mb-4">Khoảng giá</h4>
-            <div class="space-y-4">
-                <div class="flex items-center justify-between gap-2">
-                    <input name="min_price" value="{{ request('min_price') }}" class="w-[45%] bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded text-sm p-2" placeholder="Tối thiểu" type="number"/>
-                    <span class="text-slate-400">-</span>
-                    <input name="max_price" value="{{ request('max_price') }}" class="w-[45%] bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded text-sm p-2" placeholder="Tối đa" type="number"/>
+
+            <!-- Price range section -->
+            <div class="border-t border-slate-100 dark:border-slate-800 pt-6">
+                <h4 class="font-bold text-slate-900 dark:text-white mb-4 text-sm uppercase tracking-tight">Khoảng giá</h4>
+                <div class="space-y-3">
+                    @php
+                        $priceRanges = [
+                            ['label' => 'Dưới 500 ngàn', 'min' => 0, 'max' => 500000, 'key' => '0-500000'],
+                            ['label' => '500 ngàn - 1 triệu', 'min' => 500000, 'max' => 1000000, 'key' => '500000-1000000'],
+                            ['label' => '1 triệu - 2 triệu', 'min' => 1000000, 'max' => 2000000, 'key' => '1000000-2000000'],
+                            ['label' => '2 triệu - 3 triệu', 'min' => 2000000, 'max' => 3000000, 'key' => '2000000-3000000'],
+                            ['label' => '3 triệu - 5 triệu', 'min' => 3000000, 'max' => 5000000, 'key' => '3000000-5000000'],
+                            ['label' => '5 triệu - 10 triệu', 'min' => 5000000, 'max' => 10000000, 'key' => '5000000-10000000'],
+                            ['label' => 'Trên 10 triệu', 'min' => 10000000, 'max' => '', 'key' => '10000000-up'],
+                        ];
+                    @endphp
+                    @foreach($priceRanges as $range)
+                    @php $count = $priceRangeCounts[$range['key']] ?? 0; @endphp
+                    <label class="flex items-center gap-3 cursor-pointer group {{ $count == 0 ? 'opacity-40' : '' }}">
+                        <input type="checkbox" name="price_choice" 
+                               onclick="setPriceRange(this, '{{ $range['min'] }}', '{{ $range['max'] }}')"
+                               {{ (request('min_price') === (string)$range['min'] && request('max_price') === (string)$range['max']) ? 'checked' : '' }}
+                               {{ $count == 0 ? 'disabled' : '' }}
+                               class="w-4 h-4 border-slate-300 dark:border-slate-700 text-primary focus:ring-primary rounded-sm transition-all shadow-sm cursor-pointer"/>
+                        <span class="text-[13px] text-slate-600 dark:text-slate-400 group-hover:text-primary transition-colors">
+                            {{ $range['label'] }}
+                            <span class="text-[11px] opacity-40 ml-1">({{ $count }})</span>
+                        </span>
+                    </label>
+                    @endforeach
                 </div>
-                <button type="submit" class="w-full text-center py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 rounded text-sm font-medium transition-colors">Áp dụng giá</button>
+            </div>
+
+            <!-- Brands section -->
+            <div class="border-t border-slate-100 dark:border-slate-800 pt-6">
+                <h4 class="font-bold text-slate-900 dark:text-white mb-4 text-sm uppercase tracking-tight">Thương hiệu</h4>
+                <div class="space-y-3 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+                    @foreach($brands as $brand)
+                    <label class="flex items-center gap-3 cursor-pointer group">
+                        <input name="brands[]" value="{{ $brand->id }}" onchange="this.form.submit()" 
+                               {{ in_array($brand->id, request('brands', [])) ? 'checked' : '' }} 
+                               class="w-4 h-4 border-slate-300 dark:border-slate-700 text-primary focus:ring-primary rounded-sm transition-all shadow-sm" type="checkbox"/>
+                        <span class="text-[13px] text-slate-600 dark:text-slate-400 group-hover:text-primary transition-colors">
+                            {{ $brand->name }}
+                            <span class="text-[11px] opacity-40 ml-1">({{ $brand->products_count }})</span>
+                        </span>
+                    </label>
+                    @endforeach
+                </div>
+            </div>
+
+            <!-- Clear filters -->
+            <div class="pt-4">
+                <a href="{{ route('store.index') }}" class="block w-full text-center py-2 bg-slate-100 dark:bg-slate-800 hover:bg-primary hover:text-white transition-all text-xs font-bold rounded-lg text-slate-500 shadow-sm hover:shadow-primary/20">
+                    Xóa tất cả bộ lọc
+                </a>
             </div>
         </div>
     </div>
 </form>
 </aside>
 
+<script>
+    function setPriceRange(element, min, max) {
+        const minField = document.getElementById('min_price');
+        const maxField = document.getElementById('max_price');
+
+        if (!element.checked) {
+            // If unchecked, clear values
+            minField.value = '';
+            maxField.value = '';
+        } else {
+            // Uncheck all other price checkboxes
+            document.querySelectorAll('input[name="price_choice"]').forEach(cb => {
+                if (cb !== element) cb.checked = false;
+            });
+            minField.value = min;
+            maxField.value = max;
+        }
+        
+        document.getElementById('filterForm').submit();
+    }
+</script>
+
 <!-- Product Display Area: 1328px (incl border) -->
 <div class="w-[1328px] border border-slate-300 dark:border-slate-700 p-[12px] bg-white dark:bg-slate-900 rounded-xl flex flex-col">
     <!-- Sort & Controls -->
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-    <p class="text-slate-500 dark:text-slate-400 text-sm">Hiển thị <span class="text-slate-900 dark:text-white font-bold">{{ $products->firstItem() ?? 0 }}-{{ $products->lastItem() ?? 0 }}</span> trong số {{ $products->total() }} sản phẩm</p>
+    <p class="text-slate-500 dark:text-slate-400 text-sm">Hiển thị <span class="text-slate-900 dark:text-white font-bold">{{ count($products) }}</span> sản phẩm</p>
     <div class="flex items-center gap-3">
     <span class="text-sm text-slate-500">Sắp xếp theo:</span>
     <form action="{{ route('store.index') }}" method="GET" id="sortForm">
@@ -100,46 +185,48 @@
                 <img alt="{{ $product->name }}" class="w-full h-full object-contain group-hover:scale-110 transition-transform duration-700 p-6" src="{{ $product->image ? asset('storage/' . $product->image) : 'https://placehold.co/400x300?text=No+Image' }}"/>
             </a>
             
-            @if($product->sale_price)
-                <div class="absolute top-3 left-3 bg-white text-red-500 border border-red-200 text-[11px] font-bold px-2 py-1 rounded shadow-sm z-10 transition-transform group-hover:scale-110">
-                    -{{ round((($product->price - $product->sale_price) / $product->price) * 100) }}%
-                </div>
-            @endif
-
-            @if(now()->diffInDays($product->created_at) < 14)
+            @if(now()->diffInDays($product->created_at) <= 3)
                 <div class="absolute top-3 right-3 bg-white text-primary border border-primary/20 text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider shadow-sm z-10 transition-transform group-hover:scale-110">NEW</div>
             @endif
-
-            <button class="absolute bottom-3 right-3 bg-white/90 dark:bg-slate-900/90 p-2.5 rounded-full shadow-lg hover:text-primary opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-4 group-hover:translate-y-0">
-                <i class="fa-regular fa-heart text-lg"></i>
-            </button>
         </div>
 
-        <!-- Info Area: 160px Height -->
-        <div class="p-4 flex flex-col h-[160px] justify-between border-t border-slate-50 dark:border-slate-800">
-            <div>
-                <a href="{{ route('products.show', $product) }}">
-                    <h3 class="text-slate-900 dark:text-white font-bold text-[14px] leading-tight mb-1 group-hover:text-primary transition-colors line-clamp-2 h-[34px]">{{ $product->name }}</h3>
-                </a>
-                <p class="text-slate-500 dark:text-slate-400 text-[11px] font-medium uppercase tracking-tight">
-                    {{ $product->category ? $product->category->name : 'Linh kiện' }}
-                </p>
-            </div>
+        <!-- Info Area -->
+        <div class="p-4 flex flex-col gap-[6px] border-t border-slate-50 dark:border-slate-800 flex-grow">
+            <!-- Block 1: Name (max 40px) -->
+            <a href="{{ route('products.show', $product) }}" class="block h-[40px] max-h-[40px]">
+                <h3 class="text-slate-900 dark:text-white font-bold text-[16px] leading-[20px] group-hover:text-primary transition-colors line-clamp-2 overflow-hidden">{{ $product->name }}</h3>
+            </a>
             
-            <div class="flex flex-col gap-2 mt-auto">
-                <div class="flex items-center justify-between">
-                    <div class="flex flex-col">
-                        @if($product->sale_price)
-                            <span class="text-[16px] font-bold text-primary">{{ number_format($product->sale_price, 0, ',', '.') }}₫</span>
-                            <span class="text-[11px] text-slate-400 line-through">{{ number_format($product->price, 0, ',', '.') }}₫</span>
-                        @else
-                            <span class="text-[16px] font-bold text-primary">{{ number_format($product->price, 0, ',', '.') }}₫</span>
-                        @endif
+            <!-- Block 2: Price (max 46px) -->
+            <div class="flex items-center justify-between h-[46px] max-h-[46px]">
+                <div class="flex flex-col justify-center h-full">
+                    @if($product->sale_price)
+                        <span class="text-primary !font-bold text-[18px] leading-[24px]">{{ number_format($product->sale_price, 0, ',', '.') }}₫</span>
+                        <span class="text-[12px] text-slate-400 font-bold line-through leading-[18px]">{{ number_format($product->price, 0, ',', '.') }}₫</span>
+                    @else
+                        <span class="text-primary !font-bold text-[18px] leading-[24px]">{{ number_format($product->price, 0, ',', '.') }}₫</span>
+                    @endif
+                </div>
+                @if($product->sale_price)
+                    <div class="bg-red-500 text-white text-[11px] font-bold px-2 py-0.5 rounded shadow-sm whitespace-nowrap shrink-0">
+                        -{{ round((($product->price - $product->sale_price) / $product->price) * 100) }}%
                     </div>
-                    
-                    <button type="button" onclick="addToCart({{ $product->id }})" class="bg-primary hover:bg-primary/90 text-white w-10 h-10 rounded-lg shadow-lg shadow-primary/20 flex items-center justify-center transition-all hover:scale-105 active:scale-95">
-                        <i class="fa-solid fa-cart-plus text-lg"></i>
-                    </button>
+                @endif
+            </div>
+
+            <!-- Block 3: Action (max 26px) -->
+            <div class="flex items-center justify-between h-[26px] max-h-[26px]">
+                <button type="button" onclick="addToCart({{ $product->id }})" class="relative flex items-center h-[26px] rounded-full overflow-hidden group/btn pr-3 pl-0 transition-all bg-slate-100 dark:bg-slate-700/50 hover:shadow-md">
+                    <div class="absolute left-0 top-0 w-[26px] h-[26px] bg-primary rounded-full transition-all duration-300 ease-in-out group-hover/btn:w-full z-0"></div>
+                    <div class="relative z-10 flex items-center gap-1.5 h-full">
+                        <div class="w-[26px] h-[26px] flex items-center justify-center text-white shrink-0">
+                            <i class="fa-solid fa-cart-shopping text-[12px]"></i>
+                        </div>
+                        <span class="!font-bold text-[12px] uppercase tracking-wider text-slate-800 dark:text-slate-200 transition-colors duration-300 group-hover/btn:text-white">Thêm vào giỏ</span>
+                    </div>
+                </button>
+                <div class="bg-emerald-50 text-emerald-500 border border-emerald-200 text-[10px] font-bold px-2 h-[22px] flex items-center rounded whitespace-nowrap shrink-0 ml-1">
+                    Còn hàng
                 </div>
             </div>
         </div>
@@ -154,10 +241,6 @@
 @endforelse
 </div>
 
-<!-- Pagination -->
-<div class="mt-12 flex justify-center">
-    {{ $products->links() }}
-</div>
 </div>
 </div>
 </main>

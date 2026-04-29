@@ -7,12 +7,44 @@
     <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
             <h2 class="text-3xl font-black text-slate-900 dark:text-white uppercase tracking-tighter">Báo cáo kinh doanh</h2>
-            <p class="text-slate-500 text-sm font-medium">Phân tích chuyên sâu về doanh thu và hiệu suất</p>
+            <p class="text-slate-500 text-sm font-medium">
+                @if($period == 'today')
+                    Dữ liệu ngày hôm nay
+                @elseif($period == 'week')
+                    Dữ liệu trong tuần này
+                @elseif($period == 'month')
+                    Dữ liệu tháng hiện tại
+                @elseif($period == 'quarter')
+                    Dữ liệu quý hiện tại
+                @elseif($period == 'year')
+                    Dữ liệu năm hiện tại
+                @elseif($period == 'custom')
+                    Dữ liệu từ {{ \Carbon\Carbon::parse($startDate)->format('d/m/Y') }} đến {{ \Carbon\Carbon::parse($endDate)->format('d/m/Y') }}
+                @endif
+            </p>
         </div>
-        <div class="flex items-center gap-3">
-            <button class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 px-4 py-2.5 rounded-2xl text-xs font-bold uppercase tracking-wider hover:bg-slate-50 transition-colors shadow-sm">
-                <i class="fa-solid fa-download mr-2 text-primary"></i> Xuất Excel
-            </button>
+        <div class="flex items-center gap-2" x-data="{ period: '{{ $period ?? 'month' }}' }">
+            <form action="{{ route('admin.reports.index') }}" method="GET" class="flex items-center gap-2">
+                <div x-show="period === 'custom'" class="flex items-center gap-2" x-cloak>
+                    <input type="date" name="start_date" value="{{ request('start_date') }}" class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 px-4 py-2.5 rounded-2xl text-xs font-bold outline-none focus:ring-4 focus:ring-primary/10 focus:border-primary shadow-sm hover:border-slate-300 dark:hover:border-slate-600 transition-all cursor-pointer">
+                    <span class="text-slate-400 text-xs font-bold">-</span>
+                    <input type="date" name="end_date" value="{{ request('end_date') }}" class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 px-4 py-2.5 rounded-2xl text-xs font-bold outline-none focus:ring-4 focus:ring-primary/10 focus:border-primary shadow-sm hover:border-slate-300 dark:hover:border-slate-600 transition-all cursor-pointer">
+                </div>
+                <select name="period" x-model="period" @change="if(period !== 'custom') $el.form.submit()" class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 pl-5 pr-10 py-2.5 rounded-2xl text-xs font-bold uppercase tracking-wider outline-none focus:ring-4 focus:ring-primary/10 focus:border-primary shadow-sm hover:border-slate-300 dark:hover:border-slate-600 transition-all cursor-pointer">
+                    <option value="today">Hôm nay</option>
+                    <option value="week">Tuần này</option>
+                    <option value="month">Tháng hiện tại</option>
+                    <option value="quarter">Quý hiện tại</option>
+                    <option value="year">Năm hiện tại</option>
+                    <option value="custom">Tùy chỉnh ngày...</option>
+                </select>
+                <button x-show="period === 'custom'" type="submit" class="bg-primary hover:bg-primary/90 text-white px-5 py-2.5 rounded-2xl text-xs font-bold uppercase tracking-widest shadow-lg shadow-primary/30 transition-all hover:-translate-y-0.5 active:translate-y-0" x-cloak>
+                    Lọc
+                </button>
+            </form>
+            <a href="{{ route('admin.reports.export', request()->query()) }}" class="inline-block bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 px-5 py-2.5 rounded-2xl text-xs font-bold uppercase tracking-wider hover:bg-slate-50 dark:hover:bg-slate-700 transition-all hover:-translate-y-0.5 active:translate-y-0 shadow-sm ml-2 group">
+                <i class="fa-solid fa-download mr-2 text-primary group-hover:scale-110 transition-transform"></i> Xuất Excel
+            </a>
         </div>
     </div>
 
@@ -54,60 +86,16 @@
     </div>
 
     <!-- Charts Section -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <!-- Daily Revenue Chart (Last 14 Days) -->
-        <div class="bg-white dark:bg-slate-900 p-8 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm">
-            <h3 class="font-black text-slate-900 dark:text-white uppercase tracking-tighter text-lg mb-8">Doanh thu 14 ngày qua</h3>
-            <div class="h-64 flex flex-col pt-4">
-                <div class="relative flex-1 group">
-                    <svg class="w-full h-full" preserveAspectRatio="none" viewBox="0 0 100 100">
-                        @php
-                            $maxDaily = max($dailyRevenue) ?: 100000;
-                            $points = [];
-                            foreach($dailyRevenue as $idx => $val) {
-                                $x = ($idx / 13) * 100;
-                                $y = 90 - (($val / $maxDaily) * 80);
-                                $points[] = "$x,$y";
-                            }
-                            $pathStr = "M " . $points[0] . " " . implode(" ", array_map(fn($p) => "L $p", array_slice($points, 1)));
-                        @endphp
-                        <path d="{{ $pathStr }} L 100 100 L 0 100 Z" fill="url(#dailyGrad)"></path>
-                        <path d="{{ $pathStr }}" fill="none" stroke="#2badee" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
-                        <defs>
-                            <linearGradient id="dailyGrad" x1="0%" x2="0%" y1="0%" y2="100%">
-                                <stop offset="0%" style="stop-color:#2badee;stop-opacity:0.15"></stop>
-                                <stop offset="100%" style="stop-color:#2badee;stop-opacity:0"></stop>
-                            </linearGradient>
-                        </defs>
-                    </svg>
-                </div>
-                <div class="flex justify-between mt-4">
-                    @foreach($dayLabels as $idx => $label)
-                        @if($idx % 2 == 0)
-                        <span class="text-[8px] font-black text-slate-400 uppercase tracking-tighter">{{ $label }}</span>
-                        @endif
-                    @endforeach
-                </div>
+    <div class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm overflow-hidden mb-8 relative z-0">
+        <div class="p-6 md:p-8 border-b border-slate-50 dark:border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+                <h3 class="font-black text-slate-900 dark:text-white uppercase tracking-tighter text-xl">Phân tích Doanh Thu</h3>
+                <p class="text-xs text-slate-400 font-bold uppercase tracking-widest mt-1">Biểu đồ đường cong xu hướng</p>
             </div>
+            
         </div>
-
-        <!-- Monthly Revenue Chart (Last 6 Months) -->
-        <div class="bg-white dark:bg-slate-900 p-8 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm">
-            <h3 class="font-black text-slate-900 dark:text-white uppercase tracking-tighter text-lg mb-8">Tăng trưởng 6 tháng</h3>
-            <div class="h-64 flex items-end justify-between gap-4 pt-4 px-4">
-                @php $maxMonthly = max($monthlyRevenue) ?: 100000; @endphp
-                @foreach($monthlyRevenue as $idx => $val)
-                    <div class="flex-1 flex flex-col items-center gap-4 group">
-                        <div class="relative w-full">
-                            <div class="bg-indigo-500/10 dark:bg-indigo-500/5 group-hover:bg-indigo-500/20 w-full rounded-t-xl transition-all duration-700" style="height: {{ ($val / $maxMonthly) * 160 }}px"></div>
-                            <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 bg-slate-900 text-white text-[8px] font-black px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-                                {{ number_format($val, 0, ',', '.') }}₫
-                            </div>
-                        </div>
-                        <span class="text-[9px] font-black text-slate-400 uppercase tracking-tighter">{{ $monthLabels[$idx] }}</span>
-                    </div>
-                @endforeach
-            </div>
+        <div class="p-2 md:p-6 w-full overflow-hidden">
+            <div id="revenueChart" style="min-height: 380px;"></div>
         </div>
     </div>
 
@@ -203,3 +191,119 @@
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const chartData = @json($chartData);
+        const chartLabels = @json($chartLabels);
+        
+        const isDarkMode = document.documentElement.classList.contains('dark');
+        const textColor = isDarkMode ? '#94a3b8' : '#64748b';
+        const gridColor = isDarkMode ? '#334155' : '#f1f5f9';
+
+        const options = {
+            series: [{
+                name: 'Doanh thu',
+                data: chartData
+            }],
+            chart: {
+                type: 'area',
+                height: 380,
+                fontFamily: "'Be Vietnam Pro', sans-serif",
+                toolbar: {
+                    show: false
+                },
+                zoom: {
+                    enabled: false
+                },
+                animations: {
+                    enabled: true,
+                    easing: 'easeinout',
+                    speed: 800,
+                    dynamicAnimation: {
+                        enabled: true,
+                        speed: 350
+                    }
+                }
+            },
+            colors: ['#8b5cf6'],
+            fill: {
+                type: 'gradient',
+                gradient: {
+                    shadeIntensity: 1,
+                    opacityFrom: 0.45,
+                    opacityTo: 0.05,
+                    stops: [0, 100]
+                }
+            },
+            dataLabels: {
+                enabled: false
+            },
+            stroke: {
+                curve: 'smooth',
+                width: 3
+            },
+            xaxis: {
+                categories: chartLabels,
+                axisBorder: {
+                    show: false
+                },
+                axisTicks: {
+                    show: false
+                },
+                labels: {
+                    style: {
+                        colors: textColor,
+                        fontSize: '11px',
+                        fontWeight: 600
+                    }
+                }
+            },
+            yaxis: {
+                labels: {
+                    formatter: function (value) {
+                        return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND', maximumFractionDigits: 0 }).format(value);
+                    },
+                    style: {
+                        colors: textColor,
+                        fontSize: '11px',
+                        fontWeight: 600
+                    }
+                }
+            },
+            grid: {
+                borderColor: gridColor,
+                strokeDashArray: 4,
+                yaxis: {
+                    lines: {
+                        show: true
+                    }
+                },
+                xaxis: {
+                    lines: {
+                        show: false
+                    }
+                },
+                padding: {
+                    top: 0,
+                    right: 0,
+                    bottom: 0,
+                    left: 10
+                }
+            },
+            tooltip: {
+                theme: isDarkMode ? 'dark' : 'light',
+                y: {
+                    formatter: function (val) {
+                        return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND', maximumFractionDigits: 0 }).format(val);
+                    }
+                }
+            }
+        };
+
+        const chart = new ApexCharts(document.querySelector("#revenueChart"), options);
+        chart.render();
+    });
+</script>
+@endpush

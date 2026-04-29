@@ -9,13 +9,26 @@
             <h2 class="text-3xl font-black text-slate-900 dark:text-white uppercase tracking-tighter">Tổng quan hệ thống</h2>
             <p class="text-slate-500 text-sm font-medium">Cập nhật lúc {{ now()->format('H:i, d/m/Y') }}</p>
         </div>
-        <div class="flex items-center gap-3">
-            <button class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider hover:bg-slate-50 transition-colors">
-                <i class="fa-solid fa-calendar-days mr-2"></i> 7 Ngày qua
-            </button>
-            <button class="bg-primary hover:bg-primary/90 text-white px-5 py-2 rounded-xl text-xs font-bold uppercase tracking-widest flex items-center gap-2 shadow-lg shadow-primary/20 transition-all hover:scale-105 active:scale-95">
+        <div class="flex items-center gap-2" x-data="{ period: '{{ $period ?? '7days' }}' }">
+            <form action="{{ route('admin.dashboard') }}" method="GET" class="flex items-center gap-2">
+                <div x-show="period === 'custom'" class="flex items-center gap-2" x-cloak>
+                    <input type="date" name="start_date" value="{{ request('start_date') }}" class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 px-4 py-2.5 rounded-2xl text-xs font-bold outline-none focus:ring-4 focus:ring-primary/10 focus:border-primary shadow-sm hover:border-slate-300 dark:hover:border-slate-600 transition-all cursor-pointer">
+                    <span class="text-slate-400 text-xs font-bold">-</span>
+                    <input type="date" name="end_date" value="{{ request('end_date') }}" class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 px-4 py-2.5 rounded-2xl text-xs font-bold outline-none focus:ring-4 focus:ring-primary/10 focus:border-primary shadow-sm hover:border-slate-300 dark:hover:border-slate-600 transition-all cursor-pointer">
+                </div>
+                <select name="period" x-model="period" @change="if(period !== 'custom') $el.form.submit()" class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 pl-5 pr-10 py-2.5 rounded-2xl text-xs font-bold uppercase tracking-wider outline-none focus:ring-4 focus:ring-primary/10 focus:border-primary shadow-sm hover:border-slate-300 dark:hover:border-slate-600 transition-all cursor-pointer">
+                    <option value="7days">7 Ngày qua</option>
+                    <option value="month">Tháng hiện tại</option>
+                    <option value="year">Năm hiện tại</option>
+                    <option value="custom">Tùy chỉnh ngày...</option>
+                </select>
+                <button x-show="period === 'custom'" type="submit" class="bg-primary hover:bg-primary/90 text-white px-5 py-2.5 rounded-2xl text-xs font-bold uppercase tracking-widest shadow-lg shadow-primary/30 transition-all hover:-translate-y-0.5 active:translate-y-0" x-cloak>
+                    Lọc
+                </button>
+            </form>
+            <a href="{{ route('admin.reports.export', request()->query()) }}" class="bg-primary hover:bg-primary/90 text-white px-5 py-2.5 rounded-2xl text-xs font-bold uppercase tracking-widest flex items-center gap-2 shadow-lg shadow-primary/20 transition-all hover:-translate-y-0.5 active:translate-y-0 ml-2">
                 <i class="fa-solid fa-file-export"></i> Xuất báo cáo
-            </button>
+            </a>
         </div>
     </div>
 
@@ -115,43 +128,8 @@
                     <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Doanh thu</span>
                 </div>
             </div>
-            
-            <div class="h-64 flex flex-col">
-                <!-- SVG Visualization of Sales Data -->
-                <div class="relative flex-1 group overflow-hidden">
-                    <svg class="w-full h-full" preserveAspectRatio="none" viewBox="0 0 100 100" style="filter: drop-shadow(0 4px 6px rgba(43, 173, 238, 0.1));">
-                        @php
-                            $maxSales = max($salesData) ?: 100000;
-                            $points = [];
-                            foreach($salesData as $index => $val) {
-                                $x = ($index / 6) * 100;
-                                $y = 85 - (($val / $maxSales) * 70); 
-                                $points[] = "$x,$y";
-                            }
-                            $pathString = "M " . $points[0] . " " . implode(" ", array_map(fn($p) => "L $p", array_slice($points, 1)));
-                            $fillPath = $pathString . " L 100 100 L 0 100 Z";
-                        @endphp
-                        <path d="{{ $fillPath }}" fill="url(#chartGradient)"></path>
-                        <path d="{{ $pathString }}" fill="none" stroke="#2badee" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></path>
-                        <defs>
-                            <linearGradient id="chartGradient" x1="0%" x2="0%" y1="0%" y2="100%">
-                                <stop offset="0%" style="stop-color:#2badee;stop-opacity:0.2"></stop>
-                                <stop offset="100%" style="stop-color:#2badee;stop-opacity:0"></stop>
-                            </linearGradient>
-                        </defs>
-                        
-                        @foreach($points as $p)
-                            @php $parts = explode(',', $p); @endphp
-                            <circle cx="{{ $parts[0] }}" cy="{{ $parts[1] }}" r="1.5" fill="white" stroke="#2badee" stroke-width="1.5"></circle>
-                        @endforeach
-                    </svg>
-                </div>
-                
-                <div class="flex justify-between border-t border-slate-50 dark:border-slate-800 pt-6 mt-4">
-                    @foreach($labels as $label)
-                        <span class="text-[9px] font-black text-slate-400 uppercase tracking-tighter">{{ $label }}</span>
-                    @endforeach
-                </div>
+            <div class="h-64 flex flex-col w-full overflow-hidden relative z-0">
+                <div id="dashboardRevenueChart" style="min-height: 256px;"></div>
             </div>
         </div>
 
@@ -187,10 +165,10 @@
     <div class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm overflow-hidden">
         <div class="p-8 border-b border-slate-50 dark:border-slate-800 flex items-center justify-between">
             <div>
-                <h3 class="font-black text-slate-900 dark:text-white uppercase tracking-tighter text-xl">Đơn hàng vừa nhận</h3>
+                <h3 class="font-black text-slate-900 dark:text-white uppercase tracking-tighter text-xl">Đơn hàng gần đây</h3>
                 <p class="text-xs text-slate-400 font-bold uppercase tracking-widest mt-1">Thanh toán & Xử lý gần đây</p>
             </div>
-            <a href="#" class="px-4 py-2 bg-slate-100 dark:bg-slate-800 rounded-xl text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest hover:bg-slate-200 transition-colors">
+            <a href="{{ route('admin.orders.index') }}" class="px-4 py-2 bg-slate-100 dark:bg-slate-800 rounded-xl text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest hover:bg-slate-200 transition-colors">
                 Xem tất cả
             </a>
         </div>
@@ -203,7 +181,6 @@
                         <th class="px-8 py-5">Ngày đặt</th>
                         <th class="px-8 py-5 text-right">Tổng tiền</th>
                         <th class="px-8 py-5 text-center">Trạng thái</th>
-                        <th class="px-8 py-5 text-right">Thao tác</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
@@ -240,15 +217,10 @@
                                 {{ $st['label'] }}
                             </span>
                         </td>
-                        <td class="px-8 py-5 text-right">
-                            <button class="w-8 h-8 rounded-lg bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 text-slate-400 hover:text-primary hover:border-primary transition-all shadow-sm">
-                                <i class="fa-solid fa-eye text-xs"></i>
-                            </button>
-                        </td>
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="6" class="px-8 py-10 text-center text-slate-400 text-sm italic font-medium">Chưa có đơn hàng nào trong hệ thống.</td>
+                        <td colspan="5" class="px-8 py-10 text-center text-slate-400 text-sm italic font-medium">Chưa có đơn hàng nào trong hệ thống.</td>
                     </tr>
                     @endforelse
                 </tbody>
@@ -257,3 +229,94 @@
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const salesData = @json($salesData);
+        const labels = @json($labels);
+        
+        const isDarkMode = document.documentElement.classList.contains('dark');
+        const textColor = isDarkMode ? '#94a3b8' : '#64748b';
+        const gridColor = isDarkMode ? '#334155' : '#f1f5f9';
+
+        const options = {
+            series: [{
+                name: 'Doanh thu',
+                data: salesData
+            }],
+            chart: {
+                type: 'area',
+                height: 256,
+                fontFamily: "'Be Vietnam Pro', sans-serif",
+                toolbar: { show: false },
+                zoom: { enabled: false },
+                animations: {
+                    enabled: true,
+                    easing: 'easeinout',
+                    speed: 800,
+                    dynamicAnimation: { enabled: true, speed: 350 }
+                }
+            },
+            colors: ['#2badee'], // Primary color
+            fill: {
+                type: 'gradient',
+                gradient: {
+                    shadeIntensity: 1,
+                    opacityFrom: 0.45,
+                    opacityTo: 0.05,
+                    stops: [0, 100]
+                }
+            },
+            dataLabels: { enabled: false },
+            stroke: {
+                curve: 'smooth',
+                width: 3
+            },
+            xaxis: {
+                categories: labels,
+                axisBorder: { show: false },
+                axisTicks: { show: false },
+                labels: {
+                    style: {
+                        colors: textColor,
+                        fontSize: '10px',
+                        fontWeight: 600,
+                        cssClass: 'uppercase'
+                    }
+                }
+            },
+            yaxis: {
+                labels: {
+                    formatter: function (value) {
+                        return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND', maximumFractionDigits: 0 }).format(value);
+                    },
+                    style: {
+                        colors: textColor,
+                        fontSize: '11px',
+                        fontWeight: 600
+                    }
+                }
+            },
+            grid: {
+                borderColor: gridColor,
+                strokeDashArray: 4,
+                yaxis: { lines: { show: true } },
+                xaxis: { lines: { show: false } },
+                padding: { top: 0, right: 0, bottom: 0, left: 10 }
+            },
+            tooltip: {
+                theme: isDarkMode ? 'dark' : 'light',
+                y: {
+                    formatter: function (val) {
+                        return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND', maximumFractionDigits: 0 }).format(val);
+                    }
+                }
+            }
+        };
+
+        const chart = new ApexCharts(document.querySelector("#dashboardRevenueChart"), options);
+        chart.render();
+    });
+</script>
+@endpush

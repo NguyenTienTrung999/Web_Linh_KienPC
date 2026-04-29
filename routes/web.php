@@ -14,6 +14,7 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\CustomerController;
 use App\Http\Controllers\Admin\ReportController;
+use App\Http\Controllers\Admin\BrandController;
 // Public routes
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/store', [\App\Http\Controllers\StoreController::class, 'index'])->name('store.index');
@@ -46,10 +47,15 @@ Route::middleware('auth')->group(function () {
     Route::post('/my-profile/password', [UserProfileController::class, 'updatePassword'])->name('profile.update-password');
     Route::post('/my-profile/avatar', [UserProfileController::class, 'updateAvatar'])->name('profile.update-avatar');
     Route::get('/my-orders', [UserProfileController::class, 'orders'])->name('profile.orders');
+    Route::get('/my-orders/{order}/json', [UserProfileController::class, 'orderDetail'])->name('profile.orders.detail');
+    Route::put('/my-orders/{order}/update', [UserProfileController::class, 'updateOrder'])->name('profile.orders.update');
+    Route::post('/my-orders/{order}/cancel', [UserProfileController::class, 'cancelOrder'])->name('profile.orders.cancel');
+    Route::post('/my-orders/{order}/reorder', [UserProfileController::class, 'reorder'])->name('profile.orders.reorder');
     Route::get('/my-addresses', [UserProfileController::class, 'indexAddresses'])->name('profile.addresses');
     Route::post('/my-addresses', [UserProfileController::class, 'storeAddress'])->name('profile.address.store');
     Route::put('/my-addresses/{address}', [UserProfileController::class, 'updateAddress'])->name('profile.address.update');
     Route::delete('/my-addresses/{address}', [UserProfileController::class, 'deleteAddress'])->name('profile.address.delete');
+    Route::get('/my-notifications', [UserProfileController::class, 'notifications'])->name('profile.notifications');
     Route::patch('/my-addresses/{address}/default', [UserProfileController::class, 'setDefaultAddress'])->name('profile.address.set-default');
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -72,6 +78,8 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => ['auth', 'a
     Route::resource('products', ProductController::class)->except(['show']);
     Route::resource('orders', OrderController::class)->only(['index', 'show', 'update']);
     Route::resource('customers', CustomerController::class)->only(['index', 'show', 'destroy']);
+    Route::resource('brands', BrandController::class)->except(['show']);
+    Route::get('/reports/export', [ReportController::class, 'export'])->name('reports.export');
     Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
 });
 

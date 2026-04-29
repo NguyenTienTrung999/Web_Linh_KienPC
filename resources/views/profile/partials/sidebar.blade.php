@@ -25,9 +25,17 @@
             <i class="fa-solid fa-location-dot text-lg {{ request()->routeIs('profile.addresses') ? '' : 'group-hover:text-primary' }}"></i>
             <span class="text-sm {{ request()->routeIs('profile.addresses') ? '' : 'group-hover:text-primary' }}">Sổ địa chỉ</span>
         </a>
-        <a class="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-white dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 font-medium transition-all group" href="#">
-            <i class="fa-solid fa-bell text-lg group-hover:text-primary"></i>
-            <span class="text-sm group-hover:text-primary">Thông báo</span>
+        <a class="flex items-center gap-3 px-4 py-3 rounded-lg {{ request()->routeIs('profile.notifications') ? 'bg-primary text-white font-medium shadow-md shadow-primary/20' : 'hover:bg-white dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 font-medium transition-all group' }}" href="{{ route('profile.notifications') }}">
+            <div class="relative">
+                <i class="fa-solid fa-bell text-lg {{ request()->routeIs('profile.notifications') ? '' : 'group-hover:text-primary' }}"></i>
+                @if($user->unreadNotifications->count() > 0)
+                    <span class="absolute -top-1 -right-1 flex h-3 w-3">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
+                    </span>
+                @endif
+            </div>
+            <span class="text-sm {{ request()->routeIs('profile.notifications') ? '' : 'group-hover:text-primary' }}">Thông báo</span>
         </a>
         <div class="my-2 border-t border-slate-200 dark:border-slate-800"></div>
         <form method="POST" action="{{ route('logout') }}">

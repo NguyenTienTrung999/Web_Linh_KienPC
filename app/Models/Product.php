@@ -19,6 +19,7 @@ class Product extends Model
         'stock_quantity',
         'specs',
         'tags',
+        'warranty_period',
         'is_active',
         'is_featured',
         'gallery',

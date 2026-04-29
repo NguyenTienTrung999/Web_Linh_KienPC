@@ -170,15 +170,15 @@
                                         $statusClasses = [
                                             'pending' => 'bg-yellow-100 text-yellow-600 dark:bg-yellow-900/30 dark:text-yellow-400',
                                             'processing' => 'bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400',
-                                            'shipped' => 'bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400',
-                                            'delivered' => 'bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400',
+                                            'shipping' => 'bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400',
+                                            'completed' => 'bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400',
                                             'cancelled' => 'bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400',
                                         ];
                                         $statusLabels = [
                                             'pending' => 'Chờ xử lý',
                                             'processing' => 'Đang xử lý',
-                                            'shipped' => 'Đang giao',
-                                            'delivered' => 'Đã giao',
+                                            'shipping' => 'Đang giao hàng',
+                                            'completed' => 'Đã hoàn thành',
                                             'cancelled' => 'Đã hủy',
                                         ];
                                     @endphp
@@ -187,9 +187,19 @@
                                     </span>
                                 </td>
                                 <td class="p-4 text-right">
-                                    <a href="{{ route('order.status', $order->id) }}" class="text-primary hover:text-primary/80 transition-colors">
-                                        <i class="fa-solid fa-arrow-up-right-from-square"></i>
-                                    </a>
+                                    <div class="flex items-center justify-end gap-3">
+                                        @if($order->status === 'cancelled')
+                                            <form action="{{ route('profile.orders.reorder', $order->id) }}" method="POST" class="m-0">
+                                                @csrf
+                                                <button type="submit" title="Đặt lại đơn hàng" class="text-green-600 hover:text-green-700 transition-colors">
+                                                    <i class="fa-solid fa-rotate-right"></i>
+                                                </button>
+                                            </form>
+                                        @endif
+                                        <a href="{{ route('profile.orders') }}" class="text-primary hover:text-primary/80 transition-colors">
+                                            <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                                        </a>
+                                    </div>
                                 </td>
                             </tr>
                             @empty

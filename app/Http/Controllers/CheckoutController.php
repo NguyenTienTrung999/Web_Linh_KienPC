@@ -98,6 +98,11 @@ class CheckoutController extends Controller
 
             DB::commit();
             
+            // Send Notification to user
+            if (auth()->check()) {
+                auth()->user()->notify(new \App\Notifications\OrderStatusNotification($order, 'pending'));
+            }
+
             // Clear cart
             Session::forget('cart');
 

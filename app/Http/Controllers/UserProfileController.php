@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\UserAddress;
+use App\Models\Order;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
@@ -22,6 +23,97 @@ class UserProfileController extends Controller
         $user = auth()->user();
         $orders = $user->orders()->latest()->paginate(10);
         return view('profile.orders', compact('user', 'orders'));
+    }
+
+    public function orderDetail(Order $order)
+    {
+        // Ensure user owns this order
+        if ($order->user_id !== auth()->id()) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
+        $order->load(['items.product']);
+        
+        return response()->json([
+            'order' => $order,
+            'items' => $order->items
+        ]);
+    }
+
+    public function updateOrder(Request $request, Order $order)
+    {
+        // Ensure user owns this order
+        if ($order->user_id !== auth()->id()) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
+        // Only allow editing if pending or processing
+        if (!in_array($order->status, ['pending', 'processing'])) {
+            return response()->json(['error' => 'Không thể chỉnh sửa đơn hàng ở trạng thái này'], 422);
+        }
+
+        $validated = $request->validate([
+            'customer_name' => 'required|string|max:255',
+            'customer_phone' => 'required|string|max:20',
+            'shipping_address' => 'required|string|max:255',
+            'note' => 'nullable|string|max:500',
+        ]);
+
+        $order->update($validated);
+
+        return response()->json(['success' => 'Cập nhật thông tin thành công']);
+    }
+
+    public function cancelOrder(Order $order)
+    {
+        // Ensure user owns this order
+        if ($order->user_id !== auth()->id()) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
+        // Only allow cancellation if pending
+        if ($order->status !== 'pending') {
+            return response()->json(['error' => 'Chỉ có thể hủy đơn hàng đang ở trạng thái Chờ xử lý'], 422);
+        }
+
+        $order->update(['status' => 'cancelled']);
+
+        // Send Notification to user (optional, but good for consistency)
+        $order->user->notify(new \App\Notifications\OrderStatusNotification($order, 'cancelled'));
+
+        return response()->json(['success' => 'Đã hủy đơn hàng thành công']);
+    }
+
+    public function reorder(Order $order)
+    {
+        // Ensure user owns this order
+        if ($order->user_id !== auth()->id()) {
+            return redirect()->back()->with('error', 'Unauthorized');
+        }
+
+        // Only allow reordering if cancelled
+        if ($order->status !== 'cancelled') {
+            return redirect()->back()->with('error', 'Chỉ có thể đặt lại đơn hàng đã hủy.');
+        }
+
+        // Restore status to pending
+        $order->update(['status' => 'pending']);
+
+        // Notify user about the restoration
+        $order->user->notify(new \App\Notifications\OrderStatusNotification($order, 'pending'));
+
+        return redirect()->back()->with('success', 'Đơn hàng #' . $order->id . ' đã được khôi phục thành công.');
+    }
+
+    public function notifications()
+    {
+        $user = auth()->user();
+        $notifications = $user->notifications()->latest()->paginate(10);
+        
+        // Mark as read when viewing
+        $user->unreadNotifications->markAsRead();
+        
+        return view('profile.notifications', compact('user', 'notifications'));
     }
 
     public function indexAddresses()

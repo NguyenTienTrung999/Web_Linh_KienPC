@@ -1,12 +1,8 @@
 <aside class="w-64 flex-shrink-0 border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex flex-col">
-    <div class="p-6 flex items-center gap-3">
-        <div class="w-8 h-8 bg-primary rounded flex items-center justify-center text-white">
-            <i class="fa-solid fa-bolt"></i>
-        </div>
-        <div class="flex flex-col">
-            <h1 class="text-lg font-bold leading-tight tracking-tight">TechFlow</h1>
-            <p class="text-xs text-slate-500 dark:text-slate-400">Quản trị hệ thống</p>
-        </div>
+    <div class="p-6 flex items-center justify-center border-b border-slate-100 dark:border-slate-800">
+        <a href="{{ route('admin.dashboard') }}" class="block flex items-center">
+            <img src="{{ asset('images/logo-weblinhkien-Photoroom.png') }}" alt="TechFlow Admin Logo" class="w-[200px] h-[71px] object-contain">
+        </a>
     </div>
 
     <nav class="flex-1 px-4 space-y-1 overflow-y-auto">
@@ -17,6 +13,14 @@
         <a class="flex items-center gap-3 px-3 py-2 rounded-lg {{ request()->routeIs('admin.products.*') ? 'bg-primary/10 text-primary font-medium' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors' }}" href="{{ route('admin.products.index') }}">
             <i class="fa-solid fa-boxes-stacked w-5 text-center"></i>
             <span class="text-sm">Sản phẩm</span>
+        </a>
+        <a class="flex items-center gap-3 px-3 py-2 rounded-lg {{ request()->routeIs('admin.categories.*') ? 'bg-primary/10 text-primary font-medium' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors' }}" href="{{ route('admin.categories.index') }}">
+            <i class="fa-solid fa-list w-5 text-center"></i>
+            <span class="text-sm">Danh mục</span>
+        </a>
+        <a class="flex items-center gap-3 px-3 py-2 rounded-lg {{ request()->routeIs('admin.brands.*') ? 'bg-primary/10 text-primary font-medium' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors' }}" href="{{ route('admin.brands.index') }}">
+            <i class="fa-solid fa-copyright w-5 text-center"></i>
+            <span class="text-sm">Thương hiệu</span>
         </a>
         <a class="flex items-center gap-3 px-3 py-2 rounded-lg {{ request()->routeIs('admin.orders.*') ? 'bg-primary/10 text-primary font-medium' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors' }}" href="{{ route('admin.orders.index') }}">
             <i class="fa-solid fa-cart-shopping w-5 text-center"></i>

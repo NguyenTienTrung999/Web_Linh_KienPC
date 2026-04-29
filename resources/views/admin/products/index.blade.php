@@ -44,10 +44,10 @@
 
         <!-- Tabs -->
         <div class="flex border-b border-slate-100 dark:border-slate-800">
-            <button class="px-6 py-3 text-sm font-semibold border-b-2 border-primary text-primary">Tất cả sản phẩm</button>
-            <button class="px-6 py-3 text-sm font-medium text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 border-b-2 border-transparent">Đang kinh doanh</button>
-            <button class="px-6 py-3 text-sm font-medium text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 border-b-2 border-transparent">Hết hàng</button>
-            <button class="px-6 py-3 text-sm font-medium text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 border-b-2 border-transparent">Ngừng kinh doanh</button>
+            <a href="{{ request()->fullUrlWithQuery(['status' => null, 'page' => 1]) }}" class="px-6 py-3 text-sm font-semibold border-b-2 {{ !request('status') ? 'border-primary text-primary' : 'border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300' }}">Tất cả sản phẩm</a>
+            <a href="{{ request()->fullUrlWithQuery(['status' => 'active', 'page' => 1]) }}" class="px-6 py-3 text-sm font-semibold border-b-2 {{ request('status') == 'active' ? 'border-primary text-primary' : 'border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300' }}">Đang kinh doanh</a>
+            <a href="{{ request()->fullUrlWithQuery(['status' => 'out_of_stock', 'page' => 1]) }}" class="px-6 py-3 text-sm font-semibold border-b-2 {{ request('status') == 'out_of_stock' ? 'border-primary text-primary' : 'border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300' }}">Hết hàng</a>
+            <a href="{{ request()->fullUrlWithQuery(['status' => 'inactive', 'page' => 1]) }}" class="px-6 py-3 text-sm font-semibold border-b-2 {{ request('status') == 'inactive' ? 'border-primary text-primary' : 'border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300' }}">Ngừng kinh doanh</a>
         </div>
     </div>
 
@@ -72,8 +72,8 @@
                                 <div class="w-12 h-12 rounded-lg bg-slate-100 dark:bg-slate-800 overflow-hidden shrink-0 border border-slate-100 dark:border-slate-700">
                                     <img class="w-full h-full object-cover" src="{{ $product->image ? asset('storage/' . $product->image) : 'https://placehold.co/100x100?text=No+Image' }}" alt="{{ $product->name }}"/>
                                 </div>
-                                <div>
-                                    <p class="font-semibold text-slate-900 dark:text-slate-100">{{ $product->name }}</p>
+                                <div class="max-w-[350px]">
+                                    <p class="font-semibold text-slate-900 dark:text-slate-100 truncate" title="{{ $product->name }}">{{ $product->name }}</p>
                                     <p class="text-xs text-slate-500">ID: {{ $product->id }}</p>
                                 </div>
                             </div>
@@ -97,10 +97,15 @@
                             {{ $product->stock_quantity }}
                         </td>
                         <td class="px-6 py-4">
-                            @if($product->stock_quantity > 0)
+                            @if(!$product->is_active)
+                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-slate-500"></span>
+                                    Ngừng kinh doanh
+                                </span>
+                            @elseif($product->stock_quantity > 0)
                                 <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400">
                                     <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                                    Kinh doanh
+                                    Đang kinh doanh
                                 </span>
                             @else
                                 <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400">
