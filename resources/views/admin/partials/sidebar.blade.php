@@ -22,6 +22,10 @@
             <i class="fa-solid fa-copyright w-5 text-center"></i>
             <span class="text-sm">Thương hiệu</span>
         </a>
+        <a class="flex items-center gap-3 px-3 py-2 rounded-lg {{ request()->routeIs('admin.coupons.*') ? 'bg-primary/10 text-primary font-medium' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors' }}" href="{{ route('admin.coupons.index') }}">
+            <i class="fa-solid fa-ticket w-5 text-center"></i>
+            <span class="text-sm">Khuyến mãi</span>
+        </a>
         <a class="flex items-center gap-3 px-3 py-2 rounded-lg {{ request()->routeIs('admin.orders.*') ? 'bg-primary/10 text-primary font-medium' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors' }}" href="{{ route('admin.orders.index') }}">
             <i class="fa-solid fa-cart-shopping w-5 text-center"></i>
             <span class="text-sm">Đơn hàng</span>

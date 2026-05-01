@@ -14,12 +14,23 @@ class CartController extends Controller
     public function index()
     {
         $cart = session()->get('cart', []);
-        $total = 0;
+        $subtotal = 0;
         foreach ($cart as $id => $details) {
-            $total += $details['price'] * $details['quantity'];
+            $subtotal += $details['price'] * $details['quantity'];
         }
 
-        return view('cart.index', compact('cart', 'total'));
+        $coupon = session()->get('coupon');
+        $discount = 0;
+        if ($coupon) {
+            $discount = $coupon['calculated_discount'] ?? 0;
+        }
+
+        $defaultAddress = null;
+        if (auth()->check()) {
+            $defaultAddress = auth()->user()->addresses()->where('is_default', true)->first();
+        }
+
+        return view('cart.index', compact('cart', 'subtotal', 'discount', 'coupon', 'defaultAddress'));
     }
 
     /**

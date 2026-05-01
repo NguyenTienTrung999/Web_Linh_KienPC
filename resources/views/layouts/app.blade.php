@@ -127,7 +127,7 @@
     <!-- Top NavBar from Stitch -->
     <!-- Header Section -->
     <header
-        class="fixed top-0 w-full z-50 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 shadow-sm antialiased">
+        class="fixed top-0 w-full z-[1000] bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 shadow-sm antialiased">
         <!-- Top Row -->
         <div class="h-[90px] border-b border-slate-100 dark:border-slate-800">
             <div class="max-w-[1600px] mx-auto h-full px-4 flex items-center justify-between gap-8">
@@ -139,15 +139,27 @@
 
                 <!-- Search Bar: 720px -->
                 <div class="hidden lg:flex flex-1 max-w-[720px] relative items-center">
-                    <form action="{{ route('store.index') }}" method="GET" class="w-full relative">
-                        <input name="search" value="{{ request('search') }}"
+                    <form action="{{ route('store.index') }}" method="GET" class="w-full relative" id="search-form">
+                        <input name="search" id="search-input" value="{{ request('search') }}" autocomplete="off"
                             class="w-full bg-slate-100 dark:bg-slate-800 border-none rounded-full py-3.5 pl-6 pr-14 focus:ring-2 focus:ring-primary text-sm outline-none dark:text-white shadow-inner"
                             placeholder="Bạn cần tìm linh kiện gì?" type="text" />
                         <button type="submit"
-                            class="absolute right-2 top-1/2 -translate-y-1/2 w-11 h-11 bg-primary text-white rounded-full flex items-center justify-center hover:bg-primary/90 transition-colors">
+                            class="absolute right-1 top-1/2 -translate-y-1/2 w-11 h-11 bg-primary text-white rounded-full flex items-center justify-center hover:bg-primary/90 transition-colors">
                             <i class="fa-solid fa-magnifying-glass text-sm"></i>
                         </button>
                     </form>
+
+                    <!-- Search Suggestions Dropdown -->
+                    <div id="search-suggestions" class="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden hidden z-[1100]">
+                        <div class="max-h-[480px] overflow-y-auto" id="suggestion-results">
+                            <!-- Results injected here -->
+                        </div>
+                        <div id="view-all-container" class="p-3 bg-slate-50 dark:bg-slate-800 border-t border-slate-100 dark:border-slate-700 text-center hidden">
+                            <a href="#" id="view-all-link" class="text-sm font-bold text-primary hover:underline">
+                                Xem tất cả kết quả cho "<span id="search-query-display"></span>"
+                            </a>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Actions Side -->
@@ -251,7 +263,7 @@
                 <div class="relative group">
                     <!-- Category Menu Button (Link to Store) -->
                     <a href="{{ route('store.index') }}"
-                        class="h-[48px] flex items-center gap-3 px-6 bg-primary text-white font-black uppercase text-xs tracking-widest hover:bg-primary/90 transition-all rounded-xl mb-[12px] focus:outline-none">
+                        class="h-[48px] flex items-center gap-3 px-6 bg-primary text-white font-semibold uppercase text-[14px] tracking-widest hover:bg-primary/90 transition-all rounded-xl mb-[12px] focus:outline-none" style="font-size:14px !important; font-weight:600 !important">
                         <i class="fa-solid fa-bars text-sm group-hover:rotate-90 transition-transform"></i>
                         Danh mục sản phẩm
                     </a>
@@ -260,24 +272,32 @@
                     <div
                         class="absolute top-[48px] left-0 w-72 bg-white dark:bg-slate-900 shadow-2xl rounded-xl border border-slate-200 dark:border-slate-800 py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-[100] transform translate-y-2 group-hover:translate-y-0">
                         @php
-                            $targetCategories = ['Bàn phím', 'Chuột', 'Loa', 'Tai nghe'];
-                            $filteredCats = $globalCategories->filter(fn($c) => in_array($c->name, $targetCategories))->sortBy(fn($c) => array_search($c->name, $targetCategories));
+                            $categoryIcons = [
+                                'bàn phím' => 'fa-keyboard',
+                                'chuột' => 'fa-mouse',
+                                'loa' => 'fa-volume-high',
+                                'tai nghe' => 'fa-headphones',
+                                'màn hình' => 'fa-desktop',
+                                'webcam' => 'fa-video',
+                                'microphone' => 'fa-microphone',
+                            ];
                         @endphp
 
-                        @foreach($filteredCats as $cat)
+                        @foreach($globalCategories as $cat)
                             <div class="relative group/sub">
                                 <a href="{{ route('store.index', ['categories' => [$cat->id]]) }}"
                                     class="flex items-center justify-between px-5 py-3.5 text-[13px] font-bold text-slate-700 dark:text-slate-300 hover:bg-primary hover:text-white transition-all">
                                     <span class="flex items-center gap-3">
-                                        @if($cat->name == 'Bàn phím') <i
-                                            class="fa-solid fa-keyboard w-5 text-center text-slate-400 group-hover/sub:text-white"></i>
-                                        @elseif($cat->name == 'Chuột') <i
-                                            class="fa-solid fa-mouse w-5 text-center text-slate-400 group-hover/sub:text-white"></i>
-                                        @elseif($cat->name == 'Loa') <i
-                                            class="fa-solid fa-volume-high w-5 text-center text-slate-400 group-hover/sub:text-white"></i>
-                                        @elseif($cat->name == 'Tai nghe') <i
-                                            class="fa-solid fa-headphones w-5 text-center text-slate-400 group-hover/sub:text-white"></i>
-                                        @endif
+                                        @php
+                                            $iconClass = 'fa-cube';
+                                            foreach($categoryIcons as $keyword => $icon) {
+                                                if (str_contains(mb_strtolower($cat->name), $keyword)) {
+                                                    $iconClass = $icon;
+                                                    break;
+                                                }
+                                            }
+                                        @endphp
+                                        <i class="fa-solid {{ $iconClass }} w-5 text-center text-slate-400 group-hover/sub:text-white"></i>
                                         {{ $cat->name }}
                                     </span>
                                     <i class="fa-solid fa-chevron-right text-[10px] opacity-50"></i>
@@ -355,28 +375,27 @@
 
                 <!-- Quick Category Links -->
                 <div class="flex items-center gap-8 h-[48px]">
-                    <a href="{{ route('store.index', ['categories' => [2]]) }}"
-                        class="text-xs font-bold uppercase tracking-widest text-slate-600 dark:text-slate-400 hover:text-primary transition-colors flex items-center gap-2">
-                        <i class="fa-solid fa-keyboard text-sm opacity-50"></i> Bàn phím
-                    </a>
-                    <a href="{{ route('store.index', ['categories' => [4]]) }}"
-                        class="text-xs font-bold uppercase tracking-widest text-slate-600 dark:text-slate-400 hover:text-primary transition-colors flex items-center gap-2">
-                        <i class="fa-solid fa-volume-high text-sm opacity-50"></i> Loa
-                    </a>
-                    <a href="{{ route('store.index', ['categories' => [3]]) }}"
-                        class="text-xs font-bold uppercase tracking-widest text-slate-600 dark:text-slate-400 hover:text-primary transition-colors flex items-center gap-2">
-                        <i class="fa-solid fa-headphones text-sm opacity-50"></i> Tai nghe
-                    </a>
-                    <a href="{{ route('store.index', ['categories' => [1]]) }}"
-                        class="text-xs font-bold uppercase tracking-widest text-slate-600 dark:text-slate-400 hover:text-primary transition-colors flex items-center gap-2">
-                        <i class="fa-solid fa-mouse text-sm opacity-50"></i> Chuột
-                    </a>
+                    @foreach($globalCategories as $navCat)
+                        @php
+                            $navIconClass = 'fa-cube';
+                            foreach($categoryIcons as $keyword => $icon) {
+                                if (str_contains(mb_strtolower($navCat->name), $keyword)) {
+                                    $navIconClass = $icon;
+                                    break;
+                                }
+                            }
+                        @endphp
+                        <a href="{{ route('store.index', ['categories' => [$navCat->id]]) }}"
+                            class="text-[14px] font-semibold uppercase tracking-widest text-slate-600 dark:text-slate-400 hover:text-primary transition-colors flex items-center gap-2" style="font-size:14px !important; font-weight:600 !important">
+                            <i class="fa-solid {{ $navIconClass }} text-sm opacity-50"></i> {{ $navCat->name }}
+                        </a>
+                    @endforeach
                     <div class="h-4 w-px bg-slate-200 dark:border-slate-700"></div>
                     <a href="{{ route('home') }}"
-                        class="text-xs font-bold uppercase tracking-widest text-slate-600 dark:text-slate-400 hover:text-primary transition-colors">Tin
+                        class="text-[14px] font-semibold uppercase tracking-widest text-slate-600 dark:text-slate-400 hover:text-primary transition-colors" style="font-size:14px !important; font-weight:600 !important">Tin
                         tức</a>
                     <a href="#"
-                        class="text-xs font-bold uppercase tracking-widest text-slate-600 dark:text-slate-400 hover:text-primary transition-colors">Liên
+                        class="text-[14px] font-semibold uppercase tracking-widest text-slate-600 dark:text-slate-400 hover:text-primary transition-colors" style="font-size:14px !important; font-weight:600 !important">Liên
                         hệ</a>
                 </div>
             </div>
@@ -399,59 +418,64 @@
                     <img src="{{ asset('images/logo-weblinhkien-Photoroom.png') }}" alt="TechFlow Logo"
                         class="w-[200px] h-[71px] object-contain">
                 </div>
-                <ul class="space-y-4">
-                    <li><a class="text-slate-500 dark:text-slate-400 hover:text-primary transition-all duration-300 hover:underline decoration-primary underline-offset-4"
-                            href="#">Về TechFlow</a></li>
-                    <li><a class="text-slate-500 dark:text-slate-400 hover:text-primary transition-all duration-300 hover:underline decoration-primary underline-offset-4"
-                            href="#">Tuyển dụng</a></li>
-                    <li><a class="text-slate-500 dark:text-slate-400 hover:text-primary transition-all duration-300 hover:underline decoration-primary underline-offset-4"
-                            href="#">Hệ thống cửa hàng</a></li>
-                </ul>
+                <div class="text-slate-500 dark:text-slate-400 text-[13px] leading-relaxed space-y-2">
+                    <p class="font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wide text-xs">Về TechFlow</p>
+                    <p>TECHFLOW là đơn vị chuyên cung cấp Bàn phím, Chuột, Tai nghe và các sản phẩm linh kiện máy tính giá tốt nhất thị trường.</p>
+                </div>
             </div>
             <div>
-                <div class="text-[11px] font-black uppercase tracking-widest text-slate-900 dark:text-white mb-6">Hỗ trợ
+                <div class="text-[11px] font-black uppercase tracking-widest text-slate-900 dark:text-white mb-6">Liên hệ và hỗ trợ
                 </div>
                 <ul class="space-y-4">
-                    <li><a class="text-slate-500 dark:text-slate-400 hover:text-primary transition-all duration-300 hover:underline decoration-primary underline-offset-4"
-                            href="{{ route('order.tracking') }}">Tra cứu đơn hàng</a></li>
-                    <li><a class="text-slate-500 dark:text-slate-400 hover:text-primary transition-all duration-300 hover:underline decoration-primary underline-offset-4"
-                            href="#">Chính sách bảo hành</a></li>
-                    <li><a class="text-slate-500 dark:text-slate-400 hover:text-primary transition-all duration-300 hover:underline decoration-primary underline-offset-4"
-                            href="#">Trả góp 0%</a></li>
+                    <li>
+                        <a href="tel:0329346849" class="text-slate-500 dark:text-slate-400 hover:text-primary transition-all duration-300 flex items-center gap-2">
+                            <i class="fa-solid fa-phone text-xs"></i> 0329346849
+                        </a>
+                    </li>
+                    <li>
+                        <a href="mailto:nguyentrungtpvl@gmail.com" class="text-slate-500 dark:text-slate-400 hover:text-primary transition-all duration-300 flex items-center gap-2">
+                            <i class="fa-solid fa-envelope text-xs"></i> nguyentrungtpvl@gmail.com
+                        </a>
+                    </li>
+                    <li>
+                        <a class="text-slate-500 dark:text-slate-400 hover:text-primary transition-all duration-300 hover:underline decoration-primary underline-offset-4"
+                            href="{{ route('order.tracking') }}">Tra cứu đơn hàng</a>
+                    </li>
                 </ul>
             </div>
             <div>
                 <div class="text-[11px] font-black uppercase tracking-widest text-slate-900 dark:text-white mb-6">Kết
                     nối</div>
                 <div class="flex gap-4">
-                    <a class="w-10 h-10 bg-slate-200 dark:bg-slate-800 rounded-full flex items-center justify-center text-slate-600 dark:text-slate-300 hover:bg-primary hover:text-white transition-all text-sm"
-                        href="#">
-                        <i class="fa-solid fa-share-nodes"></i>
+                    <a class="w-10 h-10 bg-slate-200 dark:bg-slate-800 rounded-full flex items-center justify-center text-slate-600 dark:text-slate-300 hover:bg-[#1877F2] hover:text-white transition-all text-sm"
+                        href="https://www.facebook.com/nguyen.tien.trung.438008" target="_blank" rel="noopener noreferrer">
+                        <i class="fa-brands fa-facebook-f"></i>
                     </a>
-                    <a class="w-10 h-10 bg-slate-200 dark:bg-slate-800 rounded-full flex items-center justify-center text-slate-600 dark:text-slate-300 hover:bg-primary hover:text-white transition-all text-sm"
-                        href="#">
-                        <i class="fa-brands fa-youtube"></i>
+                    <a class="w-10 h-10 bg-slate-200 dark:bg-slate-800 rounded-full flex items-center justify-center text-slate-600 dark:text-slate-300 hover:bg-black hover:text-white transition-all text-sm"
+                        href="https://www.tiktok.com/@trung06062005?lang=en" target="_blank" rel="noopener noreferrer">
+                        <i class="fa-brands fa-tiktok"></i>
                     </a>
-                    <a class="w-10 h-10 bg-slate-200 dark:bg-slate-800 rounded-full flex items-center justify-center text-slate-600 dark:text-slate-300 hover:bg-primary hover:text-white transition-all text-sm"
-                        href="#">
-                        <i class="fa-solid fa-comments"></i>
+                    <a class="w-10 h-10 bg-slate-200 dark:bg-slate-800 rounded-full flex items-center justify-center text-slate-600 dark:text-slate-300 hover:bg-[#E1306C] hover:text-white transition-all text-sm"
+                        href="https://www.instagram.com/trung_66_05" target="_blank" rel="noopener noreferrer">
+                        <i class="fa-brands fa-instagram"></i>
                     </a>
                 </div>
             </div>
             <div>
-                <div class="text-[11px] font-black uppercase tracking-widest text-slate-900 dark:text-white mb-6">Thanh
-                    toán</div>
-                <div class="grid grid-cols-3 gap-2 opacity-60">
-                    <div
-                        class="bg-white dark:bg-slate-800 dark:border-slate-700 border p-1 rounded h-8 flex items-center justify-center text-[8px] font-black text-slate-900 dark:text-slate-100">
-                        VISA</div>
-                    <div
-                        class="bg-white dark:bg-slate-800 dark:border-slate-700 border p-1 rounded h-8 flex items-center justify-center text-[8px] font-black text-slate-900 dark:text-slate-100">
-                        MOMO</div>
-                    <div
-                        class="bg-white dark:bg-slate-800 dark:border-slate-700 border p-1 rounded h-8 flex items-center justify-center text-[8px] font-black text-slate-900 dark:text-slate-100">
-                        ZALO</div>
+                <div class="text-[11px] font-black uppercase tracking-widest text-slate-900 dark:text-white mb-6">Chính sách
                 </div>
+                <ul class="space-y-4">
+                    <li><a class="text-slate-500 dark:text-slate-400 hover:text-primary transition-all duration-300 hover:underline decoration-primary underline-offset-4"
+                            href="{{ route('policy.privacy') }}">Chính Sách Bảo Mật</a></li>
+                    <li><a class="text-slate-500 dark:text-slate-400 hover:text-primary transition-all duration-300 hover:underline decoration-primary underline-offset-4"
+                            href="{{ route('policy.warranty') }}">Quy Định Bảo Hành</a></li>
+                    <li><a class="text-slate-500 dark:text-slate-400 hover:text-primary transition-all duration-300 hover:underline decoration-primary underline-offset-4"
+                            href="{{ route('policy.return') }}">Chính Sách Đổi Trả</a></li>
+                    <li><a class="text-slate-500 dark:text-slate-400 hover:text-primary transition-all duration-300 hover:underline decoration-primary underline-offset-4"
+                            href="{{ route('policy.terms') }}">Điều khoản sử dụng</a></li>
+                    <li><a class="text-slate-500 dark:text-slate-400 hover:text-primary transition-all duration-300 hover:underline decoration-primary underline-offset-4"
+                            href="{{ route('policy.shipping') }}">Chính sách vận chuyển & kiểm hàng</a></li>
+                </ul>
             </div>
         </div>
         <div class="bg-slate-200 dark:bg-slate-800 h-px w-full my-8"></div>
@@ -562,6 +586,127 @@
     <!-- Alpine.js (Optional if needed for other components) -->
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     @yield('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const handlePopover = () => {
+                const triggers = document.querySelectorAll('.product-trigger');
+                
+                triggers.forEach(trigger => {
+                    const card = trigger.closest('.product-card');
+                    if (!card) return;
+                    
+                    const popover = card.querySelector('.product-popover');
+                    if (!popover) return;
+
+                    trigger.addEventListener('mouseenter', () => {
+                        card.style.zIndex = '500'; // Đè lên tất cả các thẻ khác khi hover
+                        popover.classList.remove('hidden');
+                        popover.classList.add('flex');
+                        setTimeout(() => popover.style.opacity = '1', 10);
+                    });
+
+                    trigger.addEventListener('mouseleave', () => {
+                        card.style.zIndex = ''; // Trả lại z-index ban đầu
+                        popover.style.opacity = '0';
+                        setTimeout(() => {
+                            popover.classList.add('hidden');
+                            popover.classList.remove('flex');
+                        }, 200);
+                    });
+
+                    trigger.addEventListener('mousemove', (e) => {
+                        const popoverWidth = 350;
+                        const xOffset = 20;
+                        const yOffset = -20;
+                        
+                        let x = e.clientX + xOffset;
+                        let y = e.clientY + yOffset;
+                        
+                        // Kiểm tra nếu bảng vượt quá mép phải màn hình
+                        if (x + popoverWidth > window.innerWidth) {
+                            x = e.clientX - popoverWidth - xOffset;
+                        }
+                        
+                        popover.style.position = 'fixed';
+                        popover.style.left = x + 'px';
+                        popover.style.top = y + 'px';
+                        popover.style.zIndex = '9999';
+                    });
+                });
+            };
+
+            handlePopover();
+            // Re-run for dynamic content (if any)
+            window.addEventListener('contentUpdated', handlePopover);
+
+            // Search Suggestions Logic
+            const searchInput = document.getElementById('search-input');
+            const searchSuggestions = document.getElementById('search-suggestions');
+            const suggestionResults = document.getElementById('suggestion-results');
+            const viewAllContainer = document.getElementById('view-all-container');
+            const viewAllLink = document.getElementById('view-all-link');
+            const searchQueryDisplay = document.getElementById('search-query-display');
+            let debounceTimer;
+
+            if (searchInput) {
+                searchInput.addEventListener('input', function() {
+                    clearTimeout(debounceTimer);
+                    const query = this.value.trim();
+
+                    if (query.length < 2) {
+                        searchSuggestions.classList.add('hidden');
+                        return;
+                    }
+
+                    debounceTimer = setTimeout(() => {
+                        fetch(`/search-suggestions?query=${encodeURIComponent(query)}`)
+                            .then(response => response.json())
+                            .then(data => {
+                                suggestionResults.innerHTML = '';
+                                
+                                if (data.length > 0) {
+                                    data.forEach(product => {
+                                        const priceHtml = product.sale_price 
+                                            ? `<span class="text-primary font-bold">${product.sale_price}</span> <span class="text-xs text-slate-400 line-through ml-2">${product.price}</span>`
+                                            : `<span class="text-primary font-bold">${product.price}</span>`;
+
+                                        const item = document.createElement('a');
+                                        item.href = product.url;
+                                        item.className = 'flex items-center gap-4 p-4 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors border-b border-slate-50 dark:border-slate-800 last:border-none';
+                                        item.innerHTML = `
+                                            <div class="w-16 h-16 bg-white rounded-lg border border-slate-100 flex-shrink-0 overflow-hidden">
+                                                <img src="${product.image}" class="w-full h-full object-contain p-2" alt="${product.name}">
+                                            </div>
+                                            <div class="flex-1">
+                                                <h4 class="text-sm font-bold text-slate-900 dark:text-white line-clamp-1">${product.name}</h4>
+                                                <div class="mt-1">${priceHtml}</div>
+                                            </div>
+                                        `;
+                                        suggestionResults.appendChild(item);
+                                    });
+
+                                    searchQueryDisplay.textContent = query;
+                                    viewAllLink.href = `/store?search=${encodeURIComponent(query)}`;
+                                    viewAllContainer.classList.remove('hidden');
+                                    searchSuggestions.classList.remove('hidden');
+                                } else {
+                                    suggestionResults.innerHTML = '<div class="p-8 text-center text-slate-400"><i class="fa-solid fa-magnifying-glass text-3xl mb-3 block"></i> Không tìm thấy sản phẩm nào</div>';
+                                    viewAllContainer.classList.add('hidden');
+                                    searchSuggestions.classList.remove('hidden');
+                                }
+                            });
+                    }, 300);
+                });
+
+                // Close suggestions when clicking outside
+                document.addEventListener('click', function(e) {
+                    if (!searchInput.contains(e.target) && !searchSuggestions.contains(e.target)) {
+                        searchSuggestions.classList.add('hidden');
+                    }
+                });
+            }
+        });
+    </script>
 </body>
 
 </html>

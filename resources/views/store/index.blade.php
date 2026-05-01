@@ -166,7 +166,7 @@
                 <input type="hidden" name="{{ $k }}" value="{{ $v }}">
             @endif
         @endforeach
-        <select name="sort" onchange="document.getElementById('sortForm').submit()" class="bg-white dark:bg-slate-900 border-slate-300 dark:border-slate-700 rounded-lg text-sm px-3 py-2 focus:ring-primary focus:border-primary">
+        <select name="sort" onchange="document.getElementById('sortForm').submit()" class="bg-white dark:bg-slate-900 border-slate-300 dark:border-slate-700 rounded-lg text-sm pl-3 pr-10 py-2 focus:ring-primary focus:border-primary">
             <option value="latest" {{ request('sort') == 'latest' ? 'selected' : '' }}>Mới nhất</option>
             <option value="price_asc" {{ request('sort') == 'price_asc' ? 'selected' : '' }}>Giá: Thấp đến Cao</option>
             <option value="price_desc" {{ request('sort') == 'price_desc' ? 'selected' : '' }}>Giá: Cao đến Thấp</option>
@@ -176,11 +176,47 @@
     </div>
 
     <div class="grid grid-cols-5 gap-[12px] justify-items-center">
-@forelse($products as $product)
+@forelse($products as $index => $product)
     <!-- Product Card -->
-    <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-300 dark:border-slate-700 overflow-hidden group hover:shadow-2xl hover:shadow-primary/10 transition-all duration-500 flex flex-col w-[250px] h-[400px]">
+    <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-300 dark:border-slate-700 hover:z-[50] group hover:shadow-2xl transition-all duration-300 flex flex-col w-[250px] h-[400px] relative product-card">
+        <!-- Product Preview Popover -->
+        <div class="product-popover fixed left-0 top-0 w-[350px] bg-white dark:bg-slate-900 rounded-xl shadow-[0_20px_50px_rgba(0,0,0,0.3)] border border-slate-200 dark:border-slate-700 z-[9999] hidden flex-col overflow-hidden pointer-events-none transition-opacity duration-200 opacity-0">
+            <div class="bg-primary p-3">
+                <h4 class="text-white font-bold text-sm leading-tight uppercase line-clamp-2">{{ $product->name }}</h4>
+            </div>
+            <div class="p-4 space-y-3">
+                <div class="flex items-center gap-2">
+                    <span class="font-bold text-slate-900 dark:text-slate-100 text-sm">Giá bán:</span>
+                    <span class="text-primary font-black text-lg">{{ number_format($product->sale_price ?: $product->price, 0, ',', '.') }} VNĐ</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="font-bold text-slate-900 dark:text-slate-100 text-sm">Bảo hành:</span>
+                    <span class="text-slate-600 dark:text-slate-400 text-sm font-medium">{{ $product->warranty_period }}</span>
+                </div>
+                <div class="pt-2 border-t border-slate-100 dark:border-slate-800">
+                    <span class="inline-block bg-primary text-white px-2 py-0.5 rounded text-[10px] font-black mb-3 uppercase tracking-wider">Mô tả tóm tắt:</span>
+                    <ul class="space-y-2">
+                        @if($product->specs && is_array($product->specs))
+                            @foreach(array_slice($product->specs, 0, 6) as $spec)
+                                <li class="flex items-start gap-2 text-[12px] leading-tight text-slate-700 dark:text-slate-300">
+                                    <i class="fa-solid fa-circle-check text-emerald-500 mt-0.5 shrink-0"></i>
+                                    <span>
+                                        @if(is_array($spec))
+                                            {{ implode(': ', $spec) }}
+                                        @else
+                                            {{ $spec }}
+                                        @endif
+                                    </span>
+                                </li>
+                            @endforeach
+                        @endif
+                    </ul>
+                </div>
+            </div>
+        </div>
+
         <!-- Image Area: 240px Height -->
-        <div class="h-[240px] bg-white relative overflow-hidden shrink-0">
+        <div class="h-[240px] bg-white relative overflow-hidden shrink-0 rounded-t-xl product-trigger">
             <a href="{{ route('products.show', $product) }}" class="block h-full">
                 <img alt="{{ $product->name }}" class="w-full h-full object-contain group-hover:scale-110 transition-transform duration-700 p-6" src="{{ $product->image ? asset('storage/' . $product->image) : 'https://placehold.co/400x300?text=No+Image' }}"/>
             </a>

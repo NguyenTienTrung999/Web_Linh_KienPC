@@ -117,6 +117,25 @@
                 <div class="bg-white dark:bg-slate-800 p-6 rounded-xl border border-primary/10 shadow-lg sticky top-24">
                     <h2 class="text-xl font-bold text-slate-900 dark:text-white mb-6">Tóm tắt đơn hàng</h2>
                     
+                    <!-- Coupon Input -->
+                    <div class="mb-6 pb-6 border-b border-slate-100 dark:border-slate-700">
+                        <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Mã giảm giá</label>
+                        <div class="flex gap-2">
+                            <input type="text" id="coupon_code_input" value="{{ $coupon ? $coupon['code'] : '' }}" {{ $coupon ? 'disabled' : '' }} class="w-full h-11 rounded-lg border-slate-200 bg-slate-50 dark:bg-slate-900 dark:border-slate-700 focus:ring-primary focus:border-primary px-4 uppercase text-sm font-bold text-slate-700 dark:text-white disabled:opacity-50" placeholder="Nhập mã...">
+                            
+                            @if($coupon)
+                            <button type="button" onclick="removeCoupon()" class="px-4 h-11 rounded-lg bg-red-50 hover:bg-red-100 text-red-500 font-bold transition-colors whitespace-nowrap border border-red-100 text-sm">
+                                GỠ MÃ
+                            </button>
+                            @else
+                            <button type="button" onclick="applyCoupon()" class="px-4 h-11 rounded-lg bg-slate-900 hover:bg-slate-800 dark:bg-slate-700 dark:hover:bg-slate-600 text-white font-bold transition-colors whitespace-nowrap text-sm">
+                                ÁP DỤNG
+                            </button>
+                            @endif
+                        </div>
+                        <p id="coupon_message" class="text-xs mt-2 hidden"></p>
+                    </div>
+
                     <!-- Product List -->
                     <div class="space-y-4 mb-6 pb-6 border-b border-slate-100 dark:border-slate-700 max-h-[400px] overflow-y-auto pr-2">
                         @foreach($cart as $id => $details)
@@ -141,6 +160,13 @@
                             <span>Tạm tính</span>
                             <span class="font-bold text-slate-900 dark:text-white">{{ number_format($subtotal, 0, ',', '.') }}₫</span>
                         </div>
+                        
+                        @if($discount > 0)
+                        <div class="flex justify-between text-sm text-green-600 font-bold">
+                            <span>Giảm giá ({{ $coupon['code'] }})</span>
+                            <span>-{{ number_format($discount, 0, ',', '.') }}₫</span>
+                        </div>
+                        @endif
                         <div class="flex justify-between text-sm text-slate-600 dark:text-slate-400">
                             <span>Phí vận chuyển</span>
                             <span id="shipping-fee-text" class="font-bold text-slate-900 dark:text-white">30.000₫</span>
@@ -151,7 +177,7 @@
                         </div>
                         <div class="flex justify-between text-lg font-bold text-slate-900 dark:text-white pt-3 border-t border-slate-100 dark:border-slate-700">
                             <span>Tổng cộng</span>
-                            <span class="text-primary font-bold text-[16px]" id="grand-total-text">{{ number_format($subtotal + $tax + 30000, 0, ',', '.') }}₫</span>
+                            <span class="text-primary font-bold text-[16px]" id="grand-total-text">{{ number_format(max(0, $subtotal + $tax + 30000 - $discount), 0, ',', '.') }}₫</span>
                         </div>
                     </div>
 
@@ -173,11 +199,13 @@
 <script>
     const subtotal = {{ $subtotal }};
     const tax = {{ $tax }};
+    const discount = {{ $discount }};
 
     function updateTotals() {
         const shippingMethod = document.querySelector('input[name="shipping_method"]:checked').value;
         const shippingFee = shippingMethod === 'express' ? 65000 : 30000;
-        const total = subtotal + tax + shippingFee;
+        let total = subtotal + tax + shippingFee - discount;
+        if(total < 0) total = 0;
 
         document.getElementById('shipping-fee-text').innerText = shippingFee.toLocaleString('vi-VN') + '₫';
         document.getElementById('grand-total-text').innerText = total.toLocaleString('vi-VN') + '₫';
@@ -191,6 +219,49 @@
         const activeOption = document.querySelector('input[name="shipping_method"]:checked').closest('.shipping-option');
         activeOption.classList.remove('border-slate-200', 'dark:border-slate-700');
         activeOption.classList.add('bg-primary/5', 'border-primary/20');
+    }
+
+    function applyCoupon() {
+        const code = document.getElementById('coupon_code_input').value.trim();
+        if (!code) return;
+
+        fetch('{{ route('coupon.apply') }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            },
+            body: JSON.stringify({ coupon_code: code })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                window.location.reload();
+            } else {
+                const msg = document.getElementById('coupon_message');
+                msg.textContent = data.message;
+                msg.classList.remove('hidden', 'text-green-500');
+                msg.classList.add('text-red-500');
+            }
+        })
+        .catch(err => console.error(err));
+    }
+
+    function removeCoupon() {
+        fetch('{{ route('coupon.remove') }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            }
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                window.location.reload();
+            }
+        })
+        .catch(err => console.error(err));
     }
 </script>
 @endsection

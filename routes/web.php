@@ -9,16 +9,19 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\CustomAuthController;
 use App\Http\Controllers\UserProfileController;
+use App\Http\Controllers\CouponController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\CustomerController;
 use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\BrandController;
+use App\Http\Controllers\Admin\CouponController as AdminCouponController;
 // Public routes
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/store', [\App\Http\Controllers\StoreController::class, 'index'])->name('store.index');
 Route::get('/products/{product}', [HomeController::class, 'show'])->name('products.show');
+Route::get('/search-suggestions', [HomeController::class, 'searchSuggestions'])->name('search.suggestions');
 Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
 Route::post('/cart/add/{product}', [CartController::class, 'add'])->name('cart.add');
 Route::post('/cart/update/{product}', [CartController::class, 'update'])->name('cart.update');
@@ -28,6 +31,11 @@ Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.in
 Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
 Route::get('/checkout/confirm/{order}', [CheckoutController::class, 'confirm'])->name('checkout.confirm');
 Route::get('/order/status/{order}', [CheckoutController::class, 'getStatus'])->name('order.status');
+Route::post('/order/clear-cart/{order}', [CheckoutController::class, 'clearCartAfterPayment'])->name('order.clear-cart');
+
+// Coupon Routes
+Route::post('/coupon/apply', [CouponController::class, 'apply'])->name('coupon.apply');
+Route::post('/coupon/remove', [CouponController::class, 'remove'])->name('coupon.remove');
 
 // SePay Webhook
 Route::post('/sepay/webhook', [SePayWebhookController::class, 'handle'])->name('sepay.webhook');
@@ -39,6 +47,13 @@ Route::post('/order-tracking', [\App\Http\Controllers\OrderTrackingController::c
 // Custom Auth UI Routes (For Stitch Design)
 Route::get('/login-custom', [CustomAuthController::class, 'login'])->name('custom.login');
 Route::get('/forgot-password-custom', [CustomAuthController::class, 'forgotPassword'])->name('custom.forgot-password');
+
+// Policy Pages
+Route::view('/chinh-sach-bao-mat', 'policies.privacy')->name('policy.privacy');
+Route::view('/quy-dinh-bao-hanh', 'policies.warranty')->name('policy.warranty');
+Route::view('/chinh-sach-doi-tra', 'policies.return')->name('policy.return');
+Route::view('/dieu-khoan-su-dung', 'policies.terms')->name('policy.terms');
+Route::view('/chinh-sach-van-chuyen', 'policies.shipping')->name('policy.shipping');
 
 // Profile Route (For Stitch Design)
 Route::middleware('auth')->group(function () {
@@ -79,6 +94,7 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => ['auth', 'a
     Route::resource('orders', OrderController::class)->only(['index', 'show', 'update']);
     Route::resource('customers', CustomerController::class)->only(['index', 'show', 'destroy']);
     Route::resource('brands', BrandController::class)->except(['show']);
+    Route::resource('coupons', AdminCouponController::class)->except(['show']);
     Route::get('/reports/export', [ReportController::class, 'export'])->name('reports.export');
     Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
 });

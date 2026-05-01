@@ -52,28 +52,7 @@
 <i class="fa-solid fa-arrow-right text-sm"></i>
 </button>
 </form>
-<!-- Divider -->
-<div class="relative my-8">
-<div class="absolute inset-0 flex items-center">
-<span class="w-full border-t border-slate-200 dark:border-slate-800"></span>
-</div>
-<div class="relative flex justify-center text-xs uppercase">
-<span class="bg-white dark:bg-slate-900 px-4 text-slate-500 dark:text-slate-400 font-medium">Hoặc đăng nhập với</span>
-</div>
-</div>
-<!-- Social Logins -->
-<div class="grid grid-cols-2 gap-4">
-<button class="flex items-center justify-center gap-2 py-2.5 border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
-<img alt="Google Logo" class="w-5 h-5" data-alt="Google colorful brand logo icon" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBKJlQXGAqoSsFau0SsW7PhmrKumZ9Qqd2GohecrlfbrHlnlfnCCq-bsFfid2Vb2HRa1Q2hmCRZ7BairJHL1f1_JFPVhesn5-YSRIq-zmLXTM0q4J_I0jeERk9y2zZWY3txb-cc239kMn-kgilI6gp6pnOZbUX-n5l2QZuGdOi6JS844bzu8h9PC-f1VT4nmn5rwXnWvxUuIramZyrJqZZVNC3gF5NogZiePZUCGSRFp4Zz2F-YJ1EzFTypqRjDq7ozrddeGBD_W5M"/>
-<span class="text-sm font-semibold text-slate-700 dark:text-slate-300">Google</span>
-</button>
-<button class="flex items-center justify-center gap-2 py-2.5 border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
-<svg class="w-5 h-5 text-[#1877F2]" fill="currentColor" viewbox="0 0 24 24">
-<path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"></path>
-</svg>
-<span class="text-sm font-semibold text-slate-700 dark:text-slate-300">Facebook</span>
-</button>
-</div>
+
 <!-- Registration Link -->
 <div class="mt-8 text-center">
 <p class="text-slate-600 dark:text-slate-400 text-sm">

@@ -10,12 +10,17 @@ class Coupon extends Model
         'code',
         'discount_value',
         'discount_type',
-        'expiry_date',
+        'min_order_value',
+        'usage_limit',
+        'used_count',
+        'valid_from',
+        'valid_to',
         'is_active',
     ];
 
     protected $casts = [
-        'expiry_date' => 'date',
+        'valid_from' => 'datetime',
+        'valid_to' => 'datetime',
         'is_active' => 'boolean',
     ];
 }

@@ -13,24 +13,7 @@ class CheckoutController extends Controller
 {
     public function index()
     {
-        $cart = session()->get('cart', []);
-        
-        if (empty($cart)) {
-            return redirect()->route('cart.index')->with('error', 'Giỏ hàng của bạn đang trống!');
-        }
-
-        $subtotal = array_sum(array_map(function($item) {
-            return $item['price'] * $item['quantity'];
-        }, $cart));
-
-        $tax = $subtotal * 0.1; // 10% VAT
-        
-        $defaultAddress = null;
-        if (auth()->check()) {
-            $defaultAddress = auth()->user()->addresses()->where('is_default', true)->first();
-        }
-        
-        return view('checkout.index', compact('cart', 'subtotal', 'tax', 'defaultAddress'));
+        return redirect()->route('cart.index');
     }
 
     public function store(Request $request)
@@ -56,10 +39,21 @@ class CheckoutController extends Controller
             $subtotal = array_sum(array_map(function($item) {
                 return $item['price'] * $item['quantity'];
             }, $cart));
+
+            $coupon = session()->get('coupon');
+            $discount = 0;
+            $couponId = null;
+            $couponCode = null;
+
+            if ($coupon) {
+                $discount = $coupon['calculated_discount'] ?? 0;
+                $couponId = $coupon['id'];
+                $couponCode = $coupon['code'];
+            }
             
             $shipping_fee = $request->shipping_method === 'express' ? 65000 : 30000;
-            $tax = $subtotal * 0.1;
-            $total_price = $subtotal + $tax + $shipping_fee;
+            $total_price = $subtotal + $shipping_fee - $discount;
+            if ($total_price < 0) $total_price = 0;
 
             $order = Order::create([
                 'user_id' => auth()->id(),
@@ -67,11 +61,19 @@ class CheckoutController extends Controller
                 'customer_email' => $request->customer_email,
                 'customer_phone' => $request->customer_phone,
                 'total_price' => $total_price,
+                'coupon_id' => $couponId,
+                'coupon_code' => $couponCode,
+                'discount_amount' => $discount,
                 'status' => 'pending',
                 'payment_method' => $request->payment_method,
                 'shipping_address' => $request->shipping_address,
                 'note' => $request->note,
             ]);
+
+            // Increment used_count
+            if ($couponId) {
+                \App\Models\Coupon::where('id', $couponId)->increment('used_count');
+            }
 
             foreach ($cart as $id => $details) {
                 OrderItem::create([
@@ -103,8 +105,12 @@ class CheckoutController extends Controller
                 auth()->user()->notify(new \App\Notifications\OrderStatusNotification($order, 'pending'));
             }
 
-            // Clear cart
-            Session::forget('cart');
+            // For banking: keep cart so user can go back. Cart cleared after payment confirmed.
+            // For COD/card: clear cart immediately.
+            if ($request->payment_method !== 'banking') {
+                Session::forget('cart');
+                Session::forget('coupon');
+            }
 
             return redirect()->route('checkout.confirm', $order->id)->with('success', 'Đặt hàng thành công!');
 
@@ -116,8 +122,6 @@ class CheckoutController extends Controller
 
     public function confirm(Order $order)
     {
-        // For guests, we might want to check session to ensure they just placed this order
-        // but for a demo, we'll just show the order details.
         return view('checkout.confirm', compact('order'));
     }
 
@@ -129,5 +133,18 @@ class CheckoutController extends Controller
         return response()->json([
             'status' => $order->status
         ]);
+    }
+
+    /**
+     * Clear cart after banking payment confirmed (called via AJAX).
+     */
+    public function clearCartAfterPayment(Order $order)
+    {
+        if ($order->status !== 'pending') {
+            Session::forget('cart');
+            Session::forget('coupon');
+            return response()->json(['success' => true]);
+        }
+        return response()->json(['success' => false]);
     }
 }
