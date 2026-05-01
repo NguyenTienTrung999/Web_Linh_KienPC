@@ -9,10 +9,24 @@
             <h2 class="text-3xl font-black text-slate-900 dark:text-white uppercase tracking-tighter">Danh sách khách hàng</h2>
             <p class="text-slate-500 text-sm font-medium">Xem và quản lý cơ sở người dùng của bạn</p>
         </div>
-        <div class="flex items-center gap-3">
-            <form action="{{ route('admin.customers.index') }}" method="GET" class="relative group">
-                <input type="text" name="search" value="{{ request('search') }}" placeholder="Tìm tên, email, sđt..." class="bg-white dark:bg-slate-800 border-none rounded-2xl pl-10 pr-4 py-2.5 text-sm font-bold text-slate-700 dark:text-slate-300 focus:ring-2 focus:ring-primary/20 w-64 transition-all">
-                <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-primary transition-colors"></i>
+        <div class="flex items-center gap-4">
+            <form action="{{ route('admin.customers.index') }}" method="GET" id="filter-form" class="flex items-center gap-3">
+                <select name="sort" onchange="this.form.submit()" class="bg-white dark:bg-slate-800 border-none rounded-2xl pl-4 pr-10 py-2.5 text-sm font-bold text-slate-700 dark:text-slate-300 focus:ring-2 focus:ring-primary/20 transition-all cursor-pointer">
+                    <option value="newest" {{ $sort == 'newest' ? 'selected' : '' }}>Mới nhất</option>
+                    <option value="oldest" {{ $sort == 'oldest' ? 'selected' : '' }}>Cũ nhất</option>
+                    <option value="most_orders" {{ $sort == 'most_orders' ? 'selected' : '' }}>Nhiều đơn nhất</option>
+                    <option value="highest_spending" {{ $sort == 'highest_spending' ? 'selected' : '' }}>Tổng chi lớn nhất</option>
+                    <option value="highest_single_purchase" {{ $sort == 'highest_single_purchase' ? 'selected' : '' }}>Chi đơn lẻ lớn nhất</option>
+                </select>
+                
+                <div class="relative group">
+                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Tìm tên, email, sđt..." class="bg-white dark:bg-slate-800 border-none rounded-2xl pl-10 pr-4 py-2.5 text-sm font-bold text-slate-700 dark:text-slate-300 focus:ring-2 focus:ring-primary/20 w-64 transition-all">
+                    <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-primary transition-colors"></i>
+                </div>
+                
+                @if(request('sort') || request('search'))
+                    <a href="{{ route('admin.customers.index') }}" class="text-xs font-bold text-rose-500 hover:underline">Xóa lọc</a>
+                @endif
             </form>
         </div>
     </div>

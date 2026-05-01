@@ -12,7 +12,7 @@ class StoreController extends Controller
     public function index(Request $request)
     {
         // 1. Core query for the main product list
-        $query = Product::with('category', 'brand');
+        $query = Product::with('category', 'brand')->where('stock_quantity', '>', 0);
 
         // Apply Search and Category filters (The most basic layer)
         if ($request->filled('search')) {
@@ -43,20 +43,22 @@ class StoreController extends Controller
             default => $query->latest(),
         };
 
-        $products = $query->get();
+        $products = $query->paginate(60);
 
         // --- SIDEBAR LOGIC ---
 
-        // 2. Fetch Categories (Always show all, but count only based on Search)
+        // 2. Fetch Categories (Always show all, but count only based on Search + Stock)
         $categories = Category::withCount(['products' => function($q) use ($request) {
+            $q->where('stock_quantity', '>', 0);
             if ($request->filled('search')) {
                 $q->where('name', 'like', '%' . $request->search . '%');
             }
         }])->get();
 
-        // 3. Fetch Brands (Filtered by Search + Category)
+        // 3. Fetch Brands (Filtered by Search + Category + Stock)
         $brandQuery = \App\Models\Brand::query();
         $brandQuery->whereHas('products', function($q) use ($request) {
+            $q->where('stock_quantity', '>', 0);
             if ($request->filled('search')) {
                 $q->where('name', 'like', '%' . $request->search . '%');
             }
@@ -66,6 +68,7 @@ class StoreController extends Controller
         });
         
         $brands = $brandQuery->withCount(['products' => function($q) use ($request) {
+            $q->where('stock_quantity', '>', 0);
             if ($request->filled('search')) {
                 $q->where('name', 'like', '%' . $request->search . '%');
             }
@@ -74,7 +77,7 @@ class StoreController extends Controller
             }
         }])->get();
 
-        // 4. Calculate Price Ranges (Filtered by Search + Category + Brand)
+        // 4. Calculate Price Ranges (Filtered by Search + Category + Brand + Stock)
         $priceRangeCounts = [];
         $ranges = [
             ['min' => 0, 'max' => 500000, 'key' => '0-500000'],
@@ -87,7 +90,7 @@ class StoreController extends Controller
         ];
 
         foreach ($ranges as $range) {
-            $rangeQuery = Product::query();
+            $rangeQuery = Product::query()->where('stock_quantity', '>', 0);
             // Apply Search
             if ($request->filled('search')) {
                 $rangeQuery->where('name', 'like', '%' . $request->search . '%');

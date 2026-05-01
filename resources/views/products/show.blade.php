@@ -170,7 +170,7 @@
         <div class="shrink-0 snap-start w-full sm:w-[calc((100%-12px)/2)] lg:w-[calc((100%-36px)/4)] xl:w-[calc((100%-60px)/6)] bg-white dark:bg-slate-800 rounded-xl border border-slate-300 dark:border-slate-700 overflow-hidden group hover:shadow-2xl transition-all duration-500 flex flex-col h-[400px]">
             <!-- Image Area: 240px -->
             <div class="h-[240px] bg-white relative overflow-hidden shrink-0">
-                <a href="{{ route('products.show', $related) }}" class="block h-full">
+                <a href="{{ route('products.show', $related->slug ?? $related->id) }}" class="block h-full">
                     <img alt="{{ $related->name }}" class="w-full h-full object-contain p-6 group-hover:scale-110 transition-transform duration-700" src="{{ $related->image ? asset('storage/' . $related->image) : 'https://placehold.co/400x400?text=No+Image' }}" onerror="this.onerror=null; this.src='https://placehold.co/400x400?text=No+Image';"/>
                 </a>
                 @if($related->sale_price)
@@ -190,7 +190,7 @@
                         @for($i=0; $i<5; $i++) <i class="fa-solid fa-star text-secondary text-[8px]"></i> @endfor
                         <span class="text-[8px] text-slate-400 font-bold">({{ rand(50, 250) }})</span>
                     </div>
-                    <a href="{{ route('products.show', $related) }}">
+                    <a href="{{ route('products.show', $related->slug ?? $related->id) }}">
                         <h3 class="font-bold text-slate-900 dark:text-slate-100 text-[13px] leading-tight mb-1 group-hover:text-primary transition-colors line-clamp-2 h-[32px]">{{ $related->name }}</h3>
                     </a>
                 </div>

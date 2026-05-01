@@ -20,6 +20,7 @@ class HomeController extends Controller
         $categoryProducts = [];
         foreach ($categories as $cat) {
             $products = Product::where('category_id', $cat->id)
+                ->where('stock_quantity', '>', 0)
                 ->latest()
                 ->take(6)
                 ->get();
@@ -31,15 +32,16 @@ class HomeController extends Controller
             }
         }
 
-        $flashSales = Product::whereNotNull('sale_price')
+        $flashSales = Product::where('stock_quantity', '>', 0)
+            ->whereNotNull('sale_price')
             ->where('sale_price', '>', 0)
             ->whereRaw('sale_price <= (price * 0.5)')
             ->latest()
             ->take(12)
             ->get();
 
-        $bestSellers = Product::inRandomOrder()->take(8)->get();
-        $featuredProducts = Product::where('is_featured', true)->latest()->get();
+        $bestSellers = Product::where('stock_quantity', '>', 0)->inRandomOrder()->take(8)->get();
+        $featuredProducts = Product::where('stock_quantity', '>', 0)->where('is_featured', true)->latest()->get();
 
         return view('home', compact('categories', 'flashSales', 'bestSellers', 'featuredProducts', 'categoryProducts'));
     }

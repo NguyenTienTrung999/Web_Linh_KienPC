@@ -17,9 +17,11 @@ use App\Http\Controllers\Admin\CustomerController;
 use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\BrandController;
 use App\Http\Controllers\Admin\CouponController as AdminCouponController;
+use App\Http\Controllers\ChatbotController;
 // Public routes
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/store', [\App\Http\Controllers\StoreController::class, 'index'])->name('store.index');
+Route::post('/chatbot/chat', [ChatbotController::class, 'chat'])->name('chatbot.chat');
 Route::get('/products/{product}', [HomeController::class, 'show'])->name('products.show');
 Route::get('/search-suggestions', [HomeController::class, 'searchSuggestions'])->name('search.suggestions');
 Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
@@ -92,6 +94,7 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => ['auth', 'a
     Route::resource('categories', CategoryController::class)->except(['show']);
     Route::resource('products', ProductController::class)->except(['show']);
     Route::resource('orders', OrderController::class)->only(['index', 'show', 'update']);
+    Route::post('customers/{customer}/reset-password', [CustomerController::class, 'resetPassword'])->name('customers.reset-password');
     Route::resource('customers', CustomerController::class)->only(['index', 'show', 'destroy']);
     Route::resource('brands', BrandController::class)->except(['show']);
     Route::resource('coupons', AdminCouponController::class)->except(['show']);

@@ -390,13 +390,6 @@
                             <i class="fa-solid {{ $navIconClass }} text-sm opacity-50"></i> {{ $navCat->name }}
                         </a>
                     @endforeach
-                    <div class="h-4 w-px bg-slate-200 dark:border-slate-700"></div>
-                    <a href="{{ route('home') }}"
-                        class="text-[14px] font-semibold uppercase tracking-widest text-slate-600 dark:text-slate-400 hover:text-primary transition-colors" style="font-size:14px !important; font-weight:600 !important">Tin
-                        tức</a>
-                    <a href="#"
-                        class="text-[14px] font-semibold uppercase tracking-widest text-slate-600 dark:text-slate-400 hover:text-primary transition-colors" style="font-size:14px !important; font-weight:600 !important">Liên
-                        hệ</a>
                 </div>
             </div>
         </div>
@@ -704,6 +697,196 @@
                         searchSuggestions.classList.add('hidden');
                     }
                 });
+            }
+        });
+    </script>
+    <!-- AI Chatbot Widget -->
+    <div id="ai-chatbot-container" class="fixed bottom-6 right-6 z-[9999] font-sans">
+        <!-- Chat Toggle Button -->
+        <button id="chatbot-toggle" class="w-16 h-16 bg-primary text-white rounded-full shadow-[0_10px_40px_rgba(59,130,246,0.5)] flex items-center justify-center hover:scale-110 transition-all duration-300 group">
+            <i class="fa-solid fa-robot text-2xl group-hover:hidden animate-in fade-in"></i>
+            <i class="fa-solid fa-xmark text-2xl hidden group-hover:block animate-in zoom-in"></i>
+        </button>
+
+        <!-- Chat Window -->
+        <div id="chatbot-window" class="absolute bottom-20 right-0 w-[380px] h-[550px] bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border border-slate-200 dark:border-slate-800 rounded-[2rem] shadow-2xl flex flex-col overflow-hidden opacity-0 invisible translate-y-10 transition-all duration-500 scale-95 origin-bottom-right">
+            <!-- Header -->
+            <div class="p-6 bg-primary text-white flex items-center justify-between shadow-lg">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-md">
+                        <i class="fa-solid fa-robot text-lg"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-sm font-black uppercase tracking-widest">TechFlow AI</h4>
+                        <div class="flex items-center gap-1.5 mt-0.5">
+                            <span class="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></span>
+                            <span class="text-[10px] font-bold text-white/70 uppercase">Trực tuyến</span>
+                        </div>
+                    </div>
+                </div>
+                <button id="chatbot-close" class="text-white/70 hover:text-white transition-colors">
+                    <i class="fa-solid fa-minus text-lg"></i>
+                </button>
+            </div>
+
+            <!-- Chat Body -->
+            <div id="chatbot-messages" class="flex-1 overflow-y-auto p-6 space-y-4 scroll-smooth">
+                <!-- Welcome Message -->
+                <div class="flex items-start gap-3">
+                    <div class="w-8 h-8 bg-primary/10 text-primary rounded-xl flex items-center justify-center flex-shrink-0">
+                        <i class="fa-solid fa-robot text-xs"></i>
+                    </div>
+                    <div class="bg-slate-100 dark:bg-slate-800 p-4 rounded-2xl rounded-tl-none max-w-[85%]">
+                        <p class="text-sm text-slate-700 dark:text-slate-300 font-medium leading-relaxed">
+                            Xin chào! Tôi là **TechFlow AI**. Tôi có thể giúp gì cho bạn trong việc lựa chọn linh kiện máy tính hôm nay? 💻✨
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Input Area -->
+            <div class="p-4 bg-slate-50/50 dark:bg-slate-800/50 border-t border-slate-100 dark:border-slate-800">
+                <form id="chatbot-form" class="relative">
+                    <input type="text" id="chatbot-input" placeholder="Nhập câu hỏi của bạn..." 
+                        class="w-full bg-white dark:bg-slate-900 border-none rounded-2xl pl-5 pr-14 py-3.5 text-sm font-bold text-slate-700 dark:text-slate-300 focus:ring-2 focus:ring-primary/20 shadow-sm transition-all"
+                        autocomplete="off">
+                    <button type="submit" class="absolute right-2 top-1.5 w-10 h-10 bg-primary text-white rounded-xl flex items-center justify-center hover:bg-primary-dark transition-all shadow-lg shadow-primary/20">
+                        <i class="fa-solid fa-paper-plane text-xs"></i>
+                    </button>
+                </form>
+                <p class="text-[9px] text-center text-slate-400 mt-3 font-black uppercase tracking-widest opacity-50">Powered by TechFlow AI & Gemini</p>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        #chatbot-window.active {
+            opacity: 1 !important;
+            visibility: visible !important;
+            transform: translateY(0) scale(1) !important;
+        }
+        #chatbot-messages::-webkit-scrollbar {
+            width: 4px;
+        }
+        #chatbot-messages::-webkit-scrollbar-thumb {
+            background: rgba(var(--primary-rgb), 0.1);
+            border-radius: 10px;
+        }
+    </style>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const toggleBtn = document.getElementById('chatbot-toggle');
+            const chatWindow = document.getElementById('chatbot-window');
+            const closeBtn = document.getElementById('chatbot-close');
+            const chatForm = document.getElementById('chatbot-form');
+            const chatInput = document.getElementById('chatbot-input');
+            const chatMessages = document.getElementById('chatbot-messages');
+
+            // Toggle window
+            toggleBtn.addEventListener('click', () => {
+                chatWindow.classList.toggle('active');
+                if (chatWindow.classList.contains('active')) {
+                    chatInput.focus();
+                }
+            });
+
+            closeBtn.addEventListener('click', () => {
+                chatWindow.classList.remove('active');
+            });
+
+            // Handle Chat
+            chatForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const message = chatInput.value.trim();
+                if (!message) return;
+
+                // Add User Message
+                addMessage(message, 'user');
+                chatInput.value = '';
+
+                // Add Typing Indicator
+                const typingId = addTypingIndicator();
+
+                try {
+                    const response = await fetch('/chatbot/chat', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        },
+                        body: JSON.stringify({ message })
+                    });
+
+                    const data = await response.json();
+                    removeTypingIndicator(typingId);
+
+                    if (data.success) {
+                        addMessage(data.reply, 'bot');
+                    } else {
+                        addMessage(data.reply || 'Rất tiếc, tôi đang gặp chút sự cố kết nối. Bạn thử lại sau nhé!', 'bot');
+                    }
+                } catch (error) {
+                    console.error('Chatbot Error:', error);
+                    removeTypingIndicator(typingId);
+                    addMessage('Hệ thống đang bận, vui lòng thử lại sau giây lát.', 'bot');
+                }
+            });
+
+            function addMessage(text, sender) {
+                const div = document.createElement('div');
+                div.className = `flex items-start gap-3 ${sender === 'user' ? 'flex-row-reverse' : ''} animate-in slide-in-from-bottom-2 duration-300`;
+                
+                const icon = sender === 'bot' 
+                    ? '<div class="w-8 h-8 bg-primary/10 text-primary rounded-xl flex items-center justify-center flex-shrink-0"><i class="fa-solid fa-robot text-xs"></i></div>'
+                    : '<div class="w-8 h-8 bg-slate-100 text-slate-400 rounded-xl flex items-center justify-center flex-shrink-0"><i class="fa-solid fa-user text-xs"></i></div>';
+
+                const contentClass = sender === 'bot'
+                    ? 'bg-slate-100 dark:bg-slate-800 rounded-tl-none'
+                    : 'bg-primary text-white rounded-tr-none';
+
+                div.innerHTML = `
+                    ${icon}
+                    <div class="${contentClass} p-4 rounded-2xl max-w-[85%] shadow-sm">
+                        <p class="text-sm font-medium leading-relaxed">
+                            ${text.replace(/\n/g, '<br>')
+                                .replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')
+                                .replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" class="text-primary-dark font-black underline hover:no-underline decoration-primary/30 decoration-2 underline-offset-4">$1</a>')}
+                        </p>
+                    </div>
+                `;
+
+                chatMessages.appendChild(div);
+                scrollToBottom();
+            }
+
+            function addTypingIndicator() {
+                const id = 'typing-' + Date.now();
+                const div = document.createElement('div');
+                div.id = id;
+                div.className = 'flex items-start gap-3 animate-in fade-in duration-300';
+                div.innerHTML = `
+                    <div class="w-8 h-8 bg-primary/10 text-primary rounded-xl flex items-center justify-center flex-shrink-0">
+                        <i class="fa-solid fa-robot text-xs"></i>
+                    </div>
+                    <div class="bg-slate-100 dark:bg-slate-800 p-4 rounded-2xl rounded-tl-none shadow-sm flex gap-1">
+                        <span class="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce"></span>
+                        <span class="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce [animation-delay:0.2s]"></span>
+                        <span class="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce [animation-delay:0.4s]"></span>
+                    </div>
+                `;
+                chatMessages.appendChild(div);
+                scrollToBottom();
+                return id;
+            }
+
+            function removeTypingIndicator(id) {
+                const el = document.getElementById(id);
+                if (el) el.remove();
+            }
+
+            function scrollToBottom() {
+                chatMessages.scrollTop = chatMessages.scrollHeight;
             }
         });
     </script>

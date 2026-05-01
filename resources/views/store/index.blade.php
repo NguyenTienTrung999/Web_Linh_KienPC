@@ -152,7 +152,7 @@
 <div class="w-[1328px] border border-slate-300 dark:border-slate-700 p-[12px] bg-white dark:bg-slate-900 rounded-xl flex flex-col">
     <!-- Sort & Controls -->
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-    <p class="text-slate-500 dark:text-slate-400 text-sm">Hiển thị <span class="text-slate-900 dark:text-white font-bold">{{ count($products) }}</span> sản phẩm</p>
+    <p class="text-slate-500 dark:text-slate-400 text-sm">Hiển thị từ <span class="font-bold text-slate-900 dark:text-white">{{ $products->firstItem() ?? 0 }}</span> đến <span class="font-bold text-slate-900 dark:text-white">{{ $products->lastItem() ?? 0 }}</span> trong tổng số <span class="font-bold text-slate-900 dark:text-white">{{ $products->total() }}</span> sản phẩm</p>
     <div class="flex items-center gap-3">
     <span class="text-sm text-slate-500">Sắp xếp theo:</span>
     <form action="{{ route('store.index') }}" method="GET" id="sortForm">
@@ -176,106 +176,151 @@
     </div>
 
     <div class="grid grid-cols-5 gap-[12px] justify-items-center">
-@forelse($products as $index => $product)
-    <!-- Product Card -->
-    <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-300 dark:border-slate-700 hover:z-[50] group hover:shadow-2xl transition-all duration-300 flex flex-col w-[250px] h-[400px] relative product-card">
-        <!-- Product Preview Popover -->
-        <div class="product-popover fixed left-0 top-0 w-[350px] bg-white dark:bg-slate-900 rounded-xl shadow-[0_20px_50px_rgba(0,0,0,0.3)] border border-slate-200 dark:border-slate-700 z-[9999] hidden flex-col overflow-hidden pointer-events-none transition-opacity duration-200 opacity-0">
-            <div class="bg-primary p-3">
-                <h4 class="text-white font-bold text-sm leading-tight uppercase line-clamp-2">{{ $product->name }}</h4>
-            </div>
-            <div class="p-4 space-y-3">
-                <div class="flex items-center gap-2">
-                    <span class="font-bold text-slate-900 dark:text-slate-100 text-sm">Giá bán:</span>
-                    <span class="text-primary font-black text-lg">{{ number_format($product->sale_price ?: $product->price, 0, ',', '.') }} VNĐ</span>
-                </div>
-                <div class="flex items-center gap-2">
-                    <span class="font-bold text-slate-900 dark:text-slate-100 text-sm">Bảo hành:</span>
-                    <span class="text-slate-600 dark:text-slate-400 text-sm font-medium">{{ $product->warranty_period }}</span>
-                </div>
-                <div class="pt-2 border-t border-slate-100 dark:border-slate-800">
-                    <span class="inline-block bg-primary text-white px-2 py-0.5 rounded text-[10px] font-black mb-3 uppercase tracking-wider">Mô tả tóm tắt:</span>
-                    <ul class="space-y-2">
-                        @if($product->specs && is_array($product->specs))
-                            @foreach(array_slice($product->specs, 0, 6) as $spec)
-                                <li class="flex items-start gap-2 text-[12px] leading-tight text-slate-700 dark:text-slate-300">
-                                    <i class="fa-solid fa-circle-check text-emerald-500 mt-0.5 shrink-0"></i>
-                                    <span>
-                                        @if(is_array($spec))
-                                            {{ implode(': ', $spec) }}
-                                        @else
-                                            {{ $spec }}
-                                        @endif
-                                    </span>
-                                </li>
-                            @endforeach
-                        @endif
-                    </ul>
-                </div>
-            </div>
-        </div>
-
-        <!-- Image Area: 240px Height -->
-        <div class="h-[240px] bg-white relative overflow-hidden shrink-0 rounded-t-xl product-trigger">
-            <a href="{{ route('products.show', $product) }}" class="block h-full">
-                <img alt="{{ $product->name }}" class="w-full h-full object-contain group-hover:scale-110 transition-transform duration-700 p-6" src="{{ $product->image ? asset('storage/' . $product->image) : 'https://placehold.co/400x300?text=No+Image' }}"/>
-            </a>
-            
-            @if(now()->diffInDays($product->created_at) <= 3)
-                <div class="absolute top-3 right-3 bg-white text-primary border border-primary/20 text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider shadow-sm z-10 transition-transform group-hover:scale-110">NEW</div>
-            @endif
-        </div>
-
-        <!-- Info Area -->
-        <div class="p-4 flex flex-col gap-[6px] border-t border-slate-50 dark:border-slate-800 flex-grow">
-            <!-- Block 1: Name (max 40px) -->
-            <a href="{{ route('products.show', $product) }}" class="block h-[40px] max-h-[40px]">
-                <h3 class="text-slate-900 dark:text-white font-bold text-[16px] leading-[20px] group-hover:text-primary transition-colors line-clamp-2 overflow-hidden">{{ $product->name }}</h3>
-            </a>
-            
-            <!-- Block 2: Price (max 46px) -->
-            <div class="flex items-center justify-between h-[46px] max-h-[46px]">
-                <div class="flex flex-col justify-center h-full">
-                    @if($product->sale_price)
-                        <span class="text-primary !font-bold text-[18px] leading-[24px]">{{ number_format($product->sale_price, 0, ',', '.') }}₫</span>
-                        <span class="text-[12px] text-slate-400 font-bold line-through leading-[18px]">{{ number_format($product->price, 0, ',', '.') }}₫</span>
-                    @else
-                        <span class="text-primary !font-bold text-[18px] leading-[24px]">{{ number_format($product->price, 0, ',', '.') }}₫</span>
-                    @endif
-                </div>
-                @if($product->sale_price)
-                    <div class="bg-red-500 text-white text-[11px] font-bold px-2 py-0.5 rounded shadow-sm whitespace-nowrap shrink-0">
-                        -{{ round((($product->price - $product->sale_price) / $product->price) * 100) }}%
+        @forelse($products as $index => $product)
+            <!-- Product Card (Same as before) -->
+            <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-300 dark:border-slate-700 hover:z-[50] group hover:shadow-2xl transition-all duration-300 flex flex-col w-[250px] h-[400px] relative product-card">
+                <!-- ... existing product card code ... -->
+                <!-- Copying the full card content to ensure it's not lost -->
+                <!-- Product Preview Popover -->
+                <div class="product-popover fixed left-0 top-0 w-[350px] bg-white dark:bg-slate-900 rounded-xl shadow-[0_20px_50px_rgba(0,0,0,0.3)] border border-slate-200 dark:border-slate-700 z-[9999] hidden flex-col overflow-hidden pointer-events-none transition-opacity duration-200 opacity-0">
+                    <div class="bg-primary p-3">
+                        <h4 class="text-white font-bold text-sm leading-tight uppercase line-clamp-2">{{ $product->name }}</h4>
                     </div>
-                @endif
-            </div>
-
-            <!-- Block 3: Action (max 26px) -->
-            <div class="flex items-center justify-between h-[26px] max-h-[26px]">
-                <button type="button" onclick="addToCart({{ $product->id }})" class="relative flex items-center h-[26px] rounded-full overflow-hidden group/btn pr-3 pl-0 transition-all bg-slate-100 dark:bg-slate-700/50 hover:shadow-md">
-                    <div class="absolute left-0 top-0 w-[26px] h-[26px] bg-primary rounded-full transition-all duration-300 ease-in-out group-hover/btn:w-full z-0"></div>
-                    <div class="relative z-10 flex items-center gap-1.5 h-full">
-                        <div class="w-[26px] h-[26px] flex items-center justify-center text-white shrink-0">
-                            <i class="fa-solid fa-cart-shopping text-[12px]"></i>
+                    <div class="p-4 space-y-3">
+                        <div class="flex items-center gap-2">
+                            <span class="font-bold text-slate-900 dark:text-slate-100 text-sm">Giá bán:</span>
+                            <span class="text-primary font-black text-lg">{{ number_format($product->sale_price ?: $product->price, 0, ',', '.') }} VNĐ</span>
                         </div>
-                        <span class="!font-bold text-[12px] uppercase tracking-wider text-slate-800 dark:text-slate-200 transition-colors duration-300 group-hover/btn:text-white">Thêm vào giỏ</span>
+                        <div class="flex items-center gap-2">
+                            <span class="font-bold text-slate-900 dark:text-slate-100 text-sm">Bảo hành:</span>
+                            <span class="text-slate-600 dark:text-slate-400 text-sm font-medium">{{ $product->warranty_period }}</span>
+                        </div>
+                        <div class="pt-2 border-t border-slate-100 dark:border-slate-800">
+                            <span class="inline-block bg-primary text-white px-2 py-0.5 rounded text-[10px] font-black mb-3 uppercase tracking-wider">Mô tả tóm tắt:</span>
+                            <ul class="space-y-2">
+                                @if($product->specs && is_array($product->specs))
+                                    @foreach(array_slice($product->specs, 0, 6) as $spec)
+                                        <li class="flex items-start gap-2 text-[12px] leading-tight text-slate-700 dark:text-slate-300">
+                                            <i class="fa-solid fa-circle-check text-emerald-500 mt-0.5 shrink-0"></i>
+                                            <span>
+                                                @if(is_array($spec))
+                                                    {{ implode(': ', $spec) }}
+                                                @else
+                                                    {{ $spec }}
+                                                @endif
+                                            </span>
+                                        </li>
+                                    @endforeach
+                                @endif
+                            </ul>
+                        </div>
                     </div>
-                </button>
-                <div class="bg-emerald-50 text-emerald-500 border border-emerald-200 text-[10px] font-bold px-2 h-[22px] flex items-center rounded whitespace-nowrap shrink-0 ml-1">
-                    Còn hàng
+                </div>
+
+                <!-- Image Area -->
+                <div class="h-[240px] bg-white relative overflow-hidden shrink-0 rounded-t-xl product-trigger">
+                    <a href="{{ route('products.show', $product->slug ?? $product->id) }}" class="block h-full">
+                        <img alt="{{ $product->name }}" class="w-full h-full object-contain group-hover:scale-110 transition-transform duration-700 p-6" src="{{ $product->image ? asset('storage/' . $product->image) : 'https://placehold.co/400x300?text=No+Image' }}"/>
+                    </a>
+                </div>
+
+                <!-- Info Area -->
+                <div class="p-4 flex flex-col gap-[6px] border-t border-slate-50 dark:border-slate-800 flex-grow">
+                    <a href="{{ route('products.show', $product->slug ?? $product->id) }}" class="block h-[40px] max-h-[40px]">
+                        <h3 class="text-slate-900 dark:text-white font-bold text-[16px] leading-[20px] group-hover:text-primary transition-colors line-clamp-2 overflow-hidden">{{ $product->name }}</h3>
+                    </a>
+                    <div class="flex items-center justify-between h-[46px] max-h-[46px]">
+                        <div class="flex flex-col justify-center h-full">
+                            @if($product->sale_price)
+                                <span class="text-primary !font-bold text-[18px] leading-[24px]">{{ number_format($product->sale_price, 0, ',', '.') }}₫</span>
+                                <span class="text-[12px] text-slate-400 font-bold line-through leading-[18px]">{{ number_format($product->price, 0, ',', '.') }}₫</span>
+                            @else
+                                <span class="text-primary !font-bold text-[18px] leading-[24px]">{{ number_format($product->price, 0, ',', '.') }}₫</span>
+                            @endif
+                        </div>
+                        @if($product->sale_price)
+                            <div class="bg-red-500 text-white text-[11px] font-bold px-2 py-0.5 rounded shadow-sm whitespace-nowrap shrink-0">
+                                -{{ round((($product->price - $product->sale_price) / $product->price) * 100) }}%
+                            </div>
+                        @endif
+                    </div>
+                    <div class="flex items-center justify-between h-[26px] max-h-[26px]">
+                        <button type="button" onclick="addToCart({{ $product->id }})" class="relative flex items-center h-[26px] rounded-full overflow-hidden group/btn pr-3 pl-0 transition-all bg-slate-100 dark:bg-slate-700/50 hover:shadow-md">
+                            <div class="absolute left-0 top-0 w-[26px] h-[26px] bg-primary rounded-full transition-all duration-300 ease-in-out group-hover/btn:w-full z-0"></div>
+                            <div class="relative z-10 flex items-center gap-1.5 h-full">
+                                <div class="w-[26px] h-[26px] flex items-center justify-center text-white shrink-0">
+                                    <i class="fa-solid fa-cart-shopping text-[12px]"></i>
+                                </div>
+                                <span class="!font-bold text-[12px] uppercase tracking-wider text-slate-800 dark:text-slate-200 transition-colors duration-300 group-hover/btn:text-white">Thêm vào giỏ</span>
+                            </div>
+                        </button>
+                        <div class="bg-emerald-50 text-emerald-500 border border-emerald-200 text-[10px] font-bold px-2 h-[22px] flex items-center rounded whitespace-nowrap shrink-0 ml-1">Còn hàng</div>
+                    </div>
                 </div>
             </div>
-        </div>
+        @empty
+            <div class="col-span-full bg-white dark:bg-slate-900 p-12 text-center rounded-xl border border-slate-300 dark:border-slate-700">
+                <i class="fa-solid fa-magnifying-glass text-6xl text-slate-300 mb-4 opacity-30"></i>
+                <h3 class="font-bold text-xl mb-2 text-slate-900 dark:text-white">Không tìm thấy sản phẩm!</h3>
+                <p class="text-slate-500">Thử thay đổi bộ lọc hoặc từ khóa tìm kiếm của bạn.</p>
+                <a href="{{ route('store.index') }}" class="mt-6 inline-block bg-primary text-white font-medium px-6 py-2 rounded-lg hover:bg-primary/90">Xóa tất cả bộ lọc</a>
+            </div>
+        @endforelse
     </div>
-@empty
-    <div class="col-span-full bg-white dark:bg-slate-900 p-12 text-center rounded-xl border border-slate-300 dark:border-slate-700">
-        <i class="fa-solid fa-magnifying-glass text-6xl text-slate-300 mb-4 opacity-30"></i>
-        <h3 class="font-bold text-xl mb-2 text-slate-900 dark:text-white">Không tìm thấy sản phẩm!</h3>
-        <p class="text-slate-500">Thử thay đổi bộ lọc hoặc từ khóa tìm kiếm của bạn.</p>
-        <a href="{{ route('store.index') }}" class="mt-6 inline-block bg-primary text-white font-medium px-6 py-2 rounded-lg hover:bg-primary/90">Xóa tất cả bộ lọc</a>
+
+    <!-- Pagination Section -->
+    @if($products->hasPages())
+    <div class="mt-12 flex justify-center pagination-container">
+        {{ $products->appends(request()->query())->links('pagination::tailwind') }}
     </div>
-@endforelse
+    @endif
 </div>
+
+<style>
+    /* Custom Square Pagination Styling */
+    .pagination-container nav div:first-child {
+        display: none !important; /* Hide mobile pagination text if it exists */
+    }
+    .pagination-container nav div:last-child {
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+    }
+    .pagination-container span[aria-current="page"] > span {
+        background-color: #2563eb !important; /* Blue-600 */
+        color: white !important;
+        border-color: #2563eb !important;
+        border-radius: 4px !important;
+        width: 38px;
+        height: 38px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+    }
+    .pagination-container a, .pagination-container span {
+        border-radius: 4px !important;
+        width: 38px;
+        height: 38px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 4px;
+        font-weight: 500;
+        transition: all 0.2s;
+        border: 1px solid #e2e8f0 !important; /* slate-200 */
+        background: white !important;
+        color: #64748b !important; /* slate-500 */
+    }
+    .pagination-container a:hover {
+        border-color: #2563eb !important;
+        color: #2563eb !important;
+    }
+    .pagination-container svg {
+        width: 16px;
+        height: 16px;
+    }
+</style>
 
 </div>
 </div>

@@ -69,7 +69,7 @@
                     <span class="absolute top-3 left-3 z-20 bg-red-500 text-white text-[11px] font-black px-2.5 py-1.5 rounded-lg shadow-lg animate-pulse">
                         -{{ round((($product->price - $product->sale_price) / $product->price) * 100) }}%
                     </span>
-                    <a href="{{ route('products.show', $product) }}" class="block h-full">
+                    <a href="{{ route('products.show', $product->slug ?? $product->id) }}" class="block h-full">
                         <img alt="{{ $product->name }}" class="w-full h-full object-contain p-6 group-hover:scale-110 transition-transform duration-700" src="{{ $product->image ? asset('storage/' . $product->image) : 'https://placehold.co/400x400?text=No+Image' }}" onerror="this.onerror=null; this.src='https://placehold.co/400x400?text=No+Image';"/>
                     </a>
 
@@ -82,7 +82,7 @@
                 <!-- Info Area -->
                 <div class="p-4 flex flex-col gap-[6px] border-t border-slate-50 dark:border-slate-800 relative bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm flex-grow">
                     <!-- Block 1: Name (max 40px) -->
-                    <a href="{{ route('products.show', $product) }}" class="block h-[40px] max-h-[40px]">
+                    <a href="{{ route('products.show', $product->slug ?? $product->id) }}" class="block h-[40px] max-h-[40px]">
                         <h3 class="font-bold text-slate-900 dark:text-slate-100 text-[16px] leading-[20px] group-hover:text-primary transition-colors line-clamp-2 overflow-hidden">{{ $product->name }}</h3>
                     </a>
                     
@@ -170,17 +170,14 @@
 
                 <!-- Image Area: 240px -->
                 <div class="h-[240px] bg-white relative overflow-hidden shrink-0 rounded-t-xl product-trigger">
-                    @if(now()->diffInDays($product->created_at) <= 3)
-                        <div class="absolute top-3 right-3 bg-white text-primary border border-primary/20 text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider shadow-sm z-10 transition-transform group-hover:scale-110">NEW</div>
-                    @endif
-                    <a href="{{ route('products.show', $product) }}" class="block h-full">
+                    <a href="{{ route('products.show', $product->slug ?? $product->id) }}" class="block h-full">
                         <img alt="{{ $product->name }}" class="w-full h-full object-contain p-6 group-hover:scale-110 transition-transform duration-700" src="{{ $product->image ? asset('storage/' . $product->image) : 'https://placehold.co/400x400?text=No+Image' }}" onerror="this.onerror=null; this.src='https://placehold.co/400x400?text=No+Image';"/>
                     </a>
                 </div>
                 <!-- Info Area -->
                 <div class="p-4 flex flex-col gap-[6px] border-t border-slate-50 dark:border-slate-800 flex-grow">
                     <!-- Block 1: Name (max 40px) -->
-                    <a href="{{ route('products.show', $product) }}" class="block h-[40px] max-h-[40px]">
+                    <a href="{{ route('products.show', $product->slug ?? $product->id) }}" class="block h-[40px] max-h-[40px]">
                         <h3 class="font-bold text-slate-900 dark:text-slate-100 text-[16px] leading-[20px] group-hover:text-primary transition-colors line-clamp-2 overflow-hidden">{{ $product->name }}</h3>
                     </a>
                     
@@ -283,15 +280,12 @@
                 </div>
 
                 <div class="h-[240px] bg-white relative overflow-hidden shrink-0 rounded-t-xl product-trigger">
-                    @if(now()->diffInDays($product->created_at) <= 3)
-                        <div class="absolute top-3 right-3 bg-white text-primary border border-primary/20 text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider shadow-sm z-10 transition-transform group-hover:scale-110">NEW</div>
-                    @endif
-                    <a href="{{ route('products.show', $product) }}" class="block h-full">
+                    <a href="{{ route('products.show', $product->slug ?? $product->id) }}" class="block h-full">
                         <img alt="{{ $product->name }}" class="w-full h-full object-contain p-6 group-hover:scale-110 transition-transform duration-700" src="{{ $product->image ? asset('storage/' . $product->image) : 'https://placehold.co/400x400?text=No+Image' }}" onerror="this.onerror=null; this.src='https://placehold.co/400x400?text=No+Image';"/>
                     </a>
                 </div>
                 <div class="p-4 flex flex-col gap-[6px] border-t border-slate-50 dark:border-slate-800 flex-grow">
-                    <a href="{{ route('products.show', $product) }}" class="block h-[40px] max-h-[40px]">
+                    <a href="{{ route('products.show', $product->slug ?? $product->id) }}" class="block h-[40px] max-h-[40px]">
                         <h3 class="font-bold text-slate-900 dark:text-slate-100 text-[16px] leading-[20px] group-hover:text-primary transition-colors line-clamp-2 overflow-hidden">{{ $product->name }}</h3>
                     </a>
                     <div class="flex items-center justify-between h-[46px] max-h-[46px]">
