@@ -46,9 +46,14 @@ class SePayWebhookController extends Controller
                 // if ($receivedAmount >= $order->total_price) { ... }
 
                 $order->update([
-                    'status' => 'processing', // or 'paid'
+                    'status' => Order::STATUS_PROCESSING,
                     'note' => $order->note . "\n[SePay] Da thanh toan " . number_format($receivedAmount) . "d luc " . $request->input('transactionDate')
                 ]);
+
+                // Send Notification to user about payment confirmation
+                if ($order->user) {
+                    $order->user->notify(new \App\Notifications\OrderStatusNotification($order, Order::STATUS_PROCESSING));
+                }
 
                 Log::info("SePay Webhook: Order #{$orderId} updated to processing.");
                 return response()->json(['success' => true]);

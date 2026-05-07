@@ -39,11 +39,13 @@ class CartController extends Controller
     public function add(Request $request, Product $product)
     {
         $cart = session()->get('cart', []);
+        $color = $request->input('color');
+        $cartKey = $color ? $product->id . '_' . $color : $product->id;
 
-        if (isset($cart[$product->id])) {
+        if (isset($cart[$cartKey])) {
             return response()->json([
                 'success' => false,
-                'message' => 'Sản phẩm đã có trong giỏ hàng vui lòng vào giỏ hàng để thêm số lượng',
+                'message' => 'Sản phẩm ' . ($color ? "màu $color " : "") . 'đã có trong giỏ hàng. Vui lòng vào giỏ hàng để chỉnh sửa số lượng.',
                 'cartCount' => $this->getCartCount($cart),
                 'cartTotal' => number_format($this->getCartTotal($cart), 0, ',', '.') . 'đ'
             ]);
@@ -51,11 +53,13 @@ class CartController extends Controller
 
         $price = $product->sale_price ?: $product->price;
 
-        $cart[$product->id] = [
+        $cart[$cartKey] = [
+            "id" => $product->id,
             "name" => $product->name,
-            "quantity" => 1,
+            "quantity" => $request->input('quantity', 1),
             "price" => $price,
-            "image" => $product->image
+            "image" => $product->image,
+            "color" => $color
         ];
 
         session()->put('cart', $cart);
@@ -75,21 +79,23 @@ class CartController extends Controller
     /**
      * Update product quantity in the cart via AJAX.
      */
-    public function update(Request $request, Product $product)
+    public function update(Request $request, $id)
     {
-        if ($product->id && $request->quantity) {
+        if ($id && $request->quantity) {
             $cart = session()->get('cart', []);
-            $cart[$product->id]["quantity"] = $request->quantity;
-            session()->put('cart', $cart);
+            if (isset($cart[$id])) {
+                $cart[$id]["quantity"] = $request->quantity;
+                session()->put('cart', $cart);
 
-            if ($request->ajax()) {
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Cập nhật giỏ hàng thành công!',
-                    'cartCount' => $this->getCartCount($cart),
-                    'itemTotal' => number_format($cart[$product->id]['price'] * $cart[$product->id]['quantity'], 0, ',', '.') . 'đ',
-                    'cartTotal' => number_format($this->getCartTotal($cart), 0, ',', '.') . 'đ'
-                ]);
+                if ($request->ajax()) {
+                    return response()->json([
+                        'success' => true,
+                        'message' => 'Cập nhật giỏ hàng thành công!',
+                        'cartCount' => $this->getCartCount($cart),
+                        'itemTotal' => number_format($cart[$id]['price'] * $cart[$id]['quantity'], 0, ',', '.') . 'đ',
+                        'cartTotal' => number_format($this->getCartTotal($cart), 0, ',', '.') . 'đ'
+                    ]);
+                }
             }
         }
 
@@ -99,12 +105,12 @@ class CartController extends Controller
     /**
      * Remove product from the cart via AJAX.
      */
-    public function remove(Request $request, Product $product)
+    public function remove(Request $request, $id)
     {
-        if ($product->id) {
+        if ($id) {
             $cart = session()->get('cart', []);
-            if (isset($cart[$product->id])) {
-                unset($cart[$product->id]);
+            if (isset($cart[$id])) {
+                unset($cart[$id]);
                 session()->put('cart', $cart);
             }
 

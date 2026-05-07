@@ -15,17 +15,8 @@
             </div>
         </div>
         <div class="flex items-center gap-3">
-            @php
-                $statusMap = [
-                    'pending' => ['label' => 'Chờ xử lý', 'color' => 'bg-amber-500/10 text-amber-600 border-amber-500/20'],
-                    'processing' => ['label' => 'Đang giao', 'color' => 'bg-primary/10 text-primary border-primary/20'],
-                    'completed' => ['label' => 'Hoàn tất', 'color' => 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20'],
-                    'cancelled' => ['label' => 'Đã hủy', 'color' => 'bg-red-500/10 text-red-600 border-red-500/20'],
-                ];
-                $st = $statusMap[$order->status] ?? ['label' => $order->status, 'color' => 'bg-slate-500/10 text-slate-500'];
-            @endphp
-            <span class="px-4 py-2 rounded-xl text-xs font-black uppercase border {{ $st['color'] }}">
-                {{ $st['label'] }}
+            <span class="px-4 py-2 rounded-xl text-xs font-black uppercase border {{ $order->getStatusColor() }}">
+                {{ $order->getStatusLabel() }}
             </span>
         </div>
     </div>
@@ -55,10 +46,15 @@
                             <tr>
                                 <td class="px-6 py-4">
                                     <div class="flex items-center gap-3">
-                                        <img src="{{ $item->product->image }}" alt="{{ $item->product->name }}" class="w-12 h-12 rounded-xl object-cover bg-slate-50 dark:bg-slate-800">
+                                        <img src="{{ $item->product->image ? asset('storage/' . $item->product->image) : 'https://placehold.co/200x200?text=Product' }}" alt="{{ $item->product->name }}" class="w-12 h-12 rounded-xl object-contain bg-slate-50 dark:bg-slate-800 p-1 border border-slate-100 dark:border-slate-800">
                                         <div class="flex flex-col">
                                             <span class="text-sm font-bold text-slate-700 dark:text-slate-300">{{ $item->product->name }}</span>
-                                            <span class="text-[10px] text-slate-400 font-medium">SKU: {{ $item->product->sku ?? 'N/A' }}</span>
+                                            <div class="flex items-center gap-2 mt-1">
+                                                <span class="text-[10px] text-slate-400 font-medium">SKU: {{ $item->product->sku ?? 'N/A' }}</span>
+                                                @if($item->color)
+                                                    <span class="text-[10px] font-black text-primary uppercase tracking-widest">Màu: {{ $item->color }}</span>
+                                                @endif
+                                            </div>
                                         </div>
                                     </div>
                                 </td>
@@ -158,10 +154,9 @@
                     <div>
                         <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block">Trạng thái mới</label>
                         <select name="status" class="w-full bg-slate-50 dark:bg-slate-800 border-none rounded-2xl px-4 py-3 text-sm font-bold text-slate-700 dark:text-slate-300 focus:ring-2 focus:ring-primary/20 appearance-none cursor-pointer">
-                            <option value="pending" {{ $order->status === 'pending' ? 'selected' : '' }}>Chờ xử lý</option>
-                            <option value="processing" {{ $order->status === 'processing' ? 'selected' : '' }}>Đang giao</option>
-                            <option value="completed" {{ $order->status === 'completed' ? 'selected' : '' }}>Hoàn tất</option>
-                            <option value="cancelled" {{ $order->status === 'cancelled' ? 'selected' : '' }}>Đã hủy</option>
+                            @foreach(\App\Models\Order::getAllStatuses() as $value => $label)
+                                <option value="{{ $value }}" {{ $order->status === $value ? 'selected' : '' }}>{{ $label }}</option>
+                            @endforeach
                         </select>
                     </div>
                     <button type="submit" class="w-full bg-primary hover:bg-primary/90 text-white py-4 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] transition-all hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-primary/20">

@@ -119,10 +119,73 @@
             background-image: radial-gradient(circle, #e2e8f0 1px, transparent 1px);
             background-size: 32px 32px;
         }
+
+        @keyframes slide-up {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-slide-up {
+            animation: slide-up 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes fade-in {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .animate-fade-in {
+            animation: fade-in 1s ease-out forwards;
+        }
+
+        @keyframes bounce-subtle {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        .animate-bounce-subtle {
+            animation: bounce-subtle 2s infinite ease-in-out;
+        }
     </style>
 </head>
 
 <body class="bg-background dark:bg-slate-900 text-on-surface dark:text-slate-100 antialiased font-sans">
+
+    <!-- Color Selection Modal -->
+    <div id="colorSelectionModal" class="fixed inset-0 z-[10000] hidden">
+        <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onclick="closeColorModal()"></div>
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md px-4">
+            <div class="bg-white dark:bg-slate-900 rounded-3xl shadow-2xl overflow-hidden border border-slate-200 dark:border-slate-800 animate-in fade-in zoom-in duration-300">
+                <!-- Header -->
+                <div class="p-6 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-slate-50/50 dark:bg-slate-800/50">
+                    <h3 class="text-lg font-black text-slate-900 dark:text-white uppercase tracking-tight">Chọn màu sắc</h3>
+                    <button onclick="closeColorModal()" class="h-8 w-8 rounded-full hover:bg-slate-200 dark:hover:bg-slate-800 flex items-center justify-center transition-colors">
+                        <i class="fa-solid fa-xmark text-sm"></i>
+                    </button>
+                </div>
+                <!-- Body -->
+                <div class="p-8">
+                    <div class="flex items-center gap-4 mb-6">
+                        <div class="w-20 h-20 bg-slate-50 dark:bg-slate-800 rounded-2xl p-2 border border-slate-100 dark:border-slate-700 flex-shrink-0">
+                            <img id="modalProductImage" src="" class="w-full h-full object-contain">
+                        </div>
+                        <div>
+                            <h4 id="modalProductName" class="font-bold text-slate-900 dark:text-white line-clamp-2 leading-tight">...</h4>
+                            <p id="modalProductPrice" class="text-primary font-black mt-1">...</p>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-8">
+                        <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-3">Màu sắc khả dụng</label>
+                        <div id="modalColorOptions" class="flex flex-wrap gap-3">
+                            <!-- Options injected here -->
+                        </div>
+                    </div>
+                    
+                    <button id="confirmColorBtn" class="w-full py-4 bg-primary hover:bg-primary/90 text-white font-black rounded-2xl transition-all shadow-lg shadow-primary/20 uppercase tracking-widest text-xs">
+                        <i class="fa-solid fa-cart-shopping mr-2"></i> Xác nhận & Thêm vào giỏ
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Top NavBar from Stitch -->
     <!-- Header Section -->
@@ -486,7 +549,7 @@
             if (type === 'error') bgClass = 'bg-red-500/90';
             if (type === 'warning') bgClass = 'bg-amber-500/90';
 
-            toast.className = `transform translate-x-full opacity-0 transition-all duration-300 ${bgClass} text-white px-6 py-4 rounded-xl shadow-2xl flex items-center gap-4 z-[100] min-w-[300px] border border-white/20 backdrop-blur-md pointer-events-auto`;
+            toast.className = `transform translate-x-full opacity-0 transition-all duration-300 ${bgClass} text-white px-6 py-4 rounded-xl shadow-2xl flex items-center gap-4 z-[10001] min-w-[300px] border border-white/20 backdrop-blur-md pointer-events-auto`;
 
             let iconClass = 'fa-circle-check';
             if (type === 'error') iconClass = 'fa-circle-exclamation';
@@ -520,7 +583,7 @@
         function createToastContainer() {
             const container = document.createElement('div');
             container.id = 'toast-container';
-            container.className = 'fixed top-20 right-4 flex flex-col gap-3 z-[100] pointer-events-none';
+            container.className = 'fixed top-24 right-4 flex flex-col gap-3 z-[10001] pointer-events-none';
             // Enable pointer events for toast itself but not container
             container.style.pointerEvents = 'none';
             document.body.appendChild(container);
@@ -541,7 +604,57 @@
             @endif
     });
 
-        async function addToCart(productId, quantity = 1, redirect = false) {
+        let pendingAddToCart = null;
+
+        function handleAddToCart(productId, colors, name, price, image) {
+            if (colors && Array.isArray(colors) && colors.length > 0) {
+                pendingAddToCart = { productId, colors, name, price, image };
+                
+                // Update Modal UI
+                document.getElementById('modalProductName').innerText = name;
+                document.getElementById('modalProductPrice').innerText = new Intl.NumberFormat('vi-VN').format(price) + '₫';
+                document.getElementById('modalProductImage').src = image;
+                
+                const optionsContainer = document.getElementById('modalColorOptions');
+                optionsContainer.innerHTML = '';
+                
+                colors.forEach((color, index) => {
+                    const btn = document.createElement('button');
+                    btn.className = `color-option-btn px-4 py-2.5 rounded-xl border-2 border-slate-100 dark:border-slate-800 text-xs font-bold transition-all hover:border-primary/30 ${index === 0 ? 'active border-primary bg-primary/5 text-primary shadow-sm shadow-primary/10' : 'text-slate-600 dark:text-slate-400'}`;
+                    btn.innerText = color;
+                    btn.onclick = () => {
+                        document.querySelectorAll('.color-option-btn').forEach(b => {
+                            b.className = 'color-option-btn px-4 py-2.5 rounded-xl border-2 border-slate-100 dark:border-slate-800 text-xs font-bold transition-all hover:border-primary/30 text-slate-600 dark:text-slate-400';
+                        });
+                        btn.className = 'color-option-btn px-4 py-2.5 rounded-xl border-2 border-primary bg-primary/5 text-primary text-xs font-bold transition-all shadow-sm shadow-primary/10';
+                        pendingAddToCart.selectedColor = color;
+                    };
+                    optionsContainer.appendChild(btn);
+                });
+                
+                pendingAddToCart.selectedColor = colors[0]; // Default selection
+                
+                document.getElementById('colorSelectionModal').classList.remove('hidden');
+                document.body.classList.add('overflow-hidden');
+            } else {
+                addToCart(productId);
+            }
+        }
+
+        document.getElementById('confirmColorBtn').onclick = () => {
+            if (pendingAddToCart) {
+                addToCart(pendingAddToCart.productId, 1, false, pendingAddToCart.selectedColor);
+                closeColorModal();
+            }
+        };
+
+        function closeColorModal() {
+            document.getElementById('colorSelectionModal').classList.add('hidden');
+            document.body.classList.remove('overflow-hidden');
+            pendingAddToCart = null;
+        }
+
+        async function addToCart(productId, quantity = 1, redirect = false, color = null) {
             try {
                 const response = await fetch(`/cart/add/${productId}`, {
                     method: 'POST',
@@ -550,7 +663,10 @@
                         'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
                         'X-Requested-With': 'XMLHttpRequest'
                     },
-                    body: JSON.stringify({ quantity })
+                    body: JSON.stringify({ 
+                        quantity: quantity,
+                        color: color
+                    })
                 });
 
                 const data = await response.json();

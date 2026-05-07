@@ -74,6 +74,7 @@ class ProductController extends Controller
             'tags' => 'nullable|string|max:255',
             'warranty_period' => 'nullable|string|max:255',
             'gallery.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+            'colors' => 'nullable|array',
         ]);
 
         $validated['is_active'] = $request->boolean('is_active');
@@ -125,6 +126,7 @@ class ProductController extends Controller
             'tags' => 'nullable|string|max:255',
             'warranty_period' => 'nullable|string|max:255',
             'gallery.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+            'colors' => 'nullable|array',
         ]);
 
         $validated['is_active'] = $request->boolean('is_active');
@@ -139,6 +141,22 @@ class ProductController extends Controller
         }
 
         $gallery = $product->gallery ?? [];
+        
+        // Handle deleted existing images
+        if ($request->has('deleted_gallery')) {
+            $deletedImages = $request->input('deleted_gallery');
+            $gallery = array_values(array_filter($gallery, function($img) use ($deletedImages) {
+                return !in_array($img, $deletedImages);
+            }));
+            
+            // Optionally delete physical files
+            foreach ($deletedImages as $img) {
+                if (Storage::disk('public')->exists($img)) {
+                    Storage::disk('public')->delete($img);
+                }
+            }
+        }
+
         if ($request->hasFile('gallery')) {
             foreach ($request->file('gallery') as $file) {
                 $gallery[] = $file->store('products', 'public');
@@ -150,6 +168,116 @@ class ProductController extends Controller
 
         return redirect()->route('admin.products.index')
             ->with('success', 'Sản phẩm đã được cập nhật thành công!');
+    }
+
+    /**
+     * Import products from CSV file.
+     */
+    public function import(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|file|mimes:csv,txt|max:10240', // Limit to 10MB CSV
+        ], [
+            'file.mimes' => 'Hệ thống hiện tại chỉ hỗ trợ định dạng CSV. Vui lòng lưu file Excel dưới dạng CSV (Comma delimited) trước khi tải lên.',
+        ]);
+
+        $file = $request->file('file');
+        $filePath = $file->getRealPath();
+        
+        $fileHandle = fopen($filePath, 'r');
+        
+        // Handle BOM (Byte Order Mark) for UTF-8 CSV from Excel
+        $bom = fread($fileHandle, 3);
+        if ($bom !== "\xEF\xBB\xBF") {
+            rewind($fileHandle);
+        }
+
+        // Get header
+        $header = fgetcsv($fileHandle);
+        
+        $importedCount = 0;
+
+        // Start transaction for safety
+        \DB::beginTransaction();
+
+        try {
+            while (($data = fgetcsv($fileHandle)) !== false) {
+                // Column Mapping:
+                // 0: Name, 1: Category Name, 2: Brand Name, 3: Price, 4: Sale Price, 
+                // 5: Stock, 6: Description, 7: Specs (key:val,key2:val2), 
+                // 8: Main Image, 9: Gallery (img1,img2), 10: Tags (tag1,tag2), 11: Warranty
+                
+                if (count($data) < 1) continue;
+
+                // 1. Resolve Category
+                $categoryName = trim($data[1] ?? '');
+                $category = Category::where('name', 'like', $categoryName)->first();
+                $categoryId = $category ? $category->id : Category::first()->id;
+
+                // 2. Resolve Brand
+                $brandName = trim($data[2] ?? '');
+                $brand = !empty($brandName) ? Brand::where('name', 'like', $brandName)->first() : null;
+                $brandId = $brand ? $brand->id : null;
+
+                // 3. Parse Specs (format key:value,key2:value2)
+                $specsStr = trim($data[7] ?? '');
+                $specs = [];
+                if (!empty($specsStr)) {
+                    $pairs = explode(',', $specsStr);
+                    foreach ($pairs as $index => $pair) {
+                        $parts = explode(':', $pair, 2);
+                        if (count($parts) === 2) {
+                            $specs[$index] = [
+                                'key' => trim($parts[0]),
+                                'value' => trim($parts[1])
+                            ];
+                        }
+                    }
+                }
+
+                // 4. Parse Gallery
+                $galleryStr = trim($data[9] ?? '');
+                $gallery = !empty($galleryStr) ? array_map('trim', explode(',', $galleryStr)) : [];
+
+                Product::create([
+                    'name' => trim($data[0] ?? 'Sản phẩm mới'),
+                    'category_id' => $categoryId,
+                    'brand_id' => $brandId,
+                    'price' => (float) str_replace(['.', ','], '', $data[3] ?? 0),
+                    'sale_price' => (!empty($data[4])) ? (float) str_replace(['.', ','], '', $data[4]) : null,
+                    'stock_quantity' => (int) ($data[5] ?? 0),
+                    'description' => $data[6] ?? '',
+                    'specs' => $specs,
+                    'image' => trim($data[8] ?? ''),
+                    'gallery' => $gallery,
+                    'tags' => trim($data[10] ?? ''),
+                    'warranty_period' => trim($data[11] ?? ''),
+                    'is_active' => true,
+                    'is_featured' => false,
+                    'colors' => (!empty($data[12])) ? array_map('trim', explode(',', $data[12])) : [],
+                ]);
+                $importedCount++;
+            }
+            \DB::commit();
+        } catch (\Exception $e) {
+            \DB::rollBack();
+            \Log::error('Product Import Error: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Lỗi khi nhập dữ liệu: ' . $e->getMessage() . ' tại dòng ' . ($importedCount + 2));
+        } finally {
+            fclose($fileHandle);
+        }
+
+        return redirect()->back()->with('success', "Đã nhập thành công {$importedCount} sản phẩm vào hệ thống.");
+    }
+
+    public function downloadSample()
+    {
+        $filePath = base_path('sample_products_100.csv');
+        if (!file_exists($filePath)) {
+            return redirect()->back()->with('error', 'File mẫu không tồn tại. Vui lòng liên hệ quản trị viên.');
+        }
+        
+        return response()->download($filePath, 'TechFlow_Sample_Products.csv');
     }
 
     /**

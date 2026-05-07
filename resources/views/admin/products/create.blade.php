@@ -12,13 +12,52 @@
         <h2 class="text-slate-900 dark:text-white text-xl font-bold tracking-tight">Thêm sản phẩm mới</h2>
     </div>
     
-    <div class="flex items-center gap-4">
-        <button type="submit" form="product-create-form" class="bg-primary text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 hover:bg-primary/90 transition-colors">
+    <div class="flex items-center gap-3">
+        <button type="button" onclick="document.getElementById('excel-import-input').click()" class="bg-emerald-600 text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 hover:bg-emerald-700 transition-colors shadow-sm">
+            <i class="fa-solid fa-file-excel text-lg"></i>
+            Nhập từ Excel
+        </button>
+        <button type="submit" form="product-create-form" class="bg-primary text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 hover:bg-primary/90 transition-colors shadow-sm">
             <i class="fa-solid fa-floppy-disk text-lg"></i>
             Lưu sản phẩm
         </button>
     </div>
 </div>
+
+<div class="mb-6 bg-emerald-50 dark:bg-emerald-500/5 p-4 rounded-xl border border-emerald-100 dark:border-emerald-500/10 shadow-sm">
+    <div class="flex items-start gap-3">
+        <i class="fa-solid fa-circle-info text-emerald-500 text-lg mt-0.5"></i>
+        <div class="space-y-2">
+            <p class="text-[10px] font-black text-emerald-800 dark:text-emerald-400 uppercase tracking-[0.15em]">Hướng dẫn nhập file CSV</p>
+            <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+                <span class="font-bold text-slate-900 dark:text-slate-200">Thứ tự cột:</span> 
+                Tên SP, Danh mục, Thương hiệu, Giá bán, Giá KM, Tồn kho, Mô tả, Thông số, Hình chính, Gallery, Tags, Bảo hành.
+            </p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
+                <div class="bg-white/50 dark:bg-slate-800/50 p-2 rounded border border-emerald-200/50 dark:border-emerald-500/10">
+                    <p class="text-[9px] font-bold text-slate-500 uppercase mb-1">Thông số (Cột 8)</p>
+                    <code class="text-[10px] text-primary">RAM:8GB, CPU:i5, SSD:256GB</code>
+                </div>
+                <div class="bg-white/50 dark:bg-slate-800/50 p-2 rounded border border-emerald-200/50 dark:border-emerald-500/10">
+                    <p class="text-[9px] font-bold text-slate-500 uppercase mb-1">Thẻ & Gallery (Cột 10, 11)</p>
+                    <code class="text-[10px] text-primary">tag1, tag2 hoặc url1, url2</code>
+                </div>
+            </div>
+            <div class="mt-4">
+                <a href="{{ route('admin.products.download-sample') }}" class="inline-flex items-center gap-2 bg-emerald-600 text-white px-3 py-1.5 rounded-lg text-[10px] font-bold hover:bg-emerald-700 transition-all shadow-sm">
+                    <i class="fa-solid fa-download"></i>
+                    Tải file CSV mẫu (100 sản phẩm)
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{-- Hidden Excel Import Form --}}
+<form id="excel-import-form" action="{{ route('admin.products.import') }}" method="POST" enctype="multipart/form-data" class="hidden">
+    @csrf
+    <input type="file" name="file" id="excel-import-input" accept=".csv, .xlsx, .xls" onchange="if(confirm('Xác nhận nhập danh sách sản phẩm từ file?')) this.form.submit()">
+</form>
 
 <nav class="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400 mb-6">
     <a href="{{ route('admin.products.index') }}" class="hover:text-primary transition-colors">Sản phẩm</a>
@@ -210,6 +249,29 @@
                         </div>
                     </div>
                 </section>
+
+                <!-- Colors -->
+                <section class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden">
+                    <div class="p-6 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+                        <h3 class="text-base font-bold text-slate-900 dark:text-white">Màu sắc sản phẩm</h3>
+                        <button type="button" onclick="addColorRow()" class="text-primary hover:bg-primary/10 px-2 py-1 rounded text-xs font-bold flex items-center gap-1">
+                            <i class="fa-solid fa-circle-plus text-sm"></i>
+                            Thêm màu
+                        </button>
+                    </div>
+                    <div class="p-6 space-y-4" id="colors-container">
+                        @if(old('colors'))
+                            @foreach(old('colors') as $index => $color)
+                            <div class="color-row flex items-center gap-2">
+                                <input name="colors[]" value="{{ $color }}" class="w-full bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-lg focus:ring-primary focus:border-primary text-sm" placeholder="Tên màu (VD: Đen, Trắng, Bạc...)" type="text">
+                                <button type="button" onclick="this.parentElement.remove()" class="text-red-500 hover:text-red-700 transition">
+                                    <i class="fa-solid fa-trash-can"></i>
+                                </button>
+                            </div>
+                            @endforeach
+                        @endif
+                    </div>
+                </section>
                 
                 <!-- Warranty -->
                 <section class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden">
@@ -280,6 +342,19 @@
         `;
         container.appendChild(row);
         specIndex++;
+    }
+
+    function addColorRow() {
+        const container = document.getElementById('colors-container');
+        const row = document.createElement('div');
+        row.className = 'color-row flex items-center gap-2';
+        row.innerHTML = `
+            <input name="colors[]" class="w-full bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-lg focus:ring-primary focus:border-primary text-sm" placeholder="Tên màu (VD: Đen, Trắng, Bạc...)" type="text">
+            <button type="button" onclick="this.parentElement.remove()" class="text-red-500 hover:text-red-700 transition">
+                <i class="fa-solid fa-trash-can"></i>
+            </button>
+        `;
+        container.appendChild(row);
     }
 
     function previewImage(event) {

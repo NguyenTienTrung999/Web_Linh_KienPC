@@ -4,37 +4,161 @@
 
 @section('content')
 <style>
+<style>
+    /* 1. Typography & Text Effects */
+    @keyframes gradient-text {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
+    .gradient-tech-text {
+        background: linear-gradient(90deg, #2badee, #a855f7, #2badee);
+        background-size: 200% auto;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: gradient-text 3s linear infinite;
+    }
+
+    @keyframes glitch {
+        0% { transform: translate(0); }
+        20% { transform: translate(-2px, 2px); }
+        40% { transform: translate(-2px, -2px); }
+        60% { transform: translate(2px, 2px); }
+        80% { transform: translate(2px, -2px); }
+        100% { transform: translate(0); }
+    }
+    .glitch-hover:hover {
+        animation: glitch 0.3s cubic-bezier(.25,.46,.45,.94) both infinite;
+        text-shadow: 2px 0 #ff00c1, -2px 0 #00fff9;
+    }
+
+    /* 2. Background & Overlays */
     .blueprint-grid {
-        background-image: radial-gradient(circle, #e2e8f0 1px, transparent 1px);
-        background-size: 32px 32px;
+        background-image: 
+            linear-gradient(rgba(43, 173, 238, 0.05) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(43, 173, 238, 0.05) 1px, transparent 1px);
+        background-size: 40px 40px;
+    }
+
+    @keyframes float-code {
+        0% { transform: translateY(100%); opacity: 0; }
+        50% { opacity: 0.5; }
+        100% { transform: translateY(-100%); opacity: 0; }
+    }
+    .coding-string {
+        position: absolute;
+        font-family: monospace;
+        font-size: 10px;
+        color: rgba(43, 173, 238, 0.3);
+        white-space: nowrap;
+        pointer-events: none;
+        animation: float-code 10s linear infinite;
+    }
+
+    /* 3. Interactive Buttons */
+    .neon-glow-btn {
+        position: relative;
+        box-shadow: 0 0 15px rgba(43, 173, 238, 0.3);
+        border: 1px solid rgba(43, 173, 238, 0.5);
+        transition: all 0.3s ease;
+    }
+    .neon-glow-btn:hover {
+        box-shadow: 0 0 30px rgba(43, 173, 238, 0.6);
+        background: #2badee;
+        border-color: #fff;
+    }
+
+    .glass-btn {
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        transition: all 0.3s ease;
+    }
+    .glass-btn:hover {
+        background: rgba(255, 255, 255, 0.15);
+        border-color: rgba(255, 255, 255, 0.3);
     }
 </style>
 
-<!-- Hero Banner -->
-<section class="relative h-[600px] flex items-center overflow-hidden">
-    <div class="absolute inset-0 bg-slate-900">
-        <img alt="Banner" class="w-full h-full object-cover opacity-60" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAe6mCDytPoH82BvHYSmB8cts4eFfa4a8dCX9YRzjLf6hUvTVaKq8v9sM0cPJHyeb_ivV-GOmH0aY2RM9W02r8xHdubr8EGKJcz_t93i_r3AItZle0VheR3F23jD0qubCOjrf8jGsrrKbLmAZLrV6WQJvDEbAbbBbm2Ey3s7n_bZi3KtaWX83GCAvQMEVb5uQZ_u52x4rLa8R4D66jH6nHR3vieDajx_hlpMZTA7Jow1tpgETk5apykSbMg-1qgi760vyZluZ0DNfg"/>
-        <div class="absolute inset-0 bg-gradient-to-t from-slate-900 via-transparent to-transparent"></div>
+<!-- Hero Banner Nâng Cấp -->
+<section id="hero-parallax" class="relative h-[700px] lg:h-[800px] flex items-center overflow-hidden bg-slate-950 group">
+    <!-- Nền ảnh với hiệu ứng Parallax -->
+    <div id="hero-bg" class="absolute inset-0 z-0 transition-transform duration-300 ease-out">
+        <img alt="Gaming Setup" class="w-full h-full object-cover opacity-50" src="{{ asset('images/hero-gaming.png') }}"/>
+        <div class="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-950/60 to-transparent"></div>
+        <div class="absolute inset-0 blueprint-grid"></div>
     </div>
-    <div class="relative max-w-[1600px] mx-auto px-4 w-full">
-        <div class="max-w-2xl">
-            <h1 class="text-white text-5xl lg:text-7xl font-black uppercase tracking-tighter mb-6 leading-none animate-slide-up">
-                Nâng Tầm Trải Nghiệm <br/> <span class="text-primary">Công Nghệ</span>
+
+    <!-- Hiệu ứng Coding Strings lơ lửng -->
+    <div class="absolute inset-0 overflow-hidden pointer-events-none z-10 opacity-20">
+        <div class="coding-string" style="left: 10%; animation-delay: 0s;">01011010101101010101</div>
+        <div class="coding-string" style="left: 20%; animation-delay: 3s;">SELECT * FROM gaming_gear</div>
+        <div class="coding-string" style="left: 80%; animation-delay: 1s;">System.out.println("TechFlow");</div>
+        <div class="coding-string" style="left: 90%; animation-delay: 5s;">connect_to_server(192.168.1.1)</div>
+    </div>
+
+    <!-- Nội dung trung tâm -->
+    <div class="relative max-w-[1600px] mx-auto px-6 w-full z-20">
+        <div id="hero-content" class="max-w-2xl transition-transform duration-500 ease-out">
+            <div class="flex items-center gap-3 mb-8 animate-slide-up">
+                <span class="w-12 h-[2px] bg-primary animate-pulse"></span>
+                <span class="text-primary font-black uppercase tracking-[0.4em] text-xs">Phòng Game Của Bạn</span>
+            </div>
+            
+            <h1 class="text-white text-6xl lg:text-8xl font-black uppercase tracking-tighter mb-8 leading-[0.9] animate-slide-up glitch-hover">
+                Nâng Tầm <br/> Trải Nghiệm <br/> <span class="gradient-tech-text">Công Nghệ</span>
             </h1>
-            <p class="text-slate-300 text-lg mb-8 max-w-lg mb-6 leading-relaxed animate-slide-up" style="animation-delay: 0.1s">
-                Khám phá bộ sưu tập linh kiện và phụ kiện gaming được tuyển chọn kỹ lưỡng, mang đến hiệu suất tối ưu cho mọi tác vụ.
+            
+            <p class="text-slate-400 text-lg mb-12 max-w-lg leading-relaxed animate-slide-up" style="animation-delay: 0.1s">
+                Khám phá hệ sinh thái linh kiện Gaming tối tân. Trải nghiệm hiệu suất vượt giới hạn với những công nghệ hàng đầu thế giới.
             </p>
-            <div class="flex flex-wrap gap-4 animate-slide-up" style="animation-delay: 0.2s">
-                <a href="{{ route('store.index') }}" class="bg-primary hover:bg-primary/90 text-white font-black uppercase text-xs tracking-widest py-4 px-8 rounded-lg transition-transform hover:scale-105 inline-block">
-                    Mua Ngay
+            
+            <div class="flex flex-wrap gap-6 animate-slide-up" style="animation-delay: 0.2s">
+                <a href="{{ route('store.index') }}" class="neon-glow-btn px-10 py-5 bg-primary/20 text-white font-black uppercase text-sm tracking-widest rounded-xl overflow-hidden group">
+                    <span class="relative z-10 flex items-center gap-2">
+                        Mua Ngay <i class="fa-solid fa-bolt text-amber-400"></i>
+                    </span>
                 </a>
-                <a href="#featured" class="bg-white/10 hover:bg-white/20 backdrop-blur-md text-white border border-white/20 font-black uppercase text-xs tracking-widest py-4 px-8 rounded-lg transition-transform hover:scale-105 inline-block">
+                <a href="#featured" class="glass-btn px-10 py-5 text-white font-black uppercase text-sm tracking-widest rounded-xl">
                     Tìm Hiểu Thêm
                 </a>
             </div>
         </div>
     </div>
+
+    <!-- HUD Info góc dưới -->
+    <div class="absolute bottom-10 left-10 z-30 hidden md:flex items-center gap-12 animate-fade-in opacity-60 hover:opacity-100 transition-opacity" style="animation-delay: 0.5s">
+        <div class="flex flex-col gap-1 border-l-2 border-primary pl-4">
+            <span class="text-[9px] text-slate-500 font-black uppercase tracking-widest">Trạng thái hệ thống</span>
+            <div class="flex items-center gap-2">
+                <div class="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-ping"></div>
+                <span class="text-white font-mono text-[11px]">ACTIVE_ENCRYPTED</span>
+            </div>
+        </div>
+        <div class="flex flex-col gap-1 border-l-2 border-slate-700 pl-4">
+            <span class="text-[9px] text-slate-500 font-black uppercase tracking-widest">Dữ liệu truyền tải</span>
+            <span class="text-white font-mono text-[11px]">10.4 Gbps</span>
+        </div>
+    </div>
 </section>
+
+<script>
+    // Mouse Parallax Effect
+    document.addEventListener('mousemove', (e) => {
+        const moveX = (e.clientX - window.innerWidth / 2) * 0.01;
+        const moveY = (e.clientY - window.innerHeight / 2) * 0.01;
+        
+        const bg = document.getElementById('hero-bg');
+        const content = document.getElementById('hero-content');
+        
+        if (bg) {
+            bg.style.transform = `translate(${moveX * -1}px, ${moveY * -1}px) scale(1.05)`;
+        }
+        if (content) {
+            content.style.transform = `translate(${moveX}px, ${moveY}px)`;
+        }
+    });
+</script>
 
 
 
@@ -74,7 +198,7 @@
                     </a>
 
                     <!-- Hover-only Add to Cart -->
-                    <button type="button" onclick="addToCart({{ $product->id }})" class="absolute bottom-4 left-4 right-4 bg-slate-900 text-white font-black text-[10px] py-3.5 rounded-xl opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-4 group-hover:translate-y-0 uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-primary z-20 shadow-xl">
+                    <button type="button" onclick="handleAddToCart({{ $product->id }}, {{ json_encode($product->colors) }}, '{{ addslashes($product->name) }}', {{ $product->sale_price ?: $product->price }}, '{{ $product->image ? asset('storage/' . $product->image) : 'https://placehold.co/400x400?text=No+Image' }}')" class="absolute bottom-4 left-4 right-4 bg-slate-900 text-white font-black text-[10px] py-3.5 rounded-xl opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-4 group-hover:translate-y-0 uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-primary z-20 shadow-xl">
                         <i class="fa-solid fa-cart-shopping text-xs"></i> Mua Ngay
                     </button>
                 </div>
@@ -200,7 +324,7 @@
 
                     <!-- Block 3: Action (max 26px) -->
                     <div class="flex items-center justify-between h-[26px] max-h-[26px]">
-                        <button type="button" onclick="addToCart({{ $product->id }})" class="relative flex items-center h-[26px] rounded-full overflow-hidden group/btn pr-3 pl-0 transition-all bg-slate-100 dark:bg-slate-700/50 hover:shadow-md">
+                        <button type="button" onclick="handleAddToCart({{ $product->id }}, {{ json_encode($product->colors) }}, '{{ addslashes($product->name) }}', {{ $product->sale_price ?: $product->price }}, '{{ $product->image ? asset('storage/' . $product->image) : 'https://placehold.co/400x400?text=No+Image' }}')" class="relative flex items-center h-[26px] rounded-full overflow-hidden group/btn pr-3 pl-0 transition-all bg-slate-100 dark:bg-slate-700/50 hover:shadow-md">
                             <div class="absolute left-0 top-0 w-[26px] h-[26px] bg-primary rounded-full transition-all duration-300 ease-in-out group-hover/btn:w-full z-0"></div>
                             <div class="relative z-10 flex items-center gap-1.5 h-full">
                                 <div class="w-[26px] h-[26px] flex items-center justify-center text-white shrink-0">
@@ -304,7 +428,7 @@
                         @endif
                     </div>
                     <div class="flex items-center justify-between h-[26px] max-h-[26px]">
-                        <button type="button" onclick="addToCart({{ $product->id }})" class="relative flex items-center h-[26px] rounded-full overflow-hidden group/btn pr-3 pl-0 transition-all bg-slate-100 dark:bg-slate-700/50 hover:shadow-md">
+                        <button type="button" onclick="handleAddToCart({{ $product->id }}, {{ json_encode($product->colors) }}, '{{ addslashes($product->name) }}', {{ $product->sale_price ?: $product->price }}, '{{ $product->image ? asset('storage/' . $product->image) : 'https://placehold.co/400x400?text=No+Image' }}')" class="relative flex items-center h-[26px] rounded-full overflow-hidden group/btn pr-3 pl-0 transition-all bg-slate-100 dark:bg-slate-700/50 hover:shadow-md">
                             <div class="absolute left-0 top-0 w-[26px] h-[26px] bg-primary rounded-full transition-all duration-300 ease-in-out group-hover/btn:w-full z-0"></div>
                             <div class="relative z-10 flex items-center gap-1.5 h-full">
                                 <div class="w-[26px] h-[26px] flex items-center justify-center text-white shrink-0">

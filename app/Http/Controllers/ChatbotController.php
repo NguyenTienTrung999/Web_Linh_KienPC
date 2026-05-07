@@ -58,26 +58,45 @@ class ChatbotController extends Controller
             QUY TẮC TRÌNH BÀY:
             - Sử dụng danh sách gạch đầu dòng, mỗi sản phẩm một dòng.";
 
-            $response = Http::withoutVerifying()->withHeaders([
-                'Content-Type' => 'application/json',
-            ])->post("https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key={$apiKey}", [
-                'contents' => [
-                    [
-                        'role' => 'user',
+            $response = Http::withoutVerifying()
+                ->timeout(30)
+                ->withHeaders([
+                    'Content-Type' => 'application/json',
+                ])->post("https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key={$apiKey}", [
+                    'system_instruction' => [
                         'parts' => [
-                            ['text' => "System Instruction: {$systemPrompt}\n\nUser Question: {$userMessage}"]
+                            ['text' => $systemPrompt]
                         ]
+                    ],
+                    'contents' => [
+                        [
+                            'role' => 'user',
+                            'parts' => [
+                                ['text' => $userMessage]
+                            ]
+                        ]
+                    ],
+                    'generationConfig' => [
+                        'temperature' => 0.8,
+                        'maxOutputTokens' => 2048,
+                        'topP' => 0.95,
+                    ],
+                    'safetySettings' => [
+                        ['category' => 'HARM_CATEGORY_HARASSMENT', 'threshold' => 'BLOCK_NONE'],
+                        ['category' => 'HARM_CATEGORY_HATE_SPEECH', 'threshold' => 'BLOCK_NONE'],
+                        ['category' => 'HARM_CATEGORY_SEXUALLY_EXPLICIT', 'threshold' => 'BLOCK_NONE'],
+                        ['category' => 'HARM_CATEGORY_DANGEROUS_CONTENT', 'threshold' => 'BLOCK_NONE']
                     ]
-                ],
-                'generationConfig' => [
-                    'temperature' => 0.7,
-                    'maxOutputTokens' => 1024,
-                ]
-            ]);
+                ]);
 
             if ($response->successful()) {
                 $data = $response->json();
+                $finishReason = $data['candidates'][0]['finishReason'] ?? '';
                 $reply = $data['candidates'][0]['content']['parts'][0]['text'] ?? 'Tôi đang suy nghĩ, bạn có thể hỏi lại được không?';
+                
+                if ($finishReason === 'SAFETY') {
+                    $reply .= "\n\n(Lưu ý: Một phần câu trả lời bị ẩn do chính sách an toàn của AI)";
+                }
                 
                 return response()->json([
                     'success' => true,
@@ -85,16 +104,52 @@ class ChatbotController extends Controller
                 ]);
             }
 
+            \Log::error('AI API Error: ' . $response->body());
+            
+            // Fallback to simpler prompt if system_instruction fails or other 400 error
+            if ($response->status() === 400 || $response->status() === 429) {
+                 return $this->fallbackChat($userMessage, $systemPrompt, $apiKey);
+            }
+
             return response()->json([
                 'success' => false,
-                'reply' => 'Lỗi từ AI: ' . ($response->json()['error']['message'] ?? 'Không xác định')
+                'reply' => 'Lỗi từ AI (' . $response->status() . '): ' . ($response->json()['error']['message'] ?? 'Không xác định')
             ]);
 
         } catch (\Exception $e) {
+            \Log::error('Chatbot Exception: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
                 'reply' => 'Lỗi kết nối: ' . $e->getMessage()
             ]);
         }
+    }
+
+    /**
+     * Fallback for older models or API errors.
+     */
+    private function fallbackChat($userMessage, $systemPrompt, $apiKey)
+    {
+        try {
+            $response = Http::withoutVerifying()->timeout(30)->post("https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key={$apiKey}", [
+                'contents' => [
+                    [
+                        'parts' => [
+                            ['text' => "Bạn là trợ lý ảo TechFlow AI. Dựa trên dữ liệu sau:\n{$systemPrompt}\n\nCâu hỏi khách hàng: " . $userMessage]
+                        ]
+                    ]
+                ]
+            ]);
+
+            if ($response->successful()) {
+                $data = $response->json();
+                $reply = $data['candidates'][0]['content']['parts'][0]['text'] ?? 'Tôi đang bận, vui lòng thử lại.';
+                return response()->json(['success' => true, 'reply' => $reply]);
+            }
+        } catch (\Exception $e) {
+            \Log::error('Fallback Chatbot Exception: ' . $e->getMessage());
+        }
+
+        return response()->json(['success' => false, 'reply' => 'Hệ thống AI hiện tại đang bảo trì hoặc hết hạn mức. Vui lòng thử lại sau.']);
     }
 }

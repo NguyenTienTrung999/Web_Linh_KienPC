@@ -53,14 +53,17 @@ class OrderStatusNotification extends Notification
     protected function getMessage()
     {
         if ($this->status === 'pending') {
-            return "Chúc mừng! Bạn đã đặt hàng thành công đơn hàng #" . $this->order->id;
+            return "Chúc mừng! Bạn đã đặt hàng thành công đơn hàng #" . $this->order->id . ". Vui lòng hoàn tất thanh toán.";
         }
         
         $statusLabels = [
-            'processing' => 'đang được xử lý',
-            'shipping' => 'đang được giao',
-            'completed' => 'đã hoàn thành',
+            'processing' => 'đã được xác nhận và đang chờ xử lý',
+            'packing' => 'đang được chuẩn bị hàng',
+            'shipping' => 'đang được giao đến bạn',
+            'completed' => 'đã được giao thành công',
             'cancelled' => 'đã bị hủy',
+            'failed' => 'gặp sự cố khi thanh toán hoặc giao hàng',
+            'refunded' => 'đã được hoàn tiền/trả hàng',
         ];
 
         $label = $statusLabels[$this->status] ?? $this->status;

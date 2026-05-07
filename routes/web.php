@@ -26,12 +26,13 @@ Route::get('/products/{product}', [HomeController::class, 'show'])->name('produc
 Route::get('/search-suggestions', [HomeController::class, 'searchSuggestions'])->name('search.suggestions');
 Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
 Route::post('/cart/add/{product}', [CartController::class, 'add'])->name('cart.add');
-Route::post('/cart/update/{product}', [CartController::class, 'update'])->name('cart.update');
-Route::post('/cart/remove/{product}', [CartController::class, 'remove'])->name('cart.remove');
+Route::post('/cart/update/{id}', [CartController::class, 'update'])->name('cart.update');
+Route::post('/cart/remove/{id}', [CartController::class, 'remove'])->name('cart.remove');
 Route::post('/cart/clear', [CartController::class, 'clear'])->name('cart.clear');
 Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
 Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
 Route::get('/checkout/confirm/{order}', [CheckoutController::class, 'confirm'])->name('checkout.confirm');
+Route::get('/orders/{order}/invoice', [CheckoutController::class, 'invoice'])->name('orders.invoice');
 Route::get('/order/status/{order}', [CheckoutController::class, 'getStatus'])->name('order.status');
 Route::post('/order/clear-cart/{order}', [CheckoutController::class, 'clearCartAfterPayment'])->name('order.clear-cart');
 
@@ -92,6 +93,8 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => ['auth', 'a
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     Route::resource('categories', CategoryController::class)->except(['show']);
+    Route::post('products/import', [ProductController::class, 'import'])->name('products.import');
+    Route::get('products/download-sample', [ProductController::class, 'downloadSample'])->name('products.download-sample');
     Route::resource('products', ProductController::class)->except(['show']);
     Route::resource('orders', OrderController::class)->only(['index', 'show', 'update']);
     Route::post('customers/{customer}/reset-password', [CustomerController::class, 'resetPassword'])->name('customers.reset-password');

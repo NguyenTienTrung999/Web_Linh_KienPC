@@ -8,9 +8,17 @@ use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class CheckoutController extends Controller
 {
+    public function invoice(Order $order)
+    {
+        $order->load(['items.product']);
+        $pdf = Pdf::loadView('pdf.invoice', compact('order'));
+        return $pdf->download('invoice-' . str_pad($order->id, 8, '0', STR_PAD_LEFT) . '.pdf');
+    }
+
     public function index()
     {
         return redirect()->route('cart.index');
@@ -64,7 +72,7 @@ class CheckoutController extends Controller
                 'coupon_id' => $couponId,
                 'coupon_code' => $couponCode,
                 'discount_amount' => $discount,
-                'status' => 'pending',
+                'status' => $request->payment_method === 'cod' ? Order::STATUS_PROCESSING : Order::STATUS_PENDING,
                 'payment_method' => $request->payment_method,
                 'shipping_address' => $request->shipping_address,
                 'note' => $request->note,
@@ -75,12 +83,13 @@ class CheckoutController extends Controller
                 \App\Models\Coupon::where('id', $couponId)->increment('used_count');
             }
 
-            foreach ($cart as $id => $details) {
+            foreach ($cart as $key => $details) {
                 OrderItem::create([
                     'order_id' => $order->id,
-                    'product_id' => $id,
+                    'product_id' => $details['id'],
                     'quantity' => $details['quantity'],
                     'price' => $details['price'],
+                    'color' => $details['color'] ?? null,
                 ]);
             }
 
@@ -102,7 +111,7 @@ class CheckoutController extends Controller
             
             // Send Notification to user
             if (auth()->check()) {
-                auth()->user()->notify(new \App\Notifications\OrderStatusNotification($order, 'pending'));
+                auth()->user()->notify(new \App\Notifications\OrderStatusNotification($order, $order->status));
             }
 
             // For banking: keep cart so user can go back. Cart cleared after payment confirmed.

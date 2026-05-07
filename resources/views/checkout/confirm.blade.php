@@ -101,18 +101,25 @@
                             </div>
                             <h4 class="font-bold text-slate-900 dark:text-white text-sm uppercase">Tóm tắt đơn hàng</h4>
                         </div>
-                        <div class="space-y-2">
+                        <div class="space-y-2 max-h-[320px] overflow-y-auto custom-scrollbar pr-2">
                             @foreach($order->items as $item)
                             <div class="flex justify-between text-sm">
+                            <div class="flex flex-col text-sm">
                                 <span class="text-slate-600 dark:text-slate-400 truncate mr-2">{{ $item->product->name }} x{{ $item->quantity }}</span>
-                                <span class="font-bold text-slate-900 dark:text-white whitespace-nowrap">{{ number_format($item->price * $item->quantity, 0, ',', '.') }}₫</span>
+                                @if($item->color)
+                                    <span class="text-[10px] text-primary font-bold uppercase tracking-widest">Màu: {{ $item->color }}</span>
+                                @endif
+                            </div>
+                            <span class="font-bold text-slate-900 dark:text-white whitespace-nowrap">{{ number_format($item->price * $item->quantity, 0, ',', '.') }}₫</span>
                             </div>
                             @endforeach
-                            <div class="pt-2 mt-2 border-t border-slate-200 dark:border-slate-700 flex justify-between">
-                                <span class="font-bold text-slate-900 dark:text-white">Tổng cộng:</span>
+                        </div>
+                        <div class="pt-2 mt-2 border-t border-slate-200 dark:border-slate-700 flex justify-between items-center">
+                            <span class="font-bold text-slate-900 dark:text-white">Tổng cộng:</span>
+                            <div class="text-right">
                                 <span class="font-black text-primary text-lg">{{ number_format($order->total_price, 0, ',', '.') }}₫</span>
+                                <p class="text-[10px] text-slate-400">(Giá đã bao gồm VAT)</p>
                             </div>
-                            <p class="text-[10px] text-slate-400 text-right">(Giá đã bao gồm VAT)</p>
                         </div>
                     </div>
                 </div>
@@ -136,17 +143,21 @@
             <div class="print:hidden absolute -bottom-24 -left-24 w-64 h-64 bg-emerald-500/5 rounded-full blur-3xl"></div>
 
             {{-- Success Header --}}
-            <div class="relative px-6 py-12 text-center border-b border-slate-50 dark:border-slate-800/50">
-                <div class="w-24 h-24 bg-emerald-500 text-white rounded-full flex items-center justify-center mx-auto mb-6 shadow-xl shadow-emerald-500/20 animate-bounce-subtle">
-                    <i class="fa-solid fa-check text-4xl"></i>
-                </div>
-                <h1 class="text-4xl font-black text-slate-900 dark:text-white mb-4 uppercase tracking-tighter">Đặt hàng thành công!</h1>
-                <p class="text-slate-500 dark:text-slate-400 max-w-lg mx-auto leading-relaxed">
-                    Cảm ơn bạn đã tin tưởng <strong>TechFlow</strong>. Đơn hàng của bạn đã được tiếp nhận và đang trong quá trình xử lý.
-                </p>
-                <div class="mt-8 inline-flex items-center gap-3 px-6 py-2 bg-slate-50 dark:bg-slate-800/50 rounded-full border border-slate-100 dark:border-slate-700">
-                    <span class="text-[10px] font-black uppercase text-slate-400">Mã đơn hàng:</span>
-                    <span class="text-lg font-bold text-primary font-mono select-all">#{{ str_pad($order->id, 8, '0', STR_PAD_LEFT) }}</span>
+            <div class="relative px-6 py-8 md:px-10 border-b border-slate-50 dark:border-slate-800/50 bg-emerald-500/5">
+                <div class="flex flex-col md:flex-row items-center gap-6 md:gap-10">
+                    <div class="w-16 h-16 md:w-20 md:h-20 bg-emerald-500 text-white rounded-2xl flex items-center justify-center shadow-xl shadow-emerald-500/20 animate-bounce-subtle shrink-0">
+                        <i class="fa-solid fa-check text-2xl md:text-3xl"></i>
+                    </div>
+                    <div class="text-center md:text-left flex-1">
+                        <h1 class="text-2xl md:text-3xl font-black text-slate-900 dark:text-white mb-1 uppercase tracking-tighter">Đặt hàng thành công!</h1>
+                        <p class="text-slate-500 dark:text-slate-400 text-xs md:text-sm leading-relaxed max-w-xl">
+                            Cảm ơn bạn đã tin tưởng <strong>TechFlow</strong>. Đơn hàng của bạn đã được tiếp nhận và đang trong quá trình xử lý.
+                        </p>
+                    </div>
+                    <div class="px-5 py-3 bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm shrink-0">
+                        <span class="text-[9px] font-black uppercase text-slate-400 block mb-0.5">Mã đơn hàng</span>
+                        <span class="text-lg font-black text-primary font-mono select-all">#{{ str_pad($order->id, 8, '0', STR_PAD_LEFT) }}</span>
+                    </div>
                 </div>
             </div>
 
@@ -222,6 +233,12 @@
                                         'cancelled' => ['label' => 'Đã hủy', 'color' => 'bg-red-500'],
                                     ];
                                     $st = $statusMap[$order->status] ?? ['label' => $order->status, 'color' => 'bg-slate-500'];
+                                    
+                                    // Override for COD
+                                    if ($order->payment_method === 'cod' && $order->status === 'processing') {
+                                        $st['label'] = 'Chờ thanh toán khi nhận hàng';
+                                        $st['color'] = 'bg-amber-500';
+                                    }
                                 @endphp
                                 <span class="px-3 py-1 rounded-full text-[10px] font-black text-white uppercase {{ $st['color'] }} shadow-sm">
                                     {{ $st['label'] }}
@@ -237,7 +254,7 @@
                         <i class="fa-solid fa-shopping-basket text-primary"></i>
                         <h4 class="font-bold text-slate-900 dark:text-white uppercase tracking-widest text-sm">Tóm tắt đơn hàng</h4>
                     </div>
-                    <div class="p-0 overflow-x-auto">
+                    <div class="p-0 max-h-[420px] overflow-y-auto custom-scrollbar overflow-x-hidden">
                         <table class="w-full text-left">
                             <tbody class="divide-y divide-slate-50 dark:divide-slate-800/50">
                                 @foreach($order->items as $item)
@@ -249,7 +266,12 @@
                                             </div>
                                             <div>
                                                 <p class="text-sm font-bold text-slate-900 dark:text-white leading-tight mb-1">{{ $item->product->name }}</p>
-                                                <p class="text-xs text-slate-400 font-medium">Số lượng: {{ $item->quantity }}</p>
+                                                <div class="flex items-center gap-3">
+                                                    <p class="text-xs text-slate-400 font-medium">Số lượng: {{ $item->quantity }}</p>
+                                                    @if($item->color)
+                                                        <span class="text-[10px] text-primary font-bold uppercase tracking-widest">Màu: {{ $item->color }}</span>
+                                                    @endif
+                                                </div>
                                             </div>
                                         </div>
                                     </td>
@@ -259,30 +281,28 @@
                                 </tr>
                                 @endforeach
                             </tbody>
-                            <tfoot class="bg-slate-50/50 dark:bg-slate-800/20">
-                                <tr class="bg-primary/5">
-                                    <td class="py-4 px-6 text-right">
-                                        <span class="text-sm font-black text-slate-900 dark:text-white uppercase tracking-wider">Tổng cộng:</span>
-                                        <p class="text-[10px] text-slate-400">(Giá đã bao gồm VAT)</p>
-                                    </td>
-                                    <td class="py-4 px-6 text-right">
-                                        <span class="text-2xl font-black text-primary">{{ number_format($order->total_price, 0, ',', '.') }}₫</span>
-                                    </td>
-                                </tr>
-                            </tfoot>
                         </table>
+                    </div>
+                    <div class="bg-primary/5 border-t border-slate-100 dark:border-slate-800 px-6 py-4 flex justify-between items-center">
+                        <div>
+                            <span class="text-sm font-black text-slate-900 dark:text-white uppercase tracking-wider">Tổng cộng:</span>
+                            <p class="text-[10px] text-slate-400">(Giá đã bao gồm VAT)</p>
+                        </div>
+                        <div class="text-right">
+                            <span class="text-2xl font-black text-primary">{{ number_format($order->total_price, 0, ',', '.') }}₫</span>
+                        </div>
                     </div>
                 </div>
 
                 {{-- Action Buttons --}}
-                <div class="print:hidden flex flex-col sm:flex-row gap-4 justify-center pt-6">
-                    <a href="{{ route('home') }}" class="px-8 py-4 bg-slate-900 dark:bg-white dark:text-slate-900 text-white font-black rounded-2xl transition-all hover:scale-105 hover:shadow-xl flex items-center justify-center gap-2">
+                <div class="print:hidden flex flex-wrap items-center justify-center gap-3 pt-6">
+                    <a href="{{ route('home') }}" class="px-6 py-4 bg-slate-900 dark:bg-white dark:text-slate-900 text-white font-black rounded-2xl transition-all hover:scale-105 hover:shadow-xl flex items-center justify-center gap-2 text-sm whitespace-nowrap">
                         <i class="fa-solid fa-house"></i> TIẾP TỤC MUA SẮM
                     </a>
-                    <button onclick="window.print()" class="px-8 py-4 bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 font-black rounded-2xl transition-all hover:scale-105 hover:bg-slate-50 dark:hover:bg-slate-700 flex items-center justify-center gap-2 text-slate-700 dark:text-white">
-                        <i class="fa-solid fa-print"></i> IN ĐƠN HÀNG
-                    </button>
-                    <a href="{{ route('order.tracking') }}" class="px-8 py-4 bg-primary/10 text-primary font-black rounded-2xl transition-all hover:scale-105 hover:bg-primary/20 flex items-center justify-center gap-2">
+                    <a href="{{ route('orders.invoice', $order->id) }}" target="_blank" class="px-6 py-4 bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 font-black rounded-2xl transition-all hover:scale-105 hover:bg-slate-50 dark:hover:bg-slate-700 flex items-center justify-center gap-2 text-slate-700 dark:text-white text-sm whitespace-nowrap">
+                        <i class="fa-solid fa-file-pdf text-red-500"></i> XUẤT HÓA ĐƠN
+                    </a>
+                    <a href="{{ route('order.tracking') }}" class="px-6 py-4 bg-primary/10 text-primary font-black rounded-2xl transition-all hover:scale-105 hover:bg-primary/20 flex items-center justify-center gap-2 text-sm whitespace-nowrap">
                         <i class="fa-solid fa-magnifying-glass"></i> TRA CỨU ĐƠN HÀNG
                     </a>
                 </div>

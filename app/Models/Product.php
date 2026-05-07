@@ -36,6 +36,7 @@ class Product extends Model
         'is_active',
         'is_featured',
         'gallery',
+        'colors',
     ];
 
     protected $casts = [
@@ -43,6 +44,7 @@ class Product extends Model
         'gallery' => 'array',
         'is_active' => 'boolean',
         'is_featured' => 'boolean',
+        'colors' => 'array',
     ];
 
     /**

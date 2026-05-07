@@ -10,12 +10,14 @@
             <p class="text-slate-500 text-sm font-medium">Quản lý và xử lý đơn hàng từ khách hàng</p>
         </div>
         <div class="flex items-center gap-3">
-            <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden flex items-center p-1">
-                <a href="{{ route('admin.orders.index') }}" class="px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-colors {{ !request('status') ? 'bg-primary text-white' : 'text-slate-500 hover:bg-slate-50' }}">Tất cả</a>
-                <a href="{{ route('admin.orders.index', ['status' => 'pending']) }}" class="px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-colors {{ request('status') == 'pending' ? 'bg-amber-500 text-white' : 'text-slate-500 hover:bg-slate-50' }}">Chờ xử lý</a>
-                <a href="{{ route('admin.orders.index', ['status' => 'processing']) }}" class="px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-colors {{ request('status') == 'processing' ? 'bg-primary text-white' : 'text-slate-500 hover:bg-slate-50' }}">Đang giao</a>
-                <a href="{{ route('admin.orders.index', ['status' => 'completed']) }}" class="px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-colors {{ request('status') == 'completed' ? 'bg-emerald-500 text-white' : 'text-slate-500 hover:bg-slate-50' }}">Hoàn tất</a>
-                <a href="{{ route('admin.orders.index', ['status' => 'cancelled']) }}" class="px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-colors {{ request('status') == 'cancelled' ? 'bg-red-500 text-white' : 'text-slate-500 hover:bg-slate-50' }}">Đã hủy</a>
+            <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl overflow-x-auto flex items-center p-1 no-scrollbar">
+                <a href="{{ route('admin.orders.index') }}" class="whitespace-nowrap px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-colors {{ !request('status') ? 'bg-primary text-white' : 'text-slate-500 hover:bg-slate-50' }}">Tất cả</a>
+                <a href="{{ route('admin.orders.index', ['status' => 'pending']) }}" class="whitespace-nowrap px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-colors {{ request('status') == 'pending' ? 'bg-amber-500 text-white' : 'text-slate-500 hover:bg-slate-50' }}">Chờ thanh toán</a>
+                <a href="{{ route('admin.orders.index', ['status' => 'processing']) }}" class="whitespace-nowrap px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-colors {{ request('status') == 'processing' ? 'bg-blue-500 text-white' : 'text-slate-500 hover:bg-slate-50' }}">Chờ xác nhận</a>
+                <a href="{{ route('admin.orders.index', ['status' => 'packing']) }}" class="whitespace-nowrap px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-colors {{ request('status') == 'packing' ? 'bg-indigo-500 text-white' : 'text-slate-500 hover:bg-slate-50' }}">Đang chuẩn bị</a>
+                <a href="{{ route('admin.orders.index', ['status' => 'shipping']) }}" class="whitespace-nowrap px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-colors {{ request('status') == 'shipping' ? 'bg-purple-500 text-white' : 'text-slate-500 hover:bg-slate-50' }}">Đang giao</a>
+                <a href="{{ route('admin.orders.index', ['status' => 'completed']) }}" class="whitespace-nowrap px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-colors {{ request('status') == 'completed' ? 'bg-emerald-500 text-white' : 'text-slate-500 hover:bg-slate-50' }}">Hoàn tất</a>
+                <a href="{{ route('admin.orders.index', ['status' => 'cancelled']) }}" class="whitespace-nowrap px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-colors {{ request('status') == 'cancelled' ? 'bg-rose-500 text-white' : 'text-slate-500 hover:bg-slate-50' }}">Đã hủy</a>
             </div>
         </div>
     </div>
@@ -60,17 +62,8 @@
                             <span class="text-sm font-black text-slate-900 dark:text-white font-mono">{{ number_format($order->total_price, 0, ',', '.') }}₫</span>
                         </td>
                         <td class="px-8 py-5 text-center">
-                            @php
-                                $statusMap = [
-                                    'pending' => ['label' => 'Chờ xử lý', 'color' => 'bg-amber-500/10 text-amber-600 border-amber-500/20'],
-                                    'processing' => ['label' => 'Đang giao', 'color' => 'bg-primary/10 text-primary border-primary/20'],
-                                    'completed' => ['label' => 'Hoàn tất', 'color' => 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20'],
-                                    'cancelled' => ['label' => 'Đã hủy', 'color' => 'bg-red-500/10 text-red-600 border-red-500/20'],
-                                ];
-                                $st = $statusMap[$order->status] ?? ['label' => $order->status, 'color' => 'bg-slate-500/10 text-slate-500'];
-                            @endphp
-                            <span class="px-2.5 py-1 rounded-lg text-[9px] font-black uppercase border {{ $st['color'] }}">
-                                {{ $st['label'] }}
+                            <span class="px-2.5 py-1 rounded-lg text-[9px] font-black uppercase border {{ $order->getStatusColor() }}">
+                                {{ $order->getStatusLabel() }}
                             </span>
                         </td>
                         <td class="px-8 py-5 text-right">

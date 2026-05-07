@@ -32,8 +32,12 @@
                         </td>
                         <td class="p-4 max-w-[300px]">
                             <p class="font-bold text-slate-900 dark:text-slate-100 text-sm">{{ $details['name'] }}</p>
-                            <!-- Giả lập bảo hành -->
-                            <p class="text-xs text-slate-500 mt-1">Bảo hành: <span class="text-primary font-medium">36 Tháng</span></p>
+                            <div class="flex flex-col gap-1 mt-1">
+                                @if(isset($details['color']) && $details['color'])
+                                    <p class="text-xs text-slate-500">Màu sắc: <span class="text-primary font-bold">{{ $details['color'] }}</span></p>
+                                @endif
+                                <p class="text-xs text-slate-500">Bảo hành: <span class="text-primary font-medium">36 Tháng</span></p>
+                            </div>
                         </td>
                         <td class="p-4 text-right">
                             <p class="font-bold text-slate-900 dark:text-slate-100 whitespace-nowrap text-sm">{{ number_format($details['price'], 0, ',', '.') }} VNĐ</p>
@@ -41,11 +45,11 @@
                         <td class="p-4 w-32">
                             <div class="flex items-center justify-center">
                                 <div class="flex items-center border border-slate-200 dark:border-slate-700 rounded bg-slate-50 dark:bg-slate-900 h-8">
-                                    <button onclick="updateQuantity({{ $id }}, -1)" class="w-8 h-full text-slate-500 hover:text-slate-700 flex items-center justify-center">
+                                    <button onclick="updateQuantity('{{ $id }}', -1)" class="w-8 h-full text-slate-500 hover:text-slate-700 flex items-center justify-center">
                                         <i class="fa-solid fa-minus text-[10px]"></i>
                                     </button>
                                     <input type="text" class="w-8 text-center text-sm bg-transparent border-none focus:ring-0 item-quantity p-0 font-medium text-slate-900 dark:text-white pointer-events-none" value="{{ $details['quantity'] }}" readonly>
-                                    <button onclick="updateQuantity({{ $id }}, 1)" class="w-8 h-full text-slate-500 hover:text-slate-700 flex items-center justify-center">
+                                    <button onclick="updateQuantity('{{ $id }}', 1)" class="w-8 h-full text-slate-500 hover:text-slate-700 flex items-center justify-center">
                                         <i class="fa-solid fa-plus text-[10px]"></i>
                                     </button>
                                 </div>
@@ -55,7 +59,7 @@
                             <p class="font-bold text-slate-900 dark:text-slate-100 whitespace-nowrap item-total text-sm">{{ number_format($details['price'] * $details['quantity'], 0, ',', '.') }} VNĐ</p>
                         </td>
                         <td class="p-4 text-center w-12">
-                            <button onclick="removeFromCart({{ $id }})" class="text-slate-400 hover:text-red-500 transition-colors w-8 h-8 flex items-center justify-center rounded-full hover:bg-red-50 dark:hover:bg-red-900/20">
+                            <button onclick="removeFromCart('{{ $id }}')" class="text-slate-400 hover:text-red-500 transition-colors w-8 h-8 flex items-center justify-center rounded-full hover:bg-red-50 dark:hover:bg-red-900/20">
                                 <i class="fa-regular fa-trash-can"></i>
                             </button>
                         </td>
@@ -198,14 +202,6 @@
                             <button type="submit" class="w-full bg-primary hover:bg-primary/90 text-white font-bold py-3 px-4 rounded text-sm flex justify-center items-center gap-2 transition-colors">
                                 <i class="fa-solid fa-check"></i> ĐẶT HÀNG
                             </button>
-                            <div class="grid grid-cols-2 gap-2 mt-1">
-                                <button type="button" class="bg-[#0f212f] hover:bg-black text-white font-bold py-2 rounded text-xs flex justify-center items-center gap-2 transition-colors">
-                                    <i class="fa-solid fa-print"></i> IN BÁO GIÁ
-                                </button>
-                                <button type="button" class="bg-[#0f212f] hover:bg-black text-white font-bold py-2 rounded text-xs flex justify-center items-center gap-2 transition-colors">
-                                    <i class="fa-solid fa-file-excel"></i> TẢI FILE EXCEL
-                                </button>
-                            </div>
                         </div>
                     </div>
                 </div>

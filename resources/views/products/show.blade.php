@@ -94,6 +94,25 @@
                         <span>Bảo hành: {{ $product->warranty_period }}</span>
                     </div>
                 @endif
+
+                @if($product->colors && is_array($product->colors) && count($product->colors) > 0)
+                    <div class="mt-6">
+                        <p class="text-sm font-bold text-slate-900 dark:text-white mb-3 flex items-center gap-2">
+                            <i class="fa-solid fa-palette text-primary"></i>
+                            Chọn màu sắc:
+                        </p>
+                        <div class="flex flex-wrap gap-3">
+                            @foreach($product->colors as $color)
+                                <button type="button" 
+                                        onclick="selectColor('{{ $color }}', this)"
+                                        class="color-option px-4 py-2 rounded-lg border-2 border-slate-200 dark:border-slate-700 text-sm font-medium transition-all hover:border-primary dark:hover:border-primary text-slate-700 dark:text-slate-300">
+                                    {{ $color }}
+                                </button>
+                            @endforeach
+                        </div>
+                        <input type="hidden" id="selected-color" value="">
+                    </div>
+                @endif
             </div>
             
             <div class="prose dark:prose-invert max-w-none">
@@ -119,10 +138,14 @@
 
             <!-- Actions -->
             <div class="flex flex-col gap-4">
-                <button type="button" onclick="addToCart({{ $product->id }})" class="w-full flex h-14 cursor-pointer items-center justify-center rounded-xl bg-primary text-white gap-2 text-base font-bold transition-all hover:bg-primary/90">
+                <button type="button" 
+                        onclick="const color = document.getElementById('selected-color')?.value; if(document.querySelectorAll('.color-option').length > 0 && !color) { showToast('Vui lòng chọn màu sắc sản phẩm!', 'warning'); return; } addToCart({{ $product->id }}, 1, false, color)" 
+                        class="w-full flex h-14 cursor-pointer items-center justify-center rounded-xl bg-primary text-white gap-2 text-base font-bold transition-all hover:bg-primary/90">
                     <i class="fa-solid fa-cart-shopping"></i> Thêm vào giỏ hàng
                 </button>
-                <button type="button" onclick="addToCart({{ $product->id }}, 1, true)" class="w-full flex h-14 cursor-pointer items-center justify-center rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 text-base font-bold transition-all hover:opacity-90">
+                <button type="button" 
+                        onclick="const color = document.getElementById('selected-color')?.value; if(document.querySelectorAll('.color-option').length > 0 && !color) { showToast('Vui lòng chọn màu sắc sản phẩm!', 'warning'); return; } addToCart({{ $product->id }}, 1, true, color)" 
+                        class="w-full flex h-14 cursor-pointer items-center justify-center rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 text-base font-bold transition-all hover:opacity-90">
                     Mua ngay
                 </button>
             </div>
@@ -253,6 +276,21 @@
         currentIndex = (currentIndex + 1) % images.length;
         changeImage(currentIndex);
     }
+
+    function selectColor(color, element) {
+        // Remove active class from all options
+        document.querySelectorAll('.color-option').forEach(opt => {
+            opt.classList.remove('border-primary', 'bg-primary/5', 'text-primary');
+            opt.classList.add('border-slate-200', 'dark:border-slate-700', 'text-slate-700', 'dark:text-slate-300');
+        });
+
+        // Add active class to selected option
+        element.classList.remove('border-slate-200', 'dark:border-slate-700', 'text-slate-700', 'dark:text-slate-300');
+        element.classList.add('border-primary', 'bg-primary/5', 'text-primary');
+
+        // Update hidden input
+        document.getElementById('selected-color').value = color;
+    }
     
     // Mouse drag scroll for thumbnails
     const scrollContainer = document.getElementById('thumb-scroll');
@@ -300,6 +338,19 @@
                 }
             }, true);
         });
+    }
+    // Color selection logic
+    function selectColor(color, element) {
+        document.getElementById('selected-color').value = color;
+        
+        // Update UI
+        document.querySelectorAll('.color-option').forEach(btn => {
+            btn.classList.remove('border-primary', 'bg-primary/5', 'text-primary');
+            btn.classList.add('border-slate-200', 'dark:border-slate-700', 'text-slate-700', 'dark:text-slate-300');
+        });
+        
+        element.classList.remove('border-slate-200', 'dark:border-slate-700', 'text-slate-700', 'dark:text-slate-300');
+        element.classList.add('border-primary', 'bg-primary/5', 'text-primary');
     }
 </script>
 @endsection

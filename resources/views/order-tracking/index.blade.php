@@ -39,7 +39,7 @@
                         <span class="text-[10px] font-black uppercase opacity-70 block mb-1">Trạng thái đơn hàng</span>
                         <div class="flex items-center gap-2">
                             <span class="text-xl font-black uppercase tracking-widest tracking-tighter">
-                                @if($order->status === 'pending') Chờ xử lý @elseif($order->status === 'processing') Đang xử lý @elseif($order->status === 'shipping') Đang giao hàng @elseif($order->status === 'completed') Hoàn tất @else Đã hủy @endif
+                                {{ $order->getStatusLabel() }}
                             </span>
                         </div>
                     </div>

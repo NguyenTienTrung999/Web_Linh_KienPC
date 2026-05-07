@@ -35,7 +35,10 @@ class UserProfileController extends Controller
         $order->load(['items.product']);
         
         return response()->json([
-            'order' => $order,
+            'order' => array_merge($order->toArray(), [
+                'status_label' => $order->getStatusLabel(),
+                'status_color' => $order->getStatusColor()
+            ]),
             'items' => $order->items
         ]);
     }
@@ -56,8 +59,13 @@ class UserProfileController extends Controller
             'customer_name' => 'required|string|max:255',
             'customer_phone' => 'required|string|max:20',
             'shipping_address' => 'required|string|max:255',
+            'payment_method' => 'nullable|string|in:cod,banking',
             'note' => 'nullable|string|max:500',
         ]);
+
+        if (isset($validated['payment_method']) && $validated['payment_method'] === 'cod' && $order->status === 'pending') {
+            $order->status = Order::STATUS_PROCESSING;
+        }
 
         $order->update($validated);
 
@@ -71,9 +79,9 @@ class UserProfileController extends Controller
             return response()->json(['error' => 'Unauthorized'], 403);
         }
 
-        // Only allow cancellation if pending
-        if ($order->status !== 'pending') {
-            return response()->json(['error' => 'Chỉ có thể hủy đơn hàng đang ở trạng thái Chờ xử lý'], 422);
+        // Only allow cancellation if pending, processing, or packing
+        if (!in_array($order->status, [Order::STATUS_PENDING, Order::STATUS_PROCESSING, Order::STATUS_PACKING])) {
+            return response()->json(['error' => 'Không thể hủy đơn hàng ở giai đoạn này'], 422);
         }
 
         $order->update(['status' => 'cancelled']);

@@ -37,24 +37,8 @@
                                 <td class="p-4 text-sm text-slate-600 dark:text-slate-400 whitespace-nowrap">{{ $order->created_at->format('d/m/Y H:i') }}</td>
                                 <td class="p-4 text-sm font-bold text-right whitespace-nowrap">{{ number_format($order->total_price, 0, ',', '.') }}đ</td>
                                 <td class="p-4 text-center whitespace-nowrap">
-                                    @php
-                                        $statusClasses = [
-                                            'pending' => 'bg-yellow-100 text-yellow-600 dark:bg-yellow-900/30 dark:text-yellow-400',
-                                            'processing' => 'bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400',
-                                            'shipping' => 'bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400',
-                                            'completed' => 'bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400',
-                                            'cancelled' => 'bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400',
-                                        ];
-                                        $statusLabels = [
-                                            'pending' => 'Chờ xử lý',
-                                            'processing' => 'Đang giao',
-                                            'shipping' => 'Đang giao hàng',
-                                            'completed' => 'Hoàn tất',
-                                            'cancelled' => 'Đã hủy',
-                                        ];
-                                    @endphp
-                                    <span class="px-3 py-1 rounded-full {{ $statusClasses[$order->status] ?? 'bg-slate-100 text-slate-600' }} text-[11px] font-bold">
-                                        {{ $statusLabels[$order->status] ?? $order->status }}
+                                    <span class="px-3 py-1 rounded-full {{ $order->getStatusColor() }} text-[11px] font-bold border">
+                                        {{ $order->getStatusLabel() }}
                                     </span>
                                 </td>
                                 <td class="p-4 text-right">
@@ -67,6 +51,12 @@
                                                     <span>Đặt lại</span>
                                                 </button>
                                             </form>
+                                        @endif
+                                        @if($order->status === 'pending')
+                                            <a href="{{ route('checkout.confirm', $order->id) }}" class="inline-flex items-center gap-2 text-emerald-600 hover:text-emerald-700 transition-colors text-sm font-bold">
+                                                <i class="fa-solid fa-credit-card text-xs"></i>
+                                                <span>Thanh toán</span>
+                                            </a>
                                         @endif
                                         <button onclick="showOrderDetails({{ $order->id }})" class="inline-flex items-center gap-2 text-primary hover:text-primary/80 transition-colors text-sm font-bold">
                                             <span>Chi tiết</span>
@@ -130,7 +120,10 @@
                         <div id="modalOrderStatus">...</div>
                     </div>
                     <div>
-                        <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Thanh toán</p>
+                        <div class="flex justify-between items-center mb-2">
+                            <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Thanh toán</p>
+                            <button id="changePaymentBtn" onclick="toggleEditShipping()" class="text-primary text-[10px] font-black uppercase tracking-widest hover:underline hidden">Thay đổi</button>
+                        </div>
                         <p class="text-sm font-bold text-slate-700 dark:text-slate-300" id="modalPaymentMethod">...</p>
                     </div>
                 </div>
@@ -153,13 +146,32 @@
                     </div>
 
                     <!-- Edit Mode -->
-                    <div id="shippingEditMode" class="hidden space-y-3">
-                        <input type="text" id="editName" class="w-full text-sm p-2 rounded border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800" placeholder="Họ tên">
-                        <input type="text" id="editPhone" class="w-full text-sm p-2 rounded border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800" placeholder="Số điện thoại">
-                        <input type="text" id="editAddress" class="w-full text-sm p-2 rounded border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800" placeholder="Địa chỉ">
-                        <div class="flex gap-2 justify-end mt-2">
-                            <button onclick="toggleEditShipping()" class="text-xs px-3 py-1 text-slate-500 hover:text-slate-700">Hủy</button>
-                            <button onclick="saveShippingInfo()" class="text-xs px-4 py-1 bg-primary text-white rounded font-bold">Lưu thay đổi</button>
+                    <div id="shippingEditMode" class="hidden space-y-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="text-[10px] font-black text-slate-400 uppercase mb-1 block">Người nhận</label>
+                                <input type="text" id="editName" class="w-full text-sm p-2 rounded border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800" placeholder="Họ tên">
+                            </div>
+                            <div>
+                                <label class="text-[10px] font-black text-slate-400 uppercase mb-1 block">Số điện thoại</label>
+                                <input type="text" id="editPhone" class="w-full text-sm p-2 rounded border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800" placeholder="Số điện thoại">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="text-[10px] font-black text-slate-400 uppercase mb-1 block">Địa chỉ nhận hàng</label>
+                            <input type="text" id="editAddress" class="w-full text-sm p-2 rounded border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800" placeholder="Địa chỉ">
+                        </div>
+                        <div>
+                            <label class="text-[10px] font-black text-slate-400 uppercase mb-1 block">Phương thức thanh toán</label>
+                            <select id="editPaymentMethod" class="w-full text-sm p-2 rounded border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800">
+                                <option value="banking">Chuyển khoản (SePay)</option>
+                                <option value="cod">Tiền mặt (COD)</option>
+                            </select>
+                            <p class="text-[10px] text-amber-600 mt-1 font-medium">* Lưu ý: Đổi sang COD đơn hàng sẽ tự động được xác nhận.</p>
+                        </div>
+                        <div class="flex gap-2 justify-end mt-2 pt-2 border-t border-slate-100 dark:border-slate-800">
+                            <button onclick="toggleEditShipping()" class="text-xs px-3 py-1 text-slate-500 hover:text-slate-700 font-bold uppercase tracking-wider">Hủy</button>
+                            <button onclick="saveShippingInfo()" class="text-xs px-4 py-2 bg-primary text-white rounded-lg font-bold uppercase tracking-wider shadow-sm">Lưu thay đổi</button>
                         </div>
                     </div>
                 </div>
@@ -191,12 +203,26 @@
                         </div>
                     </div>
                     
-                    <!-- Cancel Button -->
-                    <div id="cancelOrderWrapper" class="hidden">
-                        <button onclick="confirmCancelOrder()" class="w-full py-3 border-2 border-red-500 text-red-500 font-bold rounded-xl hover:bg-red-50 transition-all flex items-center justify-center gap-2">
-                            <i class="fa-solid fa-ban"></i>
-                            Hủy đơn hàng này
-                        </button>
+                    <!-- Action Buttons -->
+                    <div class="flex flex-col gap-3">
+                        <div id="payOrderWrapper" class="hidden">
+                            <a id="payOrderBtn" href="#" class="w-full py-4 bg-emerald-500 hover:bg-emerald-600 text-white font-black rounded-2xl transition-all flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/20 uppercase tracking-widest text-xs">
+                                <i class="fa-solid fa-credit-card"></i>
+                                Thanh toán ngay
+                            </a>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3" id="secondaryActions">
+                            <div id="invoiceOrderWrapper" class="hidden">
+                                <a id="invoiceOrderBtn" href="#" target="_blank" class="w-full py-3 border-2 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-white font-bold rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-all flex items-center justify-center gap-2 text-[10px] uppercase tracking-widest whitespace-nowrap">
+                                    <i class="fa-solid fa-file-pdf text-red-500"></i> Xuất hóa đơn
+                                </a>
+                            </div>
+                            <div id="cancelOrderWrapper" class="hidden">
+                                <button onclick="confirmCancelOrder()" class="w-full py-3 border border-red-200 text-red-500 font-bold rounded-xl hover:bg-red-50 transition-all flex items-center justify-center gap-2 text-[10px] uppercase tracking-widest whitespace-nowrap">
+                                    <i class="fa-solid fa-ban"></i> Hủy đơn hàng
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -238,35 +264,53 @@
                     document.getElementById('editShippingBtn').classList.remove('hidden');
                 }
 
-                // Show Cancel button only if pending
-                if (order.status === 'pending') {
+                // Show Cancel button if pending, processing or packing
+                if (['pending', 'processing', 'packing'].includes(order.status)) {
                     document.getElementById('cancelOrderWrapper').classList.remove('hidden');
                 } else {
                     document.getElementById('cancelOrderWrapper').classList.add('hidden');
                 }
 
-                const statusLabels = {
-                    'pending': 'Chờ xử lý',
-                    'processing': 'Đang giao',
-                    'shipping': 'Đang giao hàng',
-                    'completed': 'Hoàn tất',
-                    'cancelled': 'Đã hủy'
-                };
-                const statusClasses = {
-                    'pending': 'bg-yellow-100 text-yellow-600',
-                    'processing': 'bg-blue-100 text-blue-600',
-                    'shipping': 'bg-purple-100 text-purple-600',
-                    'completed': 'bg-green-100 text-green-600',
-                    'cancelled': 'bg-red-100 text-red-600'
-                };
+                // Show Invoice button if not cancelled/failed
+                if (!['cancelled', 'failed'].includes(order.status)) {
+                    document.getElementById('invoiceOrderWrapper').classList.remove('hidden');
+                    document.getElementById('invoiceOrderBtn').href = `/orders/${order.id}/invoice`;
+                } else {
+                    document.getElementById('invoiceOrderWrapper').classList.add('hidden');
+                }
+
+                // Adjust grid columns
+                const secondaryActions = document.getElementById('secondaryActions');
+                const cancelVisible = !document.getElementById('cancelOrderWrapper').classList.contains('hidden');
+                const invoiceVisible = !document.getElementById('invoiceOrderWrapper').classList.contains('hidden');
+                
+                if (cancelVisible && invoiceVisible) {
+                    secondaryActions.className = 'grid grid-cols-2 gap-3';
+                } else {
+                    secondaryActions.className = 'grid grid-cols-1 gap-3';
+                }
+
+                // Show Pay/Change buttons only if pending
+                if (order.status === 'pending') {
+                    document.getElementById('payOrderWrapper').classList.remove('hidden');
+                    document.getElementById('changePaymentBtn').classList.remove('hidden');
+                    document.getElementById('payOrderBtn').href = `/checkout/confirm/${order.id}`;
+                } else {
+                    document.getElementById('payOrderWrapper').classList.add('hidden');
+                    document.getElementById('changePaymentBtn').classList.add('hidden');
+                }
 
                 document.getElementById('modalOrderStatus').innerHTML = `
-                    <span class="px-3 py-1 rounded-full ${statusClasses[order.status]} text-xs font-bold">
-                        ${statusLabels[order.status]}
+                    <span class="px-3 py-1 rounded-full ${order.status_color} text-xs font-bold border">
+                        ${order.status_label}
                     </span>
                 `;
 
-                document.getElementById('modalPaymentMethod').innerText = order.payment_method.toUpperCase();
+                const paymentMethodLabels = {
+                    'banking': 'Chuyển khoản (SePay)',
+                    'cod': 'Tiền mặt (COD)'
+                };
+                document.getElementById('modalPaymentMethod').innerText = paymentMethodLabels[order.payment_method] || order.payment_method.toUpperCase();
                 
                 // View Data
                 document.getElementById('modalCustomerName').innerText = order.customer_name;
@@ -277,6 +321,7 @@
                 document.getElementById('editName').value = order.customer_name;
                 document.getElementById('editPhone').value = order.customer_phone;
                 document.getElementById('editAddress').value = order.shipping_address;
+                document.getElementById('editPaymentMethod').value = order.payment_method;
 
                 // Products
                 let productListHtml = '';
@@ -286,14 +331,15 @@
                     subtotal += itemTotal;
                     productListHtml += `
                         <div class="flex items-center gap-4">
-                            <div class="h-16 w-16 rounded-lg bg-slate-100 dark:bg-slate-800 overflow-hidden shrink-0">
-                                <img src="${item.product.image ? '/storage/' + item.product.image : '/images/placeholder.png'}" alt="${item.product.name}" class="w-full h-full object-cover">
+                            <div class="h-16 w-16 rounded-lg bg-slate-100 dark:bg-slate-800 overflow-hidden shrink-0 border border-slate-100 dark:border-slate-700">
+                                <img src="${item.product.image ? '/storage/' + item.product.image : 'https://placehold.co/200x200?text=Product'}" alt="${item.product.name}" class="w-full h-full object-contain p-2">
                             </div>
                             <div class="flex-1">
-                                <p class="text-sm font-bold text-slate-900 dark:text-white line-clamp-1">${item.product.name}</p>
-                                <p class="text-xs text-slate-500">${new Intl.NumberFormat('vi-VN').format(item.price)}đ x ${item.quantity}</p>
+                                <p class="text-sm font-bold text-slate-900 dark:text-white line-clamp-1 leading-tight mb-1">${item.product.name}</p>
+                                ${item.color ? `<p class="text-[10px] text-primary font-bold mb-1 uppercase tracking-widest">Màu: ${item.color}</p>` : ''}
+                                <p class="text-[10px] text-slate-500 font-bold uppercase tracking-widest">${new Intl.NumberFormat('vi-VN').format(item.price)}đ x ${item.quantity}</p>
                             </div>
-                            <div class="text-sm font-bold text-slate-900 dark:text-white">
+                            <div class="text-sm font-black text-slate-900 dark:text-white font-mono">
                                 ${new Intl.NumberFormat('vi-VN').format(itemTotal)}đ
                             </div>
                         </div>
@@ -333,6 +379,7 @@
             customer_name: document.getElementById('editName').value,
             customer_phone: document.getElementById('editPhone').value,
             shipping_address: document.getElementById('editAddress').value,
+            payment_method: document.getElementById('editPaymentMethod').value,
             _token: '{{ csrf_token() }}',
             _method: 'PUT'
         };

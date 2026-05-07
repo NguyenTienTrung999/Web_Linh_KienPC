@@ -245,7 +245,7 @@
                         @endif
                     </div>
                     <div class="flex items-center justify-between h-[26px] max-h-[26px]">
-                        <button type="button" onclick="addToCart({{ $product->id }})" class="relative flex items-center h-[26px] rounded-full overflow-hidden group/btn pr-3 pl-0 transition-all bg-slate-100 dark:bg-slate-700/50 hover:shadow-md">
+                        <button type="button" onclick="handleAddToCart({{ $product->id }}, {{ json_encode($product->colors) }}, '{{ addslashes($product->name) }}', {{ $product->sale_price ?: $product->price }}, '{{ $product->image ? asset('storage/' . $product->image) : 'https://placehold.co/400x400?text=No+Image' }}')" class="relative flex items-center h-[26px] rounded-full overflow-hidden group/btn pr-3 pl-0 transition-all bg-slate-100 dark:bg-slate-700/50 hover:shadow-md">
                             <div class="absolute left-0 top-0 w-[26px] h-[26px] bg-primary rounded-full transition-all duration-300 ease-in-out group-hover/btn:w-full z-0"></div>
                             <div class="relative z-10 flex items-center gap-1.5 h-full">
                                 <div class="w-[26px] h-[26px] flex items-center justify-center text-white shrink-0">

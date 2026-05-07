@@ -171,12 +171,22 @@
                         <div class="mt-6 border-t border-slate-200 dark:border-slate-800 pt-6">
                             <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Ảnh phụ (Gallery)</label>
                             
+                            {{-- Hidden input to store paths of images to be deleted --}}
+                            <div id="deleted-gallery-container"></div>
+
                             @if($product->gallery && is_array($product->gallery) && count($product->gallery) > 0)
-                            <div class="mb-4 text-sm text-slate-500">Các ảnh phụ hiện tại (Tải thêm ảnh mới sẽ được giữ nguyên ảnh cũ):</div>
+                            <div class="mb-4 text-sm text-slate-500">Các ảnh phụ hiện tại (Di chuột để xóa):</div>
                             <div class="grid grid-cols-3 md:grid-cols-5 gap-4 mb-4">
-                                @foreach($product->gallery as $galImage)
-                                <div class="aspect-square rounded border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 p-2">
+                                @foreach($product->gallery as $index => $galImage)
+                                <div class="group relative aspect-square rounded border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 p-2 overflow-hidden">
                                     <img src="{{ asset('storage/' . $galImage) }}" class="w-full h-full object-contain rounded">
+                                    
+                                    {{-- Delete Button --}}
+                                    <button type="button" 
+                                            onclick="removeExistingGalleryImage('{{ $galImage }}', this.parentElement)"
+                                            class="absolute top-1 right-1 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all hover:bg-red-600 shadow-lg">
+                                        <i class="fa-solid fa-xmark text-xs"></i>
+                                    </button>
                                 </div>
                                 @endforeach
                             </div>
@@ -237,6 +247,32 @@
                         <div class="flex flex-wrap gap-2 text-slate-500 text-xs mt-1">
                             Phân cách thẻ bằng dấu phẩy.
                         </div>
+                    </div>
+                </section>
+
+                <!-- Colors -->
+                <section class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden">
+                    <div class="p-6 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+                        <h3 class="text-base font-bold text-slate-900 dark:text-white">Màu sắc sản phẩm</h3>
+                        <button type="button" onclick="addColorRow()" class="text-primary hover:bg-primary/10 px-2 py-1 rounded text-xs font-bold flex items-center gap-1">
+                            <i class="fa-solid fa-circle-plus text-sm"></i>
+                            Thêm màu
+                        </button>
+                    </div>
+                    <div class="p-6 space-y-4" id="colors-container">
+                        @php
+                            $colors = old('colors', $product->colors ?? []);
+                        @endphp
+                        @if(is_array($colors) && count($colors) > 0)
+                            @foreach($colors as $index => $color)
+                            <div class="color-row flex items-center gap-2">
+                                <input name="colors[]" value="{{ $color }}" class="w-full bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-lg focus:ring-primary focus:border-primary text-sm" placeholder="Tên màu (VD: Đen, Trắng, Bạc...)" type="text">
+                                <button type="button" onclick="this.parentElement.remove()" class="text-red-500 hover:text-red-700 transition">
+                                    <i class="fa-solid fa-trash-can"></i>
+                                </button>
+                            </div>
+                            @endforeach
+                        @endif
                     </div>
                 </section>
                 
@@ -311,6 +347,19 @@
         specIndex++;
     }
 
+    function addColorRow() {
+        const container = document.getElementById('colors-container');
+        const row = document.createElement('div');
+        row.className = 'color-row flex items-center gap-2';
+        row.innerHTML = `
+            <input name="colors[]" class="w-full bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-lg focus:ring-primary focus:border-primary text-sm" placeholder="Tên màu (VD: Đen, Trắng, Bạc...)" type="text">
+            <button type="button" onclick="this.parentElement.remove()" class="text-red-500 hover:text-red-700 transition">
+                <i class="fa-solid fa-trash-can"></i>
+            </button>
+        `;
+        container.appendChild(row);
+    }
+
     function previewImage(event) {
         const input = event.target;
         const preview = document.getElementById('image-preview');
@@ -352,6 +401,23 @@
                 }
                 reader.readAsDataURL(file);
             });
+        }
+    }
+    function removeExistingGalleryImage(imagePath, element) {
+        if (confirm('Bạn có chắc chắn muốn xóa ảnh này không?')) {
+            // Add to hidden inputs to track deletion for backend
+            const container = document.getElementById('deleted-gallery-container');
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'deleted_gallery[]';
+            input.value = imagePath;
+            container.appendChild(input);
+            
+            // Remove from UI with animation
+            element.style.transition = 'all 0.3s ease';
+            element.style.transform = 'scale(0.8)';
+            element.style.opacity = '0';
+            setTimeout(() => element.remove(), 300);
         }
     }
 </script>
