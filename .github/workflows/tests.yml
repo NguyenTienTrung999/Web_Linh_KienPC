@@ -39,6 +39,11 @@ jobs:
       - name: Copy environment file
         run: cp .env.example .env
 
+      - name: Create SQLite Database
+        run: |
+          mkdir -p database
+          touch database/database.sqlite
+
       - name: Generate app key
         run: php artisan key:generate
         
@@ -47,6 +52,9 @@ jobs:
 
       - name: Build assets (Vite)
         run: npm run build
+
+      - name: Run Migrations
+        run: php artisan migrate --force
 
       - name: Execute tests
         run: php artisan test
