@@ -11,7 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        \Illuminate\Support\Facades\DB::statement('ALTER TABLE products MODIFY price DECIMAL(15, 2) NOT NULL, MODIFY sale_price DECIMAL(15, 2) NULL');
+        Schema::table('products', function (Blueprint $table) {
+            $table->decimal('price', 15, 2)->change();
+            $table->decimal('sale_price', 15, 2)->nullable()->change();
+        });
     }
 
     /**
@@ -19,6 +22,9 @@ return new class extends Migration
      */
     public function down(): void
     {
-        \Illuminate\Support\Facades\DB::statement('ALTER TABLE products MODIFY price DECIMAL(10, 2) NOT NULL, MODIFY sale_price DECIMAL(10, 2) NULL');
+        Schema::table('products', function (Blueprint $table) {
+            $table->decimal('price', 10, 2)->change();
+            $table->decimal('sale_price', 10, 2)->nullable()->change();
+        });
     }
 };
