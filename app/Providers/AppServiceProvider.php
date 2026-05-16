@@ -19,6 +19,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Skip database queries when running in console/tests to avoid boot failures
+        if ($this->app->runningInConsole()) {
+            return;
+        }
+
         // Use View::composer but ensure database queries run only once per request
         \Illuminate\Support\Facades\View::composer('*', function ($view) {
             static $data = null;
