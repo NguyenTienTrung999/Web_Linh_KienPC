@@ -143,6 +143,32 @@
         .animate-bounce-subtle {
             animation: bounce-subtle 2s infinite ease-in-out;
         }
+
+        /* Compact Header Styles */
+        header {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .header-compact #top-row {
+            height: 0;
+            opacity: 0;
+            overflow: hidden;
+            border-bottom-width: 0;
+        }
+
+        .header-compact #bottom-row {
+            height: 80px;
+            overflow: visible !important;
+        }
+
+        .header-compact #compact-content {
+            display: flex;
+            overflow: visible !important;
+        }
+
+        .header-compact #normal-bottom-content {
+            display: none;
+        }
     </style>
 </head>
 
@@ -189,10 +215,10 @@
 
     <!-- Top NavBar from Stitch -->
     <!-- Header Section -->
-    <header
+    <header id="main-header"
         class="fixed top-0 w-full z-[1000] bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 shadow-sm antialiased">
         <!-- Top Row -->
-        <div class="h-[90px] border-b border-slate-100 dark:border-slate-800">
+        <div id="top-row" class="h-[90px] border-b border-slate-100 dark:border-slate-800 transition-all duration-300">
             <div class="max-w-[1600px] mx-auto h-full px-4 flex items-center justify-between gap-8">
                 <!-- Logo -->
                 <a href="{{ route('home') }}" class="shrink-0 flex items-center">
@@ -318,12 +344,194 @@
             </div>
         </div>
 
+        @php
+            $categoryIcons = [
+                'bàn phím' => 'fa-keyboard',
+                'chuột' => 'fa-mouse',
+                'loa' => 'fa-volume-high',
+                'tai nghe' => 'fa-headphones',
+                'màn hình' => 'fa-desktop',
+                'webcam' => 'fa-video',
+                'microphone' => 'fa-microphone',
+            ];
+        @endphp
+
         <!-- Bottom Row -->
-        <div
-            class="h-[60px] bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 hidden md:block">
-            <div class="max-w-[1600px] mx-auto h-full px-4 flex items-start gap-10">
-                <!-- Category Menu Container -->
-                <div class="relative group">
+        <div id="bottom-row"
+            class="h-[60px] bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 hidden md:block transition-all duration-300">
+            <div class="max-w-[1600px] mx-auto h-full px-4 flex items-center">
+                
+                <!-- Compact Content (Matches Full Design Styling) -->
+                <div id="compact-content" class="hidden w-full items-center justify-between gap-4">
+                    <!-- Compact Category -->
+                    <div class="relative group">
+                        <a href="{{ route('store.index') }}"
+                            class="h-[48px] flex items-center gap-3 px-6 bg-primary text-white font-semibold uppercase text-[14px] tracking-widest hover:bg-primary/90 transition-all rounded-xl focus:outline-none" style="font-size:14px !important; font-weight:600 !important">
+                            <i class="fa-solid fa-bars text-sm group-hover:rotate-90 transition-transform"></i>
+                            <span class="whitespace-nowrap">Danh mục sản phẩm</span>
+                        </a>
+                        
+                        <!-- Dropdown Menu (Full Version with Flyouts) -->
+                        <div
+                            class="absolute top-full left-0 w-72 bg-white dark:bg-slate-900 shadow-2xl rounded-xl border border-slate-200 dark:border-slate-800 py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-[2000] transform translate-y-2 group-hover:translate-y-0">
+                            @foreach($globalCategories as $cat)
+                                <div class="relative group/sub">
+                                    <a href="{{ route('store.index', ['categories' => [$cat->id]]) }}"
+                                        class="flex items-center justify-between px-5 py-3.5 text-[13px] font-bold text-slate-700 dark:text-slate-300 group-hover/sub:bg-primary group-hover/sub:text-white transition-all">
+                                        <span class="flex items-center gap-3">
+                                            @php
+                                                $iconClass = 'fa-cube';
+                                                foreach($categoryIcons as $keyword => $icon) {
+                                                    if (str_contains(mb_strtolower($cat->name), $keyword)) {
+                                                        $iconClass = $icon;
+                                                        break;
+                                                    }
+                                                }
+                                            @endphp
+                                            <i class="fa-solid {{ $iconClass }} w-5 text-center text-slate-400 group-hover/sub:text-white"></i>
+                                            {{ $cat->name }}
+                                        </span>
+                                        <i class="fa-solid fa-chevron-right text-[10px] opacity-50"></i>
+                                    </a>
+
+                                    <!-- Flyout Menu (Level 2 - Matches Full Header) -->
+                                    <div
+                                        class="absolute top-0 left-full ml-2 w-[550px] bg-white dark:bg-slate-900 shadow-[0_20px_50px_rgba(0,0,0,0.15)] rounded-2xl border border-slate-200 dark:border-slate-800 p-8 opacity-0 invisible group-hover/sub:opacity-100 group-hover/sub:visible transition-all duration-300 z-[2001] flex gap-12 transform -translate-x-4 group-hover/sub:translate-x-0">
+                                        <!-- Brands Section -->
+                                        <div class="flex-1">
+                                            <div class="mb-6 flex">
+                                                <h4 class="relative bg-primary text-white text-[11px] font-black uppercase tracking-wider px-5 py-2.5 rounded-l-lg flex items-center gap-2 shadow-lg shadow-primary/20 after:content-[''] after:absolute after:left-full after:top-0 after:h-full after:w-4 after:bg-primary after:[clip-path:polygon(0_0,0_100%,100%_100%)]">
+                                                    <i class="fa-solid fa-layer-group text-[10px] opacity-80"></i>
+                                                    {{ $cat->name }} theo hãng
+                                                </h4>
+                                            </div>
+                                            <div class="grid grid-cols-2 gap-x-6 gap-y-3">
+                                                @php
+                                                    $brandIds = $brandCategoryMap[$cat->id] ?? collect();
+                                                    $catBrands = $globalBrands->whereIn('id', $brandIds);
+                                                @endphp
+
+                                                @forelse($catBrands as $brand)
+                                                    <a href="{{ route('store.index', ['categories' => [$cat->id], 'brands' => [$brand->id]]) }}"
+                                                        class="text-sm text-slate-600 dark:text-slate-400 hover:text-primary hover:translate-x-1 transition-all flex items-center gap-3 group/item">
+                                                        <div
+                                                            class="w-1.5 h-1.5 rounded-full bg-slate-300 group-hover/item:bg-primary transition-colors">
+                                                        </div>
+                                                        {{ $brand->name }}
+                                                    </a>
+                                                @empty
+                                                    <div class="text-xs text-slate-400 italic py-2">Chưa có hãng nào</div>
+                                                @endforelse
+                                            </div>
+                                        </div>
+
+                                        <!-- Price Section -->
+                                        <div class="w-56">
+                                            <div class="mb-6 flex">
+                                                <h4 class="relative bg-slate-800 dark:bg-slate-700 text-white text-[11px] font-black uppercase tracking-wider px-5 py-2.5 rounded-l-lg flex items-center gap-2 shadow-lg after:content-[''] after:absolute after:left-full after:top-0 after:h-full after:w-4 after:bg-slate-800 dark:after:bg-slate-700 after:[clip-path:polygon(0_0,0_100%,100%_100%)]">
+                                                    <i class="fa-solid fa-tags text-[10px] opacity-80"></i>
+                                                    Khoảng giá
+                                                </h4>
+                                            </div>
+                                            <div class="flex flex-col gap-3">
+                                                <a href="{{ route('store.index', ['categories' => [$cat->id], 'min_price' => 0, 'max_price' => 1000000]) }}"
+                                                    class="text-sm text-slate-600 dark:text-slate-400 hover:text-primary hover:translate-x-1 transition-all flex items-center gap-2 group/p">
+                                                    <i
+                                                        class="fa-solid fa-tags text-[10px] opacity-0 group-hover/p:opacity-100 transition-all"></i>
+                                                    Dưới 1 triệu
+                                                </a>
+                                                <a href="{{ route('store.index', ['categories' => [$cat->id], 'min_price' => 1000000, 'max_price' => 3000000]) }}"
+                                                    class="text-sm text-slate-600 dark:text-slate-400 hover:text-primary hover:translate-x-1 transition-all flex items-center gap-2 group/p">
+                                                    <i
+                                                        class="fa-solid fa-tags text-[10px] opacity-0 group-hover/p:opacity-100 transition-all"></i>
+                                                    1 triệu - 3 triệu
+                                                </a>
+                                                <a href="{{ route('store.index', ['categories' => [$cat->id], 'min_price' => 3000000, 'max_price' => 4000000]) }}"
+                                                    class="text-sm text-slate-600 dark:text-slate-400 hover:text-primary hover:translate-x-1 transition-all flex items-center gap-2 group/p">
+                                                    <i
+                                                        class="fa-solid fa-tags text-[10px] opacity-0 group-hover/p:opacity-100 transition-all"></i>
+                                                    3 triệu - 4 triệu
+                                                </a>
+                                                <a href="{{ route('store.index', ['categories' => [$cat->id], 'min_price' => 4000000]) }}"
+                                                    class="text-sm text-slate-600 dark:text-slate-400 hover:text-primary hover:translate-x-1 transition-all flex items-center gap-2 group/p">
+                                                    <i
+                                                        class="fa-solid fa-tags text-[10px] opacity-0 group-hover/p:opacity-100 transition-all"></i>
+                                                    Trên 4 triệu
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+
+                    <!-- Compact Search (Exact copy of top row style) -->
+                    <div class="flex-1 max-w-[720px] relative items-center">
+                        <form action="{{ route('store.index') }}" method="GET" class="w-full relative">
+                            <input name="search" id="search-input-compact" value="{{ request('search') }}" autocomplete="off"
+                                class="w-full bg-slate-100 dark:bg-slate-800 border-none rounded-full py-3.5 pl-6 pr-14 focus:ring-2 focus:ring-primary text-sm outline-none dark:text-white shadow-inner"
+                                placeholder="Bạn cần tìm linh kiện gì?" type="text" />
+                            <button type="submit" class="absolute right-1 top-1/2 -translate-y-1/2 w-11 h-11 bg-primary text-white rounded-full flex items-center justify-center hover:bg-primary/90 transition-colors">
+                                <i class="fa-solid fa-magnifying-glass text-sm"></i>
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Compact Actions (Matches Top Row with Text) -->
+                    <div class="flex items-center gap-4">
+                        <!-- Phone -->
+                        <a href="tel:0329346849" class="hidden xl:flex items-center gap-3 group">
+                            <div class="w-10 h-10 bg-primary/10 text-primary rounded-full flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all duration-300">
+                                <i class="fa-solid fa-phone text-xs"></i>
+                            </div>
+                            <div class="flex flex-col">
+                                <span class="text-[9px] font-bold text-slate-400 uppercase leading-none mb-1">Liên hệ ngay</span>
+                                <span class="text-xs font-black text-slate-900 dark:text-white">0329.346.849</span>
+                            </div>
+                        </a>
+
+                        <!-- Cart -->
+                        <a href="{{ route('cart.index') }}" class="relative w-10 h-10 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-full flex items-center justify-center hover:bg-primary hover:text-white transition-all duration-300">
+                            <i class="fa-solid fa-cart-shopping text-xs"></i>
+                            <span id="cart-count-compact" class="absolute -top-1 -right-1 bg-red-500 text-white text-[9px] font-bold px-1 py-0.5 rounded-full border border-white">
+                                {{ count(session('cart', [])) }}
+                            </span>
+                        </a>
+
+                        <!-- User Account -->
+                        @guest
+                            <a href="{{ route('custom.login') }}"
+                                class="flex items-center gap-2 text-slate-600 dark:text-slate-300 hover:text-primary transition-colors group">
+                                <div
+                                    class="w-10 h-10 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all duration-300">
+                                    <i class="fa-solid fa-user text-xs"></i>
+                                </div>
+                                <div class="hidden lg:flex flex-col">
+                                    <span class="text-[9px] font-bold text-slate-400 uppercase leading-none">Tài khoản</span>
+                                    <span class="text-xs font-bold text-slate-900 dark:text-white">Đăng nhập</span>
+                                </div>
+                            </a>
+                        @else
+                            <div class="relative group">
+                                <button class="flex items-center gap-2 text-slate-600 dark:text-slate-300 hover:text-primary transition-colors focus:outline-none">
+                                    <div class="w-10 h-10 bg-primary/10 text-primary rounded-full flex items-center justify-center">
+                                        <i class="fa-solid fa-user text-xs"></i>
+                                    </div>
+                                    <div class="hidden lg:flex flex-col items-start">
+                                        <span class="text-[9px] font-bold text-slate-400 uppercase leading-none">Xin chào</span>
+                                        <span class="text-xs font-bold text-slate-900 dark:text-white line-clamp-1 max-w-[80px]">{{ Auth::user()->name }}</span>
+                                    </div>
+                                </button>
+                            </div>
+                        @endguest
+                    </div>
+                </div>
+
+                <!-- Normal Bottom Content -->
+                <div id="normal-bottom-content" class="w-full flex items-start gap-10">
+                    <!-- Category Menu Container -->
+                    <div class="relative group">
                     <!-- Category Menu Button (Link to Store) -->
                     <a href="{{ route('store.index') }}"
                         class="h-[48px] flex items-center gap-3 px-6 bg-primary text-white font-semibold uppercase text-[14px] tracking-widest hover:bg-primary/90 transition-all rounded-xl mb-[12px] focus:outline-none" style="font-size:14px !important; font-weight:600 !important">
@@ -334,22 +542,11 @@
                     <!-- Dropdown Menu (Level 1) -->
                     <div
                         class="absolute top-[48px] left-0 w-72 bg-white dark:bg-slate-900 shadow-2xl rounded-xl border border-slate-200 dark:border-slate-800 py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-[100] transform translate-y-2 group-hover:translate-y-0">
-                        @php
-                            $categoryIcons = [
-                                'bàn phím' => 'fa-keyboard',
-                                'chuột' => 'fa-mouse',
-                                'loa' => 'fa-volume-high',
-                                'tai nghe' => 'fa-headphones',
-                                'màn hình' => 'fa-desktop',
-                                'webcam' => 'fa-video',
-                                'microphone' => 'fa-microphone',
-                            ];
-                        @endphp
 
                         @foreach($globalCategories as $cat)
                             <div class="relative group/sub">
                                 <a href="{{ route('store.index', ['categories' => [$cat->id]]) }}"
-                                    class="flex items-center justify-between px-5 py-3.5 text-[13px] font-bold text-slate-700 dark:text-slate-300 hover:bg-primary hover:text-white transition-all">
+                                    class="flex items-center justify-between px-5 py-3.5 text-[13px] font-bold text-slate-700 dark:text-slate-300 group-hover/sub:bg-primary group-hover/sub:text-white transition-all">
                                     <span class="flex items-center gap-3">
                                         @php
                                             $iconClass = 'fa-cube';
@@ -371,11 +568,12 @@
                                     class="absolute top-0 left-full ml-2 w-[550px] bg-white dark:bg-slate-900 shadow-[0_20px_50px_rgba(0,0,0,0.15)] rounded-2xl border border-slate-200 dark:border-slate-800 p-8 opacity-0 invisible group-hover/sub:opacity-100 group-hover/sub:visible transition-all duration-300 z-[101] flex gap-12 transform -translate-x-4 group-hover/sub:translate-x-0">
                                     <!-- Brands Section -->
                                     <div class="flex-1">
-                                        <h4
-                                            class="text-[11px] font-black uppercase tracking-widest text-primary mb-6 pb-2 border-b border-slate-100 dark:border-slate-800 flex items-center gap-2">
-                                            <span class="w-1.5 h-4 bg-primary rounded-full"></span>
-                                            {{ $cat->name }} theo hãng
-                                        </h4>
+                                        <div class="mb-6 flex">
+                                            <h4 class="relative bg-primary text-white text-[11px] font-black uppercase tracking-wider px-5 py-2.5 rounded-l-lg flex items-center gap-2 shadow-lg shadow-primary/20 after:content-[''] after:absolute after:left-full after:top-0 after:h-full after:w-4 after:bg-primary after:[clip-path:polygon(0_0,0_100%,100%_100%)]">
+                                                <i class="fa-solid fa-layer-group text-[10px] opacity-80"></i>
+                                                {{ $cat->name }} theo hãng
+                                            </h4>
+                                        </div>
                                         <div class="grid grid-cols-2 gap-x-6 gap-y-3">
                                             @php
                                                 $brandIds = $brandCategoryMap[$cat->id] ?? collect();
@@ -397,12 +595,13 @@
                                     </div>
 
                                     <!-- Price Section -->
-                                    <div class="w-48">
-                                        <h4
-                                            class="text-[11px] font-black uppercase tracking-widest text-primary mb-6 pb-2 border-b border-slate-100 dark:border-slate-800 flex items-center gap-2">
-                                            <span class="w-1.5 h-4 bg-primary rounded-full"></span>
-                                            Khoảng giá
-                                        </h4>
+                                    <div class="w-56">
+                                        <div class="mb-6 flex">
+                                            <h4 class="relative bg-slate-800 dark:bg-slate-700 text-white text-[11px] font-black uppercase tracking-wider px-5 py-2.5 rounded-l-lg flex items-center gap-2 shadow-lg after:content-[''] after:absolute after:left-full after:top-0 after:h-full after:w-4 after:bg-slate-800 dark:after:bg-slate-700 after:[clip-path:polygon(0_0,0_100%,100%_100%)]">
+                                                <i class="fa-solid fa-tags text-[10px] opacity-80"></i>
+                                                Khoảng giá
+                                            </h4>
+                                        </div>
                                         <div class="flex flex-col gap-3">
                                             <a href="{{ route('store.index', ['categories' => [$cat->id], 'min_price' => 0, 'max_price' => 1000000]) }}"
                                                 class="text-sm text-slate-600 dark:text-slate-400 hover:text-primary hover:translate-x-1 transition-all flex items-center gap-2 group/p">
@@ -457,6 +656,19 @@
             </div>
         </div>
     </header>
+
+    <script>
+        // Sticky Header Logic
+        window.addEventListener('scroll', function() {
+            const header = document.getElementById('main-header');
+            const scrollThreshold = 100;
+            if (window.scrollY > scrollThreshold) {
+                header.classList.add('header-compact');
+            } else {
+                header.classList.remove('header-compact');
+            }
+        });
+    </script>
 
 
     <!-- Main Content -->
@@ -674,7 +886,9 @@
                 if (data.success) {
                     // Update header count
                     const cartCount = document.getElementById('cart-count');
+                    const cartCountCompact = document.getElementById('cart-count-compact');
                     if (cartCount) cartCount.innerText = data.cartCount;
+                    if (cartCountCompact) cartCountCompact.innerText = data.cartCount;
 
                     showToast(data.message);
 
@@ -711,6 +925,11 @@
                         card.style.zIndex = '500'; // Đè lên tất cả các thẻ khác khi hover
                         popover.classList.remove('hidden');
                         popover.classList.add('flex');
+                        
+                        // Fix for containing blocks (like backdrop-blur or transform)
+                        // Move popover to body so fixed positioning is relative to viewport
+                        document.body.appendChild(popover);
+                        
                         setTimeout(() => popover.style.opacity = '1', 10);
                     });
 
@@ -720,26 +939,34 @@
                         setTimeout(() => {
                             popover.classList.add('hidden');
                             popover.classList.remove('flex');
+                            // Move popover back to card
+                            card.appendChild(popover);
                         }, 200);
                     });
 
                     trigger.addEventListener('mousemove', (e) => {
                         const popoverWidth = 350;
-                        const xOffset = 20;
-                        const yOffset = -20;
+                        const xOffset = 5;
+                        const yOffset = 5; // Khoảng cách từ con trỏ đến cạnh dưới của bảng
                         
                         let x = e.clientX + xOffset;
-                        let y = e.clientY + yOffset;
+                        // Tính toán vị trí Y để bảng nằm TRÊN con trỏ
+                        let y = e.clientY - popover.offsetHeight - yOffset;
                         
                         // Kiểm tra nếu bảng vượt quá mép phải màn hình
                         if (x + popoverWidth > window.innerWidth) {
                             x = e.clientX - popoverWidth - xOffset;
                         }
                         
+                        // Kiểm tra nếu bảng vượt quá mép trên màn hình (đẩy xuống dưới nếu không đủ chỗ)
+                        if (y < 10) {
+                            y = e.clientY + yOffset;
+                        }
+                        
                         popover.style.position = 'fixed';
                         popover.style.left = x + 'px';
                         popover.style.top = y + 'px';
-                        popover.style.zIndex = '9999';
+                        popover.style.zIndex = '99999';
                     });
                 });
             };
@@ -749,7 +976,10 @@
             window.addEventListener('contentUpdated', handlePopover);
 
             // Search Suggestions Logic
-            const searchInput = document.getElementById('search-input');
+            const searchInputs = [
+                document.getElementById('search-input'),
+                document.getElementById('search-input-compact')
+            ];
             const searchSuggestions = document.getElementById('search-suggestions');
             const suggestionResults = document.getElementById('suggestion-results');
             const viewAllContainer = document.getElementById('view-all-container');
@@ -757,14 +987,21 @@
             const searchQueryDisplay = document.getElementById('search-query-display');
             let debounceTimer;
 
-            if (searchInput) {
-                searchInput.addEventListener('input', function() {
+            searchInputs.forEach(input => {
+                if (!input) return;
+                input.addEventListener('input', function() {
                     clearTimeout(debounceTimer);
                     const query = this.value.trim();
 
                     if (query.length < 2) {
                         searchSuggestions.classList.add('hidden');
                         return;
+                    }
+
+                    // Move suggestions dropdown to the active input's container
+                    const parent = this.parentElement;
+                    if (searchSuggestions.parentElement !== parent) {
+                        parent.appendChild(searchSuggestions);
                     }
 
                     debounceTimer = setTimeout(() => {
@@ -806,14 +1043,15 @@
                             });
                     }, 300);
                 });
+            });
 
-                // Close suggestions when clicking outside
-                document.addEventListener('click', function(e) {
-                    if (!searchInput.contains(e.target) && !searchSuggestions.contains(e.target)) {
-                        searchSuggestions.classList.add('hidden');
-                    }
-                });
-            }
+            // Close suggestions when clicking outside
+            document.addEventListener('click', function(e) {
+                const isInputClick = searchInputs.some(input => input && input.contains(e.target));
+                if (!isInputClick && !searchSuggestions.contains(e.target)) {
+                    searchSuggestions.classList.add('hidden');
+                }
+            });
         });
     </script>
     <!-- AI Chatbot Widget -->

@@ -196,28 +196,46 @@ class ProductController extends Controller
         $header = fgetcsv($fileHandle);
         
         $importedCount = 0;
+        $rowNumber = 1; // Header is row 1
+
+        // Optimization: Cache all categories and brands to avoid N+1 inside the loop
+        $allCategories = Category::all()->pluck('id', 'name')->mapWithKeys(function($id, $name) {
+            return [strtolower($name) => $id];
+        })->toArray();
+        
+        $allBrands = Brand::all()->pluck('id', 'name')->mapWithKeys(function($id, $name) {
+            return [strtolower($name) => $id];
+        })->toArray();
+
+        $defaultCategoryId = !empty($allCategories) ? reset($allCategories) : null;
 
         // Start transaction for safety
         \DB::beginTransaction();
 
         try {
             while (($data = fgetcsv($fileHandle)) !== false) {
+                $rowNumber++;
+                
                 // Column Mapping:
                 // 0: Name, 1: Category Name, 2: Brand Name, 3: Price, 4: Sale Price, 
                 // 5: Stock, 6: Description, 7: Specs (key:val,key2:val2), 
                 // 8: Main Image, 9: Gallery (img1,img2), 10: Tags (tag1,tag2), 11: Warranty
                 
-                if (count($data) < 1) continue;
+                if (empty($data) || count($data) < 1 || empty(trim($data[0] ?? ''))) {
+                    continue; // Skip empty rows or rows without a name
+                }
 
                 // 1. Resolve Category
-                $categoryName = trim($data[1] ?? '');
-                $category = Category::where('name', 'like', $categoryName)->first();
-                $categoryId = $category ? $category->id : Category::first()->id;
+                $categoryName = strtolower(trim($data[1] ?? ''));
+                $categoryId = $allCategories[$categoryName] ?? $defaultCategoryId;
+
+                if (!$categoryId) {
+                    throw new \Exception("Dòng {$rowNumber}: Không tìm thấy danh mục và không có danh mục mặc định.");
+                }
 
                 // 2. Resolve Brand
-                $brandName = trim($data[2] ?? '');
-                $brand = !empty($brandName) ? Brand::where('name', 'like', $brandName)->first() : null;
-                $brandId = $brand ? $brand->id : null;
+                $brandName = strtolower(trim($data[2] ?? ''));
+                $brandId = $allBrands[$brandName] ?? null;
 
                 // 3. Parse Specs (format key:value,key2:value2)
                 $specsStr = trim($data[7] ?? '');
@@ -239,13 +257,18 @@ class ProductController extends Controller
                 $galleryStr = trim($data[9] ?? '');
                 $gallery = !empty($galleryStr) ? array_map('trim', explode(',', $galleryStr)) : [];
 
+                // 5. Parse Prices and Stock
+                $price = (float) str_replace(['.', ','], '', $data[3] ?? 0);
+                $salePrice = (!empty($data[4])) ? (float) str_replace(['.', ','], '', $data[4]) : null;
+                $stock = (int) ($data[5] ?? 0);
+
                 Product::create([
-                    'name' => trim($data[0] ?? 'Sản phẩm mới'),
+                    'name' => trim($data[0]),
                     'category_id' => $categoryId,
                     'brand_id' => $brandId,
-                    'price' => (float) str_replace(['.', ','], '', $data[3] ?? 0),
-                    'sale_price' => (!empty($data[4])) ? (float) str_replace(['.', ','], '', $data[4]) : null,
-                    'stock_quantity' => (int) ($data[5] ?? 0),
+                    'price' => $price,
+                    'sale_price' => $salePrice,
+                    'stock_quantity' => $stock,
                     'description' => $data[6] ?? '',
                     'specs' => $specs,
                     'image' => trim($data[8] ?? ''),
@@ -262,7 +285,7 @@ class ProductController extends Controller
         } catch (\Exception $e) {
             \DB::rollBack();
             \Log::error('Product Import Error: ' . $e->getMessage());
-            return redirect()->back()->with('error', 'Lỗi khi nhập dữ liệu: ' . $e->getMessage() . ' tại dòng ' . ($importedCount + 2));
+            return redirect()->back()->with('error', 'Lỗi tại dòng ' . $rowNumber . ': ' . $e->getMessage());
         } finally {
             fclose($fileHandle);
         }

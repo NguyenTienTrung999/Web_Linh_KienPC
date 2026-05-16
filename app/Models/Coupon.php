@@ -23,4 +23,24 @@ class Coupon extends Model
         'valid_to' => 'datetime',
         'is_active' => 'boolean',
     ];
+
+    public function isExpired()
+    {
+        return $this->valid_to && $this->valid_to->isPast();
+    }
+
+    public function isFull()
+    {
+        return $this->usage_limit && $this->used_count >= $this->usage_limit;
+    }
+
+    public function isValid()
+    {
+        if (!$this->is_active) return false;
+        if ($this->isExpired()) return false;
+        if ($this->isFull()) return false;
+        if ($this->valid_from && $this->valid_from->isFuture()) return false;
+        
+        return true;
+    }
 }

@@ -1,17 +1,31 @@
 @extends('layouts.app')
 
-@section('title', 'Cửa hàng')
+@php
+    $activeCategory = null;
+    if (request()->has('categories') && is_array(request('categories')) && count(request('categories')) === 1) {
+        $activeCategoryId = request('categories')[0];
+        $activeCategory = $categories->firstWhere('id', $activeCategoryId);
+    }
+@endphp
+
+@section('title', $activeCategory ? $activeCategory->name : 'Cửa hàng')
 
 @section('content')
 <main class="max-w-[1600px] mx-auto w-full px-4 md:px-0 py-8">
 <!-- Breadcrumbs & Title -->
 <div class="mb-8">
 <nav class="flex items-center gap-2 text-sm text-slate-500 mb-4">
-<a class="hover:text-primary" href="{{ route('home') }}">Trang chủ</a>
-<i class="fa-solid fa-chevron-right text-[10px]"></i>
-<span class="text-slate-900 dark:text-slate-200 font-medium">Cửa hàng</span>
+    <a class="hover:text-primary" href="{{ route('home') }}">Trang chủ</a>
+    <i class="fa-solid fa-chevron-right text-[10px]"></i>
+    @if($activeCategory)
+        <a class="hover:text-primary" href="{{ route('store.index') }}">Cửa hàng</a>
+        <i class="fa-solid fa-chevron-right text-[10px]"></i>
+        <span class="text-slate-900 dark:text-slate-200 font-medium">{{ $activeCategory->name }}</span>
+    @else
+        <span class="text-slate-900 dark:text-slate-200 font-medium">Cửa hàng</span>
+    @endif
 </nav>
-<h1 class="text-3xl font-bold text-slate-900 dark:text-white">Danh mục sản phẩm</h1>
+<h1 class="text-3xl font-bold text-slate-900 dark:text-white">{{ $activeCategory ? $activeCategory->name : 'Danh mục sản phẩm' }}</h1>
 <p class="text-slate-500 dark:text-slate-400 mt-2">Khám phá vũ trụ linh kiện và phụ kiện xây dựng không gian Gaming.</p>
 </div>
 
@@ -191,29 +205,45 @@
                             <span class="font-bold text-slate-900 dark:text-slate-100 text-sm">Giá bán:</span>
                             <span class="text-primary font-black text-lg">{{ number_format($product->sale_price ?: $product->price, 0, ',', '.') }} VNĐ</span>
                         </div>
+                        @if($product->warranty_period)
                         <div class="flex items-center gap-2">
                             <span class="font-bold text-slate-900 dark:text-slate-100 text-sm">Bảo hành:</span>
                             <span class="text-slate-600 dark:text-slate-400 text-sm font-medium">{{ $product->warranty_period }}</span>
                         </div>
+                        @endif
+                        @php
+                            $filteredSpecs = [];
+                            if($product->specs && is_array($product->specs)) {
+                                $filteredSpecs = array_filter(array_slice($product->specs, 0, 6), function($spec) {
+                                    if (is_array($spec)) {
+                                        return !empty(array_filter($spec));
+                                    }
+                                    return !empty(trim($spec));
+                                });
+                            }
+                        @endphp
+                        @if(count($filteredSpecs) > 0)
                         <div class="pt-2 border-t border-slate-100 dark:border-slate-800">
                             <span class="inline-block bg-primary text-white px-2 py-0.5 rounded text-[10px] font-black mb-3 uppercase tracking-wider">Mô tả tóm tắt:</span>
                             <ul class="space-y-2">
-                                @if($product->specs && is_array($product->specs))
-                                    @foreach(array_slice($product->specs, 0, 6) as $spec)
-                                        <li class="flex items-start gap-2 text-[12px] leading-tight text-slate-700 dark:text-slate-300">
-                                            <i class="fa-solid fa-circle-check text-emerald-500 mt-0.5 shrink-0"></i>
-                                            <span>
-                                                @if(is_array($spec))
-                                                    {{ implode(': ', $spec) }}
-                                                @else
-                                                    {{ $spec }}
-                                                @endif
-                                            </span>
-                                        </li>
-                                    @endforeach
-                                @endif
+                                @foreach($filteredSpecs as $spec)
+                                    <li class="flex items-start gap-2 text-[12px] leading-tight text-slate-700 dark:text-slate-300">
+                                        <i class="fa-solid fa-circle-check text-emerald-500 mt-0.5 shrink-0"></i>
+                                        <span>
+                                            @if(is_array($spec))
+                                                @php
+                                                    $specParts = array_filter($spec);
+                                                @endphp
+                                                {{ implode(': ', $specParts) }}
+                                            @else
+                                                {{ $spec }}
+                                            @endif
+                                        </span>
+                                    </li>
+                                @endforeach
                             </ul>
                         </div>
+                        @endif
                     </div>
                 </div>
 
@@ -278,47 +308,77 @@
 
 <style>
     /* Custom Square Pagination Styling */
-    .pagination-container nav div:first-child {
-        display: none !important; /* Hide mobile pagination text if it exists */
+    .pagination-container nav {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        width: 100% !important;
+        background: transparent !important;
     }
-    .pagination-container nav div:last-child {
+    /* Hide the "Showing X to Y of Z results" part completely */
+    .pagination-container nav p,
+    .pagination-container nav > div:first-child,
+    .pagination-container nav > div:last-child > div:first-child {
+        display: none !important;
+    }
+    /* Layout Container for Buttons */
+    .pagination-container nav > div:last-child > div:last-child,
+    .pagination-container .relative.z-0 {
+        display: flex !important;
+        gap: 8px !important;
         background: transparent !important;
         border: none !important;
         box-shadow: none !important;
+        padding: 0 !important;
     }
-    .pagination-container span[aria-current="page"] > span {
-        background-color: #2563eb !important; /* Blue-600 */
-        color: white !important;
-        border-color: #2563eb !important;
-        border-radius: 4px !important;
-        width: 38px;
-        height: 38px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: bold;
-    }
-    .pagination-container a, .pagination-container span {
-        border-radius: 4px !important;
-        width: 38px;
-        height: 38px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin: 0 4px;
-        font-weight: 500;
-        transition: all 0.2s;
-        border: 1px solid #e2e8f0 !important; /* slate-200 */
+    /* Base Button Style (Links, Disabled, and Current Page wrappers) */
+    .pagination-container a, 
+    .pagination-container span[aria-disabled="true"] > span,
+    .pagination-container span[aria-current="page"] > span,
+    .pagination-container span.relative.inline-flex {
+        border-radius: 8px !important;
+        width: 40px !important;
+        height: 40px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        margin: 0 !important;
+        font-weight: 600 !important;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        border: 1px solid #e2e8f0 !important;
         background: white !important;
-        color: #64748b !important; /* slate-500 */
+        color: #64748b !important;
+        box-shadow: none !important;
+        text-decoration: none !important;
     }
+    /* Active Page Style */
+    .pagination-container span[aria-current="page"] > span {
+        background-color: #2badee !important;
+        color: white !important;
+        border-color: #2badee !important;
+        font-weight: 800 !important;
+        box-shadow: 0 4px 12px rgba(43, 173, 238, 0.4) !important;
+    }
+    /* Dark Mode */
+    .dark .pagination-container a, 
+    .dark .pagination-container span[aria-disabled="true"] > span,
+    .dark .pagination-container span[aria-current="page"] > span,
+    .dark .pagination-container span.relative.inline-flex {
+        border-color: #334155 !important;
+        background-color: #1e293b !important;
+        color: #94a3b8 !important;
+    }
+    /* Hover State */
     .pagination-container a:hover {
-        border-color: #2563eb !important;
-        color: #2563eb !important;
+        border-color: #2badee !important;
+        color: #2badee !important;
+        transform: translateY(-3px) !important;
+        box-shadow: 0 6px 15px rgba(0,0,0,0.1) !important;
     }
+    /* Arrows Icon Size */
     .pagination-container svg {
-        width: 16px;
-        height: 16px;
+        width: 18px !important;
+        height: 18px !important;
     }
 </style>
 

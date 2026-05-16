@@ -3,6 +3,32 @@
 @section('title', 'Trang chủ')
 
 @section('content')
+@section('content')
+@php
+    $categoryIcons = [
+        'chuột' => 'fa-mouse',
+        'bàn phím' => 'fa-keyboard',
+        'tai nghe' => 'fa-headset',
+        'loa' => 'fa-volume-high',
+        'màn hình' => 'fa-desktop',
+        'vga' => 'fa-microchip',
+        'card' => 'fa-microchip',
+        'mainboard' => 'fa-circuit-board',
+        'ram' => 'fa-memory',
+        'ssd' => 'fa-hard-drive',
+        'hdd' => 'fa-hard-drive',
+        'nguồn' => 'fa-plug',
+        'case' => 'fa-box-open',
+        'tản nhiệt' => 'fa-fan',
+        'laptop' => 'fa-laptop',
+        'camera' => 'fa-camera',
+        'ghế' => 'fa-chair',
+        'bàn' => 'fa-table',
+        'phần mềm' => 'fa-compact-disc',
+        'tay cầm' => 'fa-gamepad',
+        'linh kiện' => 'fa-microchip'
+    ];
+@endphp
 <style>
 <style>
     /* 1. Typography & Text Effects */
@@ -166,10 +192,19 @@
 @if($flashSales->count() > 0)
 <section class="py-12 bg-gradient-to-b from-[#0c4a6e] via-[#2badee] to-white transition-all duration-700">
     <div class="max-w-[1600px] mx-auto border border-slate-300 dark:border-slate-700 rounded-2xl p-8 bg-white/40 dark:bg-slate-900/40 backdrop-blur-md shadow-sm mb-[22px] relative overflow-hidden">
-        <div class="flex flex-col md:flex-row md:items-center justify-between mb-10 gap-6 relative z-10">
-            <div>
-                <h2 class="slash-header text-3xl font-black uppercase tracking-tighter mb-2 text-slate-900 dark:text-white">Deal Hot Mỗi Ngày</h2>
-                <p class="text-slate-600 dark:text-slate-300 font-medium">Săn linh kiện giá cực hời</p>
+        <div class="flex flex-col md:flex-row md:items-center justify-between mb-10 gap-6 relative z-10 -mt-[33px] -ml-[33px] -mr-[32px] pr-8">
+            <div class="flex">
+                <h2 class="relative flex items-center h-16 bg-gradient-to-r from-red-400 to-red-600 rounded-tl-2xl shadow-lg group pr-14" style="clip-path: polygon(0 0, 100% 0, calc(100% - 40px) 100%, 0 100%);">
+                    <!-- HUD Content -->
+                    <div class="px-8 flex items-center h-full relative z-30">
+                        <div class="w-11 h-11 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center mr-5 border border-white/30 group-hover:scale-110 transition-all duration-500 shadow-inner">
+                            <i class="fa-solid fa-fire-flame-curved text-white text-xl animate-pulse"></i>
+                        </div>
+                        <span class="text-white !font-bold uppercase text-2xl tracking-widest drop-shadow-md whitespace-nowrap">
+                            HOT SALE
+                        </span>
+                    </div>
+                </h2>
             </div>
             
             <div class="flex items-center gap-6">
@@ -187,53 +222,119 @@
 
         <div id="deal-hot-slider" class="flex gap-[12px] overflow-x-auto snap-x snap-mandatory pb-4 scroll-smooth [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
             @foreach($flashSales as $product)
-            <div class="shrink-0 snap-start w-[calc((100%-60px)/6)] bg-white dark:bg-slate-800 rounded-xl border border-slate-300 dark:border-slate-700 overflow-hidden group hover:shadow-2xl transition-all duration-500 flex flex-col h-[400px]">
+            <div class="shrink-0 snap-start w-[calc((100%-60px)/6)] bg-white dark:bg-slate-800 rounded-xl border border-slate-300 dark:border-slate-700 hover:z-[50] group hover:shadow-2xl transition-all duration-300 flex flex-col h-[400px] relative product-card">
+                <!-- Product Preview Popover -->
+                <div class="product-popover fixed left-0 top-0 w-[350px] bg-white dark:bg-slate-900 rounded-xl shadow-[0_20px_50px_rgba(0,0,0,0.3)] border border-slate-200 dark:border-slate-700 z-[9999] hidden flex-col overflow-hidden pointer-events-none transition-opacity duration-200 opacity-0">
+                    <div class="bg-primary p-3">
+                        <h4 class="text-white font-bold text-sm leading-tight uppercase line-clamp-2">{{ $product->name }}</h4>
+                    </div>
+                    <div class="p-4 space-y-3">
+                        <div class="flex items-center gap-2">
+                            <span class="font-bold text-slate-900 dark:text-slate-100 text-sm">Giá bán:</span>
+                            <span class="text-primary font-black text-lg">{{ number_format($product->sale_price ?: $product->price, 0, ',', '.') }} VNĐ</span>
+                        </div>
+                        @if($product->warranty_period)
+                        <div class="flex items-center gap-2">
+                            <span class="font-bold text-slate-900 dark:text-slate-100 text-sm">Bảo hành:</span>
+                            <span class="text-slate-600 dark:text-slate-400 text-sm font-medium">{{ $product->warranty_period }}</span>
+                        </div>
+                        @endif
+                        @php
+                            $filteredSpecs = [];
+                            if($product->specs && is_array($product->specs)) {
+                                $filteredSpecs = array_filter(array_slice($product->specs, 0, 6), function($spec) {
+                                    if (is_array($spec)) {
+                                        return !empty(array_filter($spec));
+                                    }
+                                    return !empty(trim($spec));
+                                });
+                            }
+                        @endphp
+                        @if(count($filteredSpecs) > 0)
+                        <div class="pt-2 border-t border-slate-100 dark:border-slate-800">
+                            <span class="inline-block bg-primary text-white px-2 py-0.5 rounded text-[10px] font-black mb-3 uppercase tracking-wider">Mô tả tóm tắt:</span>
+                            <ul class="space-y-2">
+                                @foreach($filteredSpecs as $spec)
+                                    <li class="flex items-start gap-2 text-[12px] leading-tight text-slate-700 dark:text-slate-300">
+                                        <i class="fa-solid fa-circle-check text-emerald-500 mt-0.5 shrink-0"></i>
+                                        <span>
+                                            @if(is_array($spec))
+                                                @php
+                                                    $specParts = array_filter($spec);
+                                                @endphp
+                                                {{ implode(': ', $specParts) }}
+                                            @else
+                                                {{ $spec }}
+                                            @endif
+                                        </span>
+                                    </li>
+                                @endforeach
+                            </ul>
+                        </div>
+                        @endif
+                    </div>
+                </div>
+
                 <!-- Image Area: 240px -->
-                <div class="h-[240px] bg-white relative overflow-hidden shrink-0">
-                    <span class="absolute top-3 left-3 z-20 bg-red-500 text-white text-[11px] font-black px-2.5 py-1.5 rounded-lg shadow-lg animate-pulse">
-                        -{{ round((($product->price - $product->sale_price) / $product->price) * 100) }}%
-                    </span>
+                <div class="h-[240px] bg-white relative overflow-hidden shrink-0 rounded-t-xl product-trigger">
                     <a href="{{ route('products.show', $product->slug ?? $product->id) }}" class="block h-full">
                         <img alt="{{ $product->name }}" class="w-full h-full object-contain p-6 group-hover:scale-110 transition-transform duration-700" src="{{ $product->image ? asset('storage/' . $product->image) : 'https://placehold.co/400x400?text=No+Image' }}" onerror="this.onerror=null; this.src='https://placehold.co/400x400?text=No+Image';"/>
                     </a>
-
-                    <!-- Hover-only Add to Cart -->
-                    <button type="button" onclick="handleAddToCart({{ $product->id }}, {{ json_encode($product->colors) }}, '{{ addslashes($product->name) }}', {{ $product->sale_price ?: $product->price }}, '{{ $product->image ? asset('storage/' . $product->image) : 'https://placehold.co/400x400?text=No+Image' }}')" class="absolute bottom-4 left-4 right-4 bg-slate-900 text-white font-black text-[10px] py-3.5 rounded-xl opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-4 group-hover:translate-y-0 uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-primary z-20 shadow-xl">
-                        <i class="fa-solid fa-cart-shopping text-xs"></i> Mua Ngay
-                    </button>
                 </div>
 
                 <!-- Info Area -->
-                <div class="p-4 flex flex-col gap-[6px] border-t border-slate-50 dark:border-slate-800 relative bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm flex-grow">
+                <div class="p-4 flex flex-col gap-[6px] border-t border-slate-50 dark:border-slate-800 flex-grow">
                     <!-- Block 1: Name (max 40px) -->
                     <a href="{{ route('products.show', $product->slug ?? $product->id) }}" class="block h-[40px] max-h-[40px]">
                         <h3 class="font-bold text-slate-900 dark:text-slate-100 text-[16px] leading-[20px] group-hover:text-primary transition-colors line-clamp-2 overflow-hidden">{{ $product->name }}</h3>
                     </a>
                     
                     <!-- Block 2: Price (max 46px) -->
-                    <div class="flex flex-col justify-center h-[46px] max-h-[46px]">
-                        <span class="text-primary !font-bold text-[18px] leading-[24px]">{{ number_format($product->sale_price, 0, ',', '.') }}₫</span>
-                        <span class="text-[12px] text-slate-400 font-bold line-through leading-[18px]">{{ number_format($product->price, 0, ',', '.') }}₫</span>
-                    </div>
-                    
-                    <!-- Block 3: Progress & Status (max 26px) -->
-                    <div class="flex flex-col justify-center h-[26px] max-h-[26px] gap-1">
-                        <div class="flex justify-between items-center">
-                            <div class="flex items-center gap-2">
-                                <span class="text-[9px] text-slate-500 dark:text-slate-400 font-black uppercase tracking-wider">Đã bán {{ rand(15, 45) }}/50</span>
-                                <span class="text-[9px] text-primary font-bold">Sắp hết</span>
-                            </div>
-                            <div class="bg-emerald-50 text-emerald-500 border border-emerald-200 text-[9px] font-bold px-1.5 h-[16px] flex items-center rounded whitespace-nowrap">
-                                Còn hàng
-                            </div>
+                    <div class="flex items-center justify-between h-[46px] max-h-[46px]">
+                        <div class="flex flex-col justify-center h-full">
+                            @if($product->sale_price)
+                                <span class="text-primary !font-bold text-[18px] leading-[24px]">{{ number_format($product->sale_price, 0, ',', '.') }}₫</span>
+                                <span class="text-[12px] text-slate-400 font-bold line-through leading-[18px]">{{ number_format($product->price, 0, ',', '.') }}₫</span>
+                            @else
+                                <span class="text-primary !font-bold text-[18px] leading-[24px]">{{ number_format($product->price, 0, ',', '.') }}₫</span>
+                            @endif
                         </div>
-                        <div class="w-full bg-slate-200 dark:bg-slate-700 h-1.5 rounded-full overflow-hidden shrink-0">
-                            <div class="bg-gradient-to-r from-primary to-blue-600 h-full rounded-full transition-all duration-1000" style="width: {{ rand(40, 90) }}%"></div>
+                        @if($product->sale_price)
+                            <div class="bg-red-500 text-white text-[11px] font-bold px-2 py-0.5 rounded shadow-sm whitespace-nowrap shrink-0">
+                                -{{ round((($product->price - $product->sale_price) / $product->price) * 100) }}%
+                            </div>
+                        @endif
+                    </div>
+
+                    <!-- Block 3: Action (max 26px) - Synchronized with standard cards -->
+                    <div class="flex items-center justify-between h-[26px] max-h-[26px]">
+                        <button type="button" onclick="handleAddToCart({{ $product->id }}, {{ json_encode($product->colors) }}, '{{ addslashes($product->name) }}', {{ $product->sale_price ?: $product->price }}, '{{ $product->image ? asset('storage/' . $product->image) : 'https://placehold.co/400x400?text=No+Image' }}')" class="relative flex items-center h-[26px] rounded-full overflow-hidden group/btn pr-3 pl-0 transition-all bg-slate-100 dark:bg-slate-700/50 hover:shadow-md">
+                            <div class="absolute left-0 top-0 w-[26px] h-[26px] bg-primary rounded-full transition-all duration-300 ease-in-out group-hover/btn:w-full z-0"></div>
+                            <div class="relative z-10 flex items-center gap-1.5 h-full">
+                                <div class="w-[26px] h-[26px] flex items-center justify-center text-white shrink-0">
+                                    <i class="fa-solid fa-cart-shopping text-[12px]"></i>
+                                </div>
+                                <span class="!font-bold text-[12px] uppercase tracking-wider text-slate-800 dark:text-slate-200 transition-colors duration-300 group-hover/btn:text-white">Thêm vào giỏ</span>
+                            </div>
+                        </button>
+                        <div class="bg-emerald-50 text-emerald-500 border border-emerald-200 text-[10px] font-bold px-2 h-[22px] flex items-center rounded whitespace-nowrap shrink-0 ml-1">
+                            Còn hàng
                         </div>
                     </div>
                 </div>
             </div>
             @endforeach
+        </div>
+
+        <!-- See All Deal Hot Button -->
+        <div class="flex justify-center mt-8 relative z-10">
+            <a href="{{ route('hot-sale') }}" class="group relative flex items-center gap-2 px-6 py-1.5 bg-gradient-to-r from-red-400 to-red-600 text-white !font-bold text-sm rounded-full shadow-md hover:shadow-lg hover:scale-105 transition-all duration-300 overflow-hidden">
+                <!-- Shine Effect -->
+                <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out"></div>
+                
+                <span class="relative z-10">Xem tất cả</span>
+                <i class="fa-solid fa-angles-right relative z-10 text-[10px] group-hover:translate-x-1 transition-transform duration-300"></i>
+            </a>
         </div>
     </div>
 </section>
@@ -241,9 +342,23 @@
 
 <!-- Featured Products -->
 <section id="featured" class="pb-4 pt-16">
-    <div class="max-w-[1600px] mx-auto border border-slate-300 dark:border-slate-700 rounded-2xl p-8 bg-white dark:bg-slate-900 shadow-sm mb-[22px]">
-        <div class="flex items-center justify-between mb-8">
-            <h2 class="slash-header text-2xl font-black uppercase tracking-tighter text-on-surface">Sản phẩm nổi bật</h2>
+    <div class="max-w-[1600px] mx-auto border border-slate-300 dark:border-slate-700 rounded-2xl p-8 bg-white dark:bg-slate-900 shadow-sm mb-[22px] relative overflow-hidden">
+        <div class="flex items-center justify-between mb-8 -mt-[33px] -ml-[33px] -mr-[32px] pr-8">
+            <div class="flex">
+                <div class="relative flex h-14">
+                <h2 class="relative flex items-center h-16 bg-gradient-to-r from-sky-400 to-blue-700 rounded-tl-2xl shadow-lg group pr-14" style="clip-path: polygon(0 0, 100% 0, calc(100% - 40px) 100%, 0 100%);">
+                    <!-- HUD Content -->
+                    <div class="px-8 flex items-center h-full relative z-30">
+                        <div class="w-11 h-11 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center mr-5 border border-white/30 group-hover:scale-110 transition-all duration-500 shadow-inner">
+                            <i class="fa-solid fa-star text-white text-xl animate-pulse"></i>
+                        </div>
+                        <span class="text-white !font-bold uppercase text-2xl tracking-widest drop-shadow-md whitespace-nowrap">
+                            Sản phẩm nổi bật
+                        </span>
+                    </div>
+                </h2>
+                </div>
+            </div>
             <div class="flex gap-2">
                 <button onclick="document.getElementById('featured-slider').scrollBy({left: -320, behavior: 'smooth'})" class="w-10 h-10 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-slate-400 hover:text-primary hover:border-primary transition-colors hover:shadow-lg">
                     <i class="fa-solid fa-chevron-left text-sm"></i>
@@ -253,6 +368,7 @@
                 </button>
             </div>
         </div>
+        
         <div id="featured-slider" class="flex gap-[12px] overflow-x-auto snap-x snap-mandatory pb-4 scroll-smooth [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
             @forelse($featuredProducts as $product)
             <div class="shrink-0 snap-start w-[calc((100%-60px)/6)] bg-white dark:bg-slate-800 rounded-xl border border-slate-300 dark:border-slate-700 hover:z-[50] group hover:shadow-2xl transition-all duration-300 flex flex-col h-[400px] relative product-card">
@@ -298,6 +414,7 @@
                         <img alt="{{ $product->name }}" class="w-full h-full object-contain p-6 group-hover:scale-110 transition-transform duration-700" src="{{ $product->image ? asset('storage/' . $product->image) : 'https://placehold.co/400x400?text=No+Image' }}" onerror="this.onerror=null; this.src='https://placehold.co/400x400?text=No+Image';"/>
                     </a>
                 </div>
+
                 <!-- Info Area -->
                 <div class="p-4 flex flex-col gap-[6px] border-t border-slate-50 dark:border-slate-800 flex-grow">
                     <!-- Block 1: Name (max 40px) -->
@@ -346,6 +463,17 @@
                 </div>
             @endforelse
         </div>
+
+        <!-- See All Featured Products Button -->
+        <div class="flex justify-center mt-8 relative z-10">
+            <a href="{{ route('featured.products') }}" class="group relative flex items-center gap-2 px-6 py-1.5 bg-gradient-to-r from-sky-400 to-blue-700 text-white !font-bold text-sm rounded-full shadow-md hover:shadow-lg hover:scale-105 transition-all duration-300 overflow-hidden">
+                <!-- Shine Effect -->
+                <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out"></div>
+                
+                <span class="relative z-10">Xem tất cả</span>
+                <i class="fa-solid fa-angles-right relative z-10 text-[10px] group-hover:translate-x-1 transition-transform duration-300"></i>
+            </a>
+        </div>
     </div>
 </section>
 
@@ -353,13 +481,39 @@
 @foreach($categoryProducts as $catData)
 @php $catSection = $catData['category']; $catProducts = $catData['products']; @endphp
 <section class="py-4">
-    <div class="max-w-[1600px] mx-auto border border-slate-300 dark:border-slate-700 rounded-2xl p-8 bg-white dark:bg-slate-900 shadow-sm mb-[22px]">
-        <div class="flex flex-col md:flex-row md:items-center justify-between mb-8">
-            <h2 class="slash-header text-2xl font-black uppercase tracking-tighter text-on-surface">{{ $catSection->name }}</h2>
-            <div class="flex gap-4 mt-6 md:mt-0 overflow-x-auto pb-2">
-                <a href="{{ route('store.index', ['categories' => [$catSection->id]]) }}" class="whitespace-nowrap border border-primary text-primary hover:bg-primary hover:text-white px-6 py-2 rounded-full text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-2 group shadow-sm hover:shadow-primary/20">
-                    Xem tất cả 
-                    <i class="fa-solid fa-chevron-right text-[8px] transition-transform group-hover:translate-x-1"></i>
+    <div class="max-w-[1600px] mx-auto border border-slate-300 dark:border-slate-700 rounded-2xl p-8 bg-white dark:bg-slate-900 shadow-sm mb-[22px] relative overflow-hidden">
+        <div class="flex flex-col md:flex-row md:items-center justify-between mb-8 -mt-[33px] -ml-[33px] -mr-[32px] pr-8">
+            <div class="flex">
+                <div class="relative flex h-14">
+                    @php
+                        $iconClass = 'fa-microchip';
+                        foreach($categoryIcons as $keyword => $icon) {
+                            if (str_contains(mb_strtolower($catSection->name), $keyword)) {
+                                $iconClass = $icon;
+                                break;
+                            }
+                        }
+                    @endphp
+                    <h2 class="relative flex items-center h-16 bg-gradient-to-r from-sky-400 to-blue-700 rounded-tl-2xl shadow-lg group pr-14" style="clip-path: polygon(0 0, 100% 0, calc(100% - 40px) 100%, 0 100%);">
+                        <!-- HUD Content -->
+                        <div class="px-8 flex items-center h-full relative z-30">
+                            <div class="w-11 h-11 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center mr-5 border border-white/30 group-hover:scale-110 transition-all duration-500 shadow-inner">
+                                <i class="fa-solid {{ $iconClass }} text-white text-xl animate-pulse"></i>
+                            </div>
+                            <span class="text-white !font-bold uppercase text-2xl tracking-widest drop-shadow-md whitespace-nowrap">
+                                {{ $catSection->name }}
+                            </span>
+                        </div>
+                    </h2>
+                </div>
+            </div>
+            <div class="flex items-center mt-6 md:mt-0 translate-y-3">
+                <a href="{{ route('store.index', ['categories' => [$catSection->id]]) }}" class="group relative flex items-center gap-2 px-6 py-1.5 bg-gradient-to-r from-sky-400 to-blue-700 text-white !font-bold text-sm rounded-full shadow-md hover:shadow-lg hover:scale-105 transition-all duration-300 overflow-hidden">
+                    <!-- Shine Effect -->
+                    <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out"></div>
+                    
+                    <span class="relative z-10">Xem tất cả</span>
+                    <i class="fa-solid fa-angles-right text-[10px] relative z-10"></i>
                 </a>
             </div>
         </div>
@@ -451,43 +605,44 @@
 
 
 <!-- USP Section -->
-<section class="py-12 bg-slate-50 dark:bg-slate-900 border-y border-outline-variant dark:border-slate-800">
-    <div class="max-w-[1400px] mx-auto px-4">
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            <div class="flex items-center gap-4">
-                <div class="w-12 h-12 bg-primary/10 text-primary flex items-center justify-center rounded-full shrink-0">
-                    <i class="fa-solid fa-truck text-lg"></i>
+<section class="pt-0 pb-8 bg-slate-50/50 dark:bg-slate-900/50 overflow-hidden">
+    <div class="max-w-[1500px] mx-auto px-10">
+        <div class="bg-white dark:bg-slate-800 shadow-[0_15px_50px_-15px_rgba(0,0,0,0.1)] py-8 px-8 md:px-20 -skew-x-6 border border-slate-100 dark:border-slate-700 relative group transition-all duration-700 hover:shadow-primary/5">
+            <div class="skew-x-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8">
+                <!-- Giao hàng -->
+                <div class="flex flex-col items-center text-center group/item">
+                    <div class="w-16 h-16 flex items-center justify-center mb-4 transition-transform duration-500 group-hover/item:-translate-y-2">
+                        <i class="fa-solid fa-truck-fast text-4xl text-primary drop-shadow-[0_5px_10px_rgba(239,68,68,0.2)]"></i>
+                    </div>
+                    <div class="text-[13px] font-black uppercase tracking-tighter text-slate-900 dark:text-slate-100 leading-tight mb-2">Giao hàng toàn quốc</div>
+                    <div class="text-[11px] text-slate-500 dark:text-slate-400 font-medium">Giao hàng trước, trả tiền sau COD</div>
                 </div>
-                <div>
-                    <div class="text-[11px] font-black uppercase tracking-widest text-slate-900 dark:text-slate-100 leading-none mb-1">Giao hàng nhanh 24h</div>
-                    <div class="text-xs text-slate-500">Miễn phí cho đơn từ 2tr</div>
+
+                <!-- Đổi trả -->
+                <div class="flex flex-col items-center text-center group/item">
+                    <div class="w-16 h-16 flex items-center justify-center mb-4 transition-transform duration-500 group-hover/item:-translate-y-2">
+                        <i class="fa-solid fa-box-open text-4xl text-primary drop-shadow-[0_5px_10px_rgba(239,68,68,0.2)]"></i>
+                    </div>
+                    <div class="text-[13px] font-black uppercase tracking-tighter text-slate-900 dark:text-slate-100 leading-tight mb-2">Đổi trả dễ dàng</div>
+                    <div class="text-[11px] text-slate-500 dark:text-slate-400 font-medium">Đổi mới trong 30 ngày đầu</div>
                 </div>
-            </div>
-            <div class="flex items-center gap-4">
-                <div class="w-12 h-12 bg-primary/10 text-primary flex items-center justify-center rounded-full shrink-0">
-                    <i class="fa-solid fa-user-check text-lg"></i>
+
+                <!-- Thanh toán -->
+                <div class="flex flex-col items-center text-center group/item">
+                    <div class="w-16 h-16 flex items-center justify-center mb-4 transition-transform duration-500 group-hover/item:-translate-y-2">
+                        <i class="fa-solid fa-credit-card text-4xl text-primary drop-shadow-[0_5px_10px_rgba(239,68,68,0.2)]"></i>
+                    </div>
+                    <div class="text-[13px] font-black uppercase tracking-tighter text-slate-900 dark:text-slate-100 leading-tight mb-2">Thanh toán tiện lợi</div>
+                    <div class="text-[11px] text-slate-500 dark:text-slate-400 font-medium">Trả tiền mặt, chuyển khoản, trả góp 0%</div>
                 </div>
-                <div>
-                    <div class="text-[11px] font-black uppercase tracking-widest text-slate-900 dark:text-slate-100 leading-none mb-1">Bảo hành chính hãng</div>
-                    <div class="text-xs text-slate-500">Cam kết 100% hàng thật</div>
-                </div>
-            </div>
-            <div class="flex items-center gap-4">
-                <div class="w-12 h-12 bg-primary/10 text-primary flex items-center justify-center rounded-full shrink-0">
-                    <i class="fa-solid fa-rotate-left text-lg"></i>
-                </div>
-                <div>
-                    <div class="text-[11px] font-black uppercase tracking-widest text-slate-900 dark:text-slate-100 leading-none mb-1">Đổi trả 30 ngày</div>
-                    <div class="text-xs text-slate-500">Thủ tục nhanh chóng</div>
-                </div>
-            </div>
-            <div class="flex items-center gap-4">
-                <div class="w-12 h-12 bg-primary/10 text-primary flex items-center justify-center rounded-full shrink-0">
-                    <i class="fa-solid fa-headset text-lg"></i>
-                </div>
-                <div>
-                    <div class="text-[11px] font-black uppercase tracking-widest text-slate-900 dark:text-slate-100 leading-none mb-1">Hỗ trợ 24/7</div>
-                    <div class="text-xs text-slate-500">Luôn sẵn sàng giải đáp</div>
+
+                <!-- Hỗ trợ -->
+                <div class="flex flex-col items-center text-center group/item">
+                    <div class="w-16 h-16 flex items-center justify-center mb-4 transition-transform duration-500 group-hover/item:-translate-y-2">
+                        <i class="fa-solid fa-headset text-4xl text-primary drop-shadow-[0_5px_10px_rgba(239,68,68,0.2)]"></i>
+                    </div>
+                    <div class="text-[13px] font-black uppercase tracking-tighter text-slate-900 dark:text-slate-100 leading-tight mb-2">Hỗ trợ nhiệt tình</div>
+                    <div class="text-[11px] text-slate-500 dark:text-slate-400 font-medium">Tư vấn tổng đài miễn phí 24/7</div>
                 </div>
             </div>
         </div>

@@ -14,25 +14,24 @@ class HomeController extends Controller
     public function index(Request $request)
     {
         // For the new Home Page structure
-        $categories = Category::all();
+        // Dynamic: load categories with their latest 6 products (Fix N+1 query problem)
+        $categoriesWithProducts = Category::with(['products' => function($query) {
+            $query->where('stock_quantity', '>', 0)
+                  ->latest()
+                  ->take(6);
+        }])->get();
 
-        // Dynamic: load all categories with their latest 6 products
         $categoryProducts = [];
-        foreach ($categories as $cat) {
-            $products = Product::where('category_id', $cat->id)
-                ->where('stock_quantity', '>', 0)
-                ->latest()
-                ->take(6)
-                ->get();
-            if ($products->count() > 0) {
+        foreach ($categoriesWithProducts as $cat) {
+            if ($cat->products->count() > 0) {
                 $categoryProducts[] = [
                     'category' => $cat,
-                    'products' => $products,
+                    'products' => $cat->products,
                 ];
             }
         }
 
-        $flashSales = Product::where('stock_quantity', '>', 0)
+        $flashSales = Product::with('category')->where('stock_quantity', '>', 0)
             ->whereNotNull('sale_price')
             ->where('sale_price', '>', 0)
             ->whereRaw('sale_price <= (price * 0.5)')
@@ -40,15 +39,60 @@ class HomeController extends Controller
             ->take(12)
             ->get();
 
-        $bestSellers = Product::where('stock_quantity', '>', 0)->inRandomOrder()->take(8)->get();
-        $featuredProducts = Product::where('stock_quantity', '>', 0)->where('is_featured', true)->latest()->get();
+        $bestSellers = Product::with('category')->where('stock_quantity', '>', 0)->inRandomOrder()->take(8)->get();
+        $featuredProducts = Product::with('category')->where('stock_quantity', '>', 0)->where('is_featured', true)->latest()->get();
+
+        $categories = $categoriesWithProducts; // For the sidebar/navigation
 
         return view('home', compact('categories', 'flashSales', 'bestSellers', 'featuredProducts', 'categoryProducts'));
     }
 
     /**
-     * Display the product detail page.
+     * Display the Hot Sale products page.
      */
+    public function hotSale(Request $request)
+    {
+        $query = Product::with('category')->where('stock_quantity', '>', 0)
+            ->whereNotNull('sale_price')
+            ->where('sale_price', '>', 0)
+            ->whereRaw('sale_price <= (price * 0.5)'); // High discount products (50% or more)
+
+        // Sorting logic matching StoreController
+        $sort = $request->get('sort', 'latest');
+        match ($sort) {
+            'price_asc' => $query->orderByRaw('COALESCE(sale_price, price) asc'),
+            'price_desc' => $query->orderByRaw('COALESCE(sale_price, price) desc'),
+            default => $query->latest(),
+        };
+
+        $products = $query->paginate(20);
+        $totalProducts = $products->total();
+
+        return view('hot-sale', compact('products', 'totalProducts', 'sort'));
+    }
+
+    /**
+     * Display the Featured Products page.
+     */
+    public function featuredProducts(Request $request)
+    {
+        $query = Product::with('category')->where('stock_quantity', '>', 0)
+            ->where('is_featured', true);
+
+        // Sorting logic
+        $sort = $request->get('sort', 'latest');
+        match ($sort) {
+            'price_asc' => $query->orderByRaw('COALESCE(sale_price, price) asc'),
+            'price_desc' => $query->orderByRaw('COALESCE(sale_price, price) desc'),
+            default => $query->latest(),
+        };
+
+        $products = $query->paginate(24); // Show more featured products
+        $totalProducts = $products->total();
+
+        return view('featured-products', compact('products', 'totalProducts', 'sort'));
+    }
+
     public function show(Product $product)
     {
         $product->load('category');

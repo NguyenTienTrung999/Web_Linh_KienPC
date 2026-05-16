@@ -78,38 +78,29 @@ class StoreController extends Controller
         }])->get();
 
         // 4. Calculate Price Ranges (Filtered by Search + Category + Brand + Stock)
-        $priceRangeCounts = [];
-        $ranges = [
-            ['min' => 0, 'max' => 500000, 'key' => '0-500000'],
-            ['min' => 500000, 'max' => 1000000, 'key' => '500000-1000000'],
-            ['min' => 1000000, 'max' => 2000000, 'key' => '1000000-2000000'],
-            ['min' => 2000000, 'max' => 3000000, 'key' => '2000000-3000000'],
-            ['min' => 3000000, 'max' => 5000000, 'key' => '3000000-5000000'],
-            ['min' => 5000000, 'max' => 10000000, 'key' => '5000000-10000000'],
-            ['min' => 10000000, 'max' => null, 'key' => '10000000-up'],
-        ];
-
-        foreach ($ranges as $range) {
-            $rangeQuery = Product::query()->where('stock_quantity', '>', 0);
-            // Apply Search
-            if ($request->filled('search')) {
-                $rangeQuery->where('name', 'like', '%' . $request->search . '%');
-            }
-            // Apply Category
-            if ($request->has('categories') && is_array($request->categories)) {
-                $rangeQuery->whereIn('category_id', $request->categories);
-            }
-            // Apply Brand
-            if ($request->has('brands') && is_array($request->brands)) {
-                $rangeQuery->whereIn('brand_id', $request->brands);
-            }
-            // Apply this specific price range
-            $rangeQuery->whereRaw('COALESCE(sale_price, price) >= ?', [$range['min']]);
-            if ($range['max']) {
-                $rangeQuery->whereRaw('COALESCE(sale_price, price) < ?', [$range['max']]);
-            }
-            $priceRangeCounts[$range['key']] = $rangeQuery->count();
+        // 4. Calculate Price Ranges (Filtered by Search + Category + Brand + Stock)
+        // Optimized: Single query for all price ranges
+        $rangeQuery = Product::query()->where('stock_quantity', '>', 0);
+        
+        if ($request->filled('search')) {
+            $rangeQuery->where('name', 'like', '%' . $request->search . '%');
         }
+        if ($request->has('categories') && is_array($request->categories)) {
+            $rangeQuery->whereIn('category_id', $request->categories);
+        }
+        if ($request->has('brands') && is_array($request->brands)) {
+            $rangeQuery->whereIn('brand_id', $request->brands);
+        }
+
+        $priceRangeCounts = $rangeQuery->selectRaw("
+            COUNT(CASE WHEN COALESCE(sale_price, price) < 500000 THEN 1 END) as `0-500000`,
+            COUNT(CASE WHEN COALESCE(sale_price, price) >= 500000 AND COALESCE(sale_price, price) < 1000000 THEN 1 END) as `500000-1000000`,
+            COUNT(CASE WHEN COALESCE(sale_price, price) >= 1000000 AND COALESCE(sale_price, price) < 2000000 THEN 1 END) as `1000000-2000000`,
+            COUNT(CASE WHEN COALESCE(sale_price, price) >= 2000000 AND COALESCE(sale_price, price) < 3000000 THEN 1 END) as `2000000-3000000`,
+            COUNT(CASE WHEN COALESCE(sale_price, price) >= 3000000 AND COALESCE(sale_price, price) < 5000000 THEN 1 END) as `3000000-5000000`,
+            COUNT(CASE WHEN COALESCE(sale_price, price) >= 5000000 AND COALESCE(sale_price, price) < 10000000 THEN 1 END) as `5000000-10000000`,
+            COUNT(CASE WHEN COALESCE(sale_price, price) >= 10000000 THEN 1 END) as `10000000-up`
+        ")->first()->toArray();
 
         return view('store.index', compact('products', 'categories', 'brands', 'priceRangeCounts'));
     }

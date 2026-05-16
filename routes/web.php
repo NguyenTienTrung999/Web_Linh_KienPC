@@ -23,6 +23,8 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/store', [\App\Http\Controllers\StoreController::class, 'index'])->name('store.index');
 Route::post('/chatbot/chat', [ChatbotController::class, 'chat'])->name('chatbot.chat');
 Route::get('/products/{product}', [HomeController::class, 'show'])->name('products.show');
+Route::get('/hot-sale', [HomeController::class, 'hotSale'])->name('hot-sale');
+Route::get('/featured-products', [HomeController::class, 'featuredProducts'])->name('featured.products');
 Route::get('/search-suggestions', [HomeController::class, 'searchSuggestions'])->name('search.suggestions');
 Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
 Route::post('/cart/add/{product}', [CartController::class, 'add'])->name('cart.add');
