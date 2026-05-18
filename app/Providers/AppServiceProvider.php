@@ -6,6 +6,7 @@ use App\Models\Brand;
 use App\Models\Category;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
@@ -23,6 +24,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Force HTTPS in production to avoid mixed content errors behind proxies (like Render)
+        if (env('APP_ENV') === 'production') {
+            URL::forceScheme('https');
+        }
+
         // Use View::composer but ensure database queries run only once per request
         View::composer('*', function ($view) {
             static $data = null;
