@@ -32,13 +32,13 @@
 <div class="flex flex-row gap-[12px] items-start">
 <!-- Sidebar Filters: 260px -->
 <aside class="w-[260px] shrink-0">
-<form action="{{ route('store.index') }}" method="GET" id="filterForm">
+<form action="{{ request('is_seo_category') ? route('store.category', request('category_slug')) : route('store.index') }}" method="GET" id="filterForm">
     <!-- Preserve search term if it exists -->
     @if(request('search'))
         <input type="hidden" name="search" value="{{ request('search') }}">
     @endif
     <!-- Preserve active categories -->
-    @if(request('categories'))
+    @if(request('categories') && !request('is_seo_category'))
         @foreach(request('categories') as $catId)
             <input type="hidden" name="categories[]" value="{{ $catId }}">
         @endforeach
@@ -69,8 +69,8 @@
                     </li>
                     @foreach($categories as $cat)
                     <li>
-                        <a href="{{ route('store.index', ['categories' => [$cat->id]]) }}" 
-                           class="flex items-center gap-2 text-[13px] {{ in_array($cat->id, request('categories', [])) ? 'text-primary font-bold' : 'text-slate-600 dark:text-slate-400 hover:text-primary' }} transition-colors">
+                        <a href="{{ route('store.category', $cat->slug) }}" 
+                           class="flex items-center gap-2 text-[13px] {{ (request('is_seo_category') && request('category_slug') == $cat->slug) || in_array($cat->id, request('categories', [])) ? 'text-primary font-bold' : 'text-slate-600 dark:text-slate-400 hover:text-primary' }} transition-colors">
                             <span class="text-[10px] opacity-40">»</span>
                             {{ $cat->name }}
                         </a>
@@ -169,9 +169,15 @@
     <p class="text-slate-500 dark:text-slate-400 text-sm">Hiển thị từ <span class="font-bold text-slate-900 dark:text-white">{{ $products->firstItem() ?? 0 }}</span> đến <span class="font-bold text-slate-900 dark:text-white">{{ $products->lastItem() ?? 0 }}</span> trong tổng số <span class="font-bold text-slate-900 dark:text-white">{{ $products->total() }}</span> sản phẩm</p>
     <div class="flex items-center gap-3">
     <span class="text-sm text-slate-500">Sắp xếp theo:</span>
-    <form action="{{ route('store.index') }}" method="GET" id="sortForm">
+    <form action="{{ request('is_seo_category') ? route('store.category', request('category_slug')) : route('store.index') }}" method="GET" id="sortForm">
         <!-- Repopulate current filters silently for sort -->
-        @foreach(request()->except(['sort', 'page']) as $k => $v)
+        @php
+            $exceptParams = ['sort', 'page', 'is_seo_category', 'category_slug'];
+            if(request('is_seo_category')) {
+                $exceptParams[] = 'categories';
+            }
+        @endphp
+        @foreach(request()->except($exceptParams) as $k => $v)
             @if(is_array($v))
                 @foreach($v as $val)
                     <input type="hidden" name="{{ $k }}[]" value="{{ $val }}">

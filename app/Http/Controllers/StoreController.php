@@ -2,10 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use App\Models\Product;
 use App\Models\Category;
+use App\Models\Product;
+use Illuminate\Http\Request;
 
 class StoreController extends Controller
 {
@@ -48,16 +47,17 @@ class StoreController extends Controller
         // --- SIDEBAR LOGIC ---
 
         // 2. Fetch Categories (Always show all, but count only based on Search + Stock)
-        $categories = Category::withCount(['products' => function($q) use ($request) {
+        $categories = Category::withCount(['products' => function ($q) use ($request) {
             $q->where('stock_quantity', '>', 0);
             if ($request->filled('search')) {
                 $q->where('name', 'like', '%' . $request->search . '%');
             }
-        }])->get();
+        },
+        ])->get();
 
         // 3. Fetch Brands (Filtered by Search + Category + Stock)
         $brandQuery = \App\Models\Brand::query();
-        $brandQuery->whereHas('products', function($q) use ($request) {
+        $brandQuery->whereHas('products', function ($q) use ($request) {
             $q->where('stock_quantity', '>', 0);
             if ($request->filled('search')) {
                 $q->where('name', 'like', '%' . $request->search . '%');
@@ -66,8 +66,8 @@ class StoreController extends Controller
                 $q->whereIn('category_id', $request->categories);
             }
         });
-        
-        $brands = $brandQuery->withCount(['products' => function($q) use ($request) {
+
+        $brands = $brandQuery->withCount(['products' => function ($q) use ($request) {
             $q->where('stock_quantity', '>', 0);
             if ($request->filled('search')) {
                 $q->where('name', 'like', '%' . $request->search . '%');
@@ -75,13 +75,14 @@ class StoreController extends Controller
             if ($request->has('categories') && is_array($request->categories)) {
                 $q->whereIn('category_id', $request->categories);
             }
-        }])->get();
+        },
+        ])->get();
 
         // 4. Calculate Price Ranges (Filtered by Search + Category + Brand + Stock)
         // 4. Calculate Price Ranges (Filtered by Search + Category + Brand + Stock)
         // Optimized: Single query for all price ranges
         $rangeQuery = Product::query()->where('stock_quantity', '>', 0);
-        
+
         if ($request->filled('search')) {
             $rangeQuery->where('name', 'like', '%' . $request->search . '%');
         }
@@ -92,7 +93,7 @@ class StoreController extends Controller
             $rangeQuery->whereIn('brand_id', $request->brands);
         }
 
-        $priceRangeCounts = $rangeQuery->selectRaw("
+        $priceRangeCounts = $rangeQuery->selectRaw('
             COUNT(CASE WHEN COALESCE(sale_price, price) < 500000 THEN 1 END) as `0-500000`,
             COUNT(CASE WHEN COALESCE(sale_price, price) >= 500000 AND COALESCE(sale_price, price) < 1000000 THEN 1 END) as `500000-1000000`,
             COUNT(CASE WHEN COALESCE(sale_price, price) >= 1000000 AND COALESCE(sale_price, price) < 2000000 THEN 1 END) as `1000000-2000000`,
@@ -100,8 +101,18 @@ class StoreController extends Controller
             COUNT(CASE WHEN COALESCE(sale_price, price) >= 3000000 AND COALESCE(sale_price, price) < 5000000 THEN 1 END) as `3000000-5000000`,
             COUNT(CASE WHEN COALESCE(sale_price, price) >= 5000000 AND COALESCE(sale_price, price) < 10000000 THEN 1 END) as `5000000-10000000`,
             COUNT(CASE WHEN COALESCE(sale_price, price) >= 10000000 THEN 1 END) as `10000000-up`
-        ")->first()->toArray();
+        ')->first()->toArray();
 
         return view('store.index', compact('products', 'categories', 'brands', 'priceRangeCounts'));
+    }
+
+    public function category($slug, Request $request)
+    {
+        $category = Category::where('slug', $slug)->firstOrFail();
+        
+        // Inject the category into the request so the index logic works perfectly
+        $request->merge(['categories' => [$category->id], 'is_seo_category' => true, 'category_slug' => $slug]);
+        
+        return $this->index($request);
     }
 }

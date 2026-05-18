@@ -2,9 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-
 use App\Models\Product;
+use Illuminate\Http\Request;
 
 class CartController extends Controller
 {
@@ -45,21 +44,21 @@ class CartController extends Controller
         if (isset($cart[$cartKey])) {
             return response()->json([
                 'success' => false,
-                'message' => 'Sản phẩm ' . ($color ? "màu $color " : "") . 'đã có trong giỏ hàng. Vui lòng vào giỏ hàng để chỉnh sửa số lượng.',
+                'message' => 'Sản phẩm ' . ($color ? "màu {$color} " : '') . 'đã có trong giỏ hàng. Vui lòng vào giỏ hàng để chỉnh sửa số lượng.',
                 'cartCount' => $this->getCartCount($cart),
-                'cartTotal' => number_format($this->getCartTotal($cart), 0, ',', '.') . 'đ'
+                'cartTotal' => number_format($this->getCartTotal($cart), 0, ',', '.') . 'đ',
             ]);
         }
 
         $price = $product->sale_price ?: $product->price;
 
         $cart[$cartKey] = [
-            "id" => $product->id,
-            "name" => $product->name,
-            "quantity" => $request->input('quantity', 1),
-            "price" => $price,
-            "image" => $product->image,
-            "color" => $color
+            'id' => $product->id,
+            'name' => $product->name,
+            'quantity' => $request->input('quantity', 1),
+            'price' => $price,
+            'image' => $product->image,
+            'color' => $color,
         ];
 
         session()->put('cart', $cart);
@@ -69,7 +68,7 @@ class CartController extends Controller
                 'success' => true,
                 'message' => 'Sản phẩm đã được thêm vào giỏ hàng!',
                 'cartCount' => $this->getCartCount($cart),
-                'cartTotal' => number_format($this->getCartTotal($cart), 0, ',', '.') . 'đ'
+                'cartTotal' => number_format($this->getCartTotal($cart), 0, ',', '.') . 'đ',
             ]);
         }
 
@@ -84,7 +83,7 @@ class CartController extends Controller
         if ($id && $request->quantity) {
             $cart = session()->get('cart', []);
             if (isset($cart[$id])) {
-                $cart[$id]["quantity"] = $request->quantity;
+                $cart[$id]['quantity'] = $request->quantity;
                 session()->put('cart', $cart);
 
                 if ($request->ajax()) {
@@ -93,7 +92,7 @@ class CartController extends Controller
                         'message' => 'Cập nhật giỏ hàng thành công!',
                         'cartCount' => $this->getCartCount($cart),
                         'itemTotal' => number_format($cart[$id]['price'] * $cart[$id]['quantity'], 0, ',', '.') . 'đ',
-                        'cartTotal' => number_format($this->getCartTotal($cart), 0, ',', '.') . 'đ'
+                        'cartTotal' => number_format($this->getCartTotal($cart), 0, ',', '.') . 'đ',
                     ]);
                 }
             }
@@ -119,7 +118,7 @@ class CartController extends Controller
                     'success' => true,
                     'message' => 'Đã xóa sản phẩm khỏi giỏ hàng!',
                     'cartCount' => $this->getCartCount($cart),
-                    'cartTotal' => number_format($this->getCartTotal($cart), 0, ',', '.') . 'đ'
+                    'cartTotal' => number_format($this->getCartTotal($cart), 0, ',', '.') . 'đ',
                 ]);
             }
         }
@@ -139,7 +138,7 @@ class CartController extends Controller
                 'success' => true,
                 'message' => 'Đã xóa toàn bộ giỏ hàng!',
                 'cartCount' => 0,
-                'cartTotal' => '0đ'
+                'cartTotal' => '0đ',
             ]);
         }
 

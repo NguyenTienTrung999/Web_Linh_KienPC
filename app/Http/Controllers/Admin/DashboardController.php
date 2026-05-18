@@ -3,10 +3,10 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Order;
-use App\Models\User;
-use App\Models\Product;
 use App\Models\Category;
+use App\Models\Order;
+use App\Models\Product;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class DashboardController extends Controller
@@ -53,7 +53,7 @@ class DashboardController extends Controller
 
         $totalRevenue = (clone $orderQuery)->where('status', '!=', 'cancelled')->sum('total_price');
         $ordersCount = (clone $orderQuery)->count();
-        
+
         // Let customers and products remain all-time stats as they represent the overall system size
         $customersCount = User::where('role', 'user')->count();
         $productsCount = Product::count();
@@ -62,49 +62,76 @@ class DashboardController extends Controller
         $recentOrders = (clone $orderQuery)->latest()->take(5)->get();
 
         // 3. Category Distribution (Product count per category)
-        $categories = Category::withCount('products')->get()->map(function($category) use ($productsCount) {
+        $categories = Category::withCount('products')->get()->map(function ($category) use ($productsCount) {
             return [
                 'name' => $category->name,
                 'count' => $category->products_count,
-                'percentage' => $productsCount > 0 ? round(($category->products_count / $productsCount) * 100) : 0
+                'percentage' => $productsCount > 0 ? round($category->products_count / $productsCount * 100) : 0,
             ];
         });
 
         // 4. Sales Growth (Dynamic based on period)
         $salesData = [];
         $labels = [];
-        
+
         if ($startDate && $endDate) {
             $diffDays = $startDate->diffInDays($endDate);
-            
+
+            // Cấu trúc tạm để đảm bảo các ngày/tháng không có doanh thu vẫn hiển thị giá trị 0
+            $chartData = collect();
+
             if ($diffDays > 60) {
                 // Group by month
                 $cStartMonth = $startDate->copy()->startOfMonth();
-                while($cStartMonth->lte($endDate)) {
+                while ($cStartMonth->lte($endDate)) {
+                    $monthStr = $cStartMonth->format('Y-m');
                     $labels[] = $cStartMonth->format('m/Y');
-                    $salesData[] = Order::whereMonth('created_at', $cStartMonth->month)
-                                         ->whereYear('created_at', $cStartMonth->year)
-                                         ->whereBetween('created_at', [$startDate, $endDate])
-                                         ->where('status', '!=', 'cancelled')
-                                         ->sum('total_price');
+                    $chartData->put($monthStr, 0);
                     $cStartMonth->addMonth();
                 }
+
+                $groupedSales = Order::select(
+                    \Illuminate\Support\Facades\DB::raw('DATE_FORMAT(created_at, "%Y-%m") as date_group'),
+                    \Illuminate\Support\Facades\DB::raw('SUM(total_price) as total')
+                )
+                ->whereBetween('created_at', [$startDate, $endDate])
+                ->where('status', '!=', 'cancelled')
+                ->groupBy('date_group')
+                ->pluck('total', 'date_group');
+
             } else {
                 // Group by day
                 for ($i = 0; $i <= $diffDays; $i++) {
                     $date = $startDate->copy()->addDays($i);
+                    $dateStr = $date->format('Y-m-d');
                     $labels[] = $date->format('d/m');
-                    $salesData[] = Order::whereDate('created_at', $date)
-                                        ->where('status', '!=', 'cancelled')
-                                        ->sum('total_price');
+                    $chartData->put($dateStr, 0);
+                }
+
+                $groupedSales = Order::select(
+                    \Illuminate\Support\Facades\DB::raw('DATE(created_at) as date_group'),
+                    \Illuminate\Support\Facades\DB::raw('SUM(total_price) as total')
+                )
+                ->whereBetween('created_at', [$startDate, $endDate])
+                ->where('status', '!=', 'cancelled')
+                ->groupBy('date_group')
+                ->pluck('total', 'date_group');
+            }
+
+            // Gộp dữ liệu từ CSDL vào cấu trúc mảng đã chuẩn bị
+            foreach ($groupedSales as $dateGroup => $total) {
+                if ($chartData->has($dateGroup)) {
+                    $chartData[$dateGroup] = $total;
                 }
             }
+
+            $salesData = $chartData->values()->toArray();
         }
 
         return view('admin.dashboard.index', compact(
-            'totalRevenue', 
-            'ordersCount', 
-            'customersCount', 
+            'totalRevenue',
+            'ordersCount',
+            'customersCount',
             'productsCount',
             'recentOrders',
             'categories',

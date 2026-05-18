@@ -2,12 +2,12 @@
 
 namespace App\Providers;
 
-use Illuminate\Support\ServiceProvider;
-use Illuminate\Support\Facades\View;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Schema;
 use App\Models\Brand;
 use App\Models\Category;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\View;
+use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -16,7 +16,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
     }
 
     /**
@@ -51,7 +50,7 @@ class AppServiceProvider extends ServiceProvider
                                 ->distinct()
                                 ->get()
                                 ->groupBy('category_id')
-                                ->map(fn($items) => $items->pluck('brand_id'));
+                                ->map(fn ($items) => $items->pluck('brand_id'));
                         }
                     }
                 } catch (\Exception $e) {

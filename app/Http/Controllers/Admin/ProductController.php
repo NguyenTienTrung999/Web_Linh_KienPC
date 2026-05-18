@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Product;
-use App\Models\Category;
 use App\Models\Brand;
+use App\Models\Category;
+use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -42,7 +42,7 @@ class ProductController extends Controller
 
         // Use pagination since the view has pagination logic built-in
         $products = $query->paginate(10)->withQueryString();
-        
+
         return view('admin.products.index', compact('products'));
     }
 
@@ -141,14 +141,14 @@ class ProductController extends Controller
         }
 
         $gallery = $product->gallery ?? [];
-        
+
         // Handle deleted existing images
         if ($request->has('deleted_gallery')) {
             $deletedImages = $request->input('deleted_gallery');
-            $gallery = array_values(array_filter($gallery, function($img) use ($deletedImages) {
-                return !in_array($img, $deletedImages);
+            $gallery = array_values(array_filter($gallery, function ($img) use ($deletedImages) {
+                return ! in_array($img, $deletedImages);
             }));
-            
+
             // Optionally delete physical files
             foreach ($deletedImages as $img) {
                 if (Storage::disk('public')->exists($img)) {
@@ -183,9 +183,9 @@ class ProductController extends Controller
 
         $file = $request->file('file');
         $filePath = $file->getRealPath();
-        
+
         $fileHandle = fopen($filePath, 'r');
-        
+
         // Handle BOM (Byte Order Mark) for UTF-8 CSV from Excel
         $bom = fread($fileHandle, 3);
         if ($bom !== "\xEF\xBB\xBF") {
@@ -194,20 +194,20 @@ class ProductController extends Controller
 
         // Get header
         $header = fgetcsv($fileHandle);
-        
+
         $importedCount = 0;
         $rowNumber = 1; // Header is row 1
 
         // Optimization: Cache all categories and brands to avoid N+1 inside the loop
-        $allCategories = Category::all()->pluck('id', 'name')->mapWithKeys(function($id, $name) {
-            return [strtolower($name) => $id];
-        })->toArray();
-        
-        $allBrands = Brand::all()->pluck('id', 'name')->mapWithKeys(function($id, $name) {
+        $allCategories = Category::all()->pluck('id', 'name')->mapWithKeys(function ($id, $name) {
             return [strtolower($name) => $id];
         })->toArray();
 
-        $defaultCategoryId = !empty($allCategories) ? reset($allCategories) : null;
+        $allBrands = Brand::all()->pluck('id', 'name')->mapWithKeys(function ($id, $name) {
+            return [strtolower($name) => $id];
+        })->toArray();
+
+        $defaultCategoryId = ! empty($allCategories) ? reset($allCategories) : null;
 
         // Start transaction for safety
         \DB::beginTransaction();
@@ -215,12 +215,12 @@ class ProductController extends Controller
         try {
             while (($data = fgetcsv($fileHandle)) !== false) {
                 $rowNumber++;
-                
+
                 // Column Mapping:
-                // 0: Name, 1: Category Name, 2: Brand Name, 3: Price, 4: Sale Price, 
-                // 5: Stock, 6: Description, 7: Specs (key:val,key2:val2), 
+                // 0: Name, 1: Category Name, 2: Brand Name, 3: Price, 4: Sale Price,
+                // 5: Stock, 6: Description, 7: Specs (key:val,key2:val2),
                 // 8: Main Image, 9: Gallery (img1,img2), 10: Tags (tag1,tag2), 11: Warranty
-                
+
                 if (empty($data) || count($data) < 1 || empty(trim($data[0] ?? ''))) {
                     continue; // Skip empty rows or rows without a name
                 }
@@ -229,7 +229,7 @@ class ProductController extends Controller
                 $categoryName = strtolower(trim($data[1] ?? ''));
                 $categoryId = $allCategories[$categoryName] ?? $defaultCategoryId;
 
-                if (!$categoryId) {
+                if (! $categoryId) {
                     throw new \Exception("Dòng {$rowNumber}: Không tìm thấy danh mục và không có danh mục mặc định.");
                 }
 
@@ -240,14 +240,14 @@ class ProductController extends Controller
                 // 3. Parse Specs (format key:value,key2:value2)
                 $specsStr = trim($data[7] ?? '');
                 $specs = [];
-                if (!empty($specsStr)) {
+                if (! empty($specsStr)) {
                     $pairs = explode(',', $specsStr);
                     foreach ($pairs as $index => $pair) {
                         $parts = explode(':', $pair, 2);
                         if (count($parts) === 2) {
                             $specs[$index] = [
                                 'key' => trim($parts[0]),
-                                'value' => trim($parts[1])
+                                'value' => trim($parts[1]),
                             ];
                         }
                     }
@@ -255,11 +255,11 @@ class ProductController extends Controller
 
                 // 4. Parse Gallery
                 $galleryStr = trim($data[9] ?? '');
-                $gallery = !empty($galleryStr) ? array_map('trim', explode(',', $galleryStr)) : [];
+                $gallery = ! empty($galleryStr) ? array_map('trim', explode(',', $galleryStr)) : [];
 
                 // 5. Parse Prices and Stock
                 $price = (float) str_replace(['.', ','], '', $data[3] ?? 0);
-                $salePrice = (!empty($data[4])) ? (float) str_replace(['.', ','], '', $data[4]) : null;
+                $salePrice = ! empty($data[4]) ? (float) str_replace(['.', ','], '', $data[4]) : null;
                 $stock = (int) ($data[5] ?? 0);
 
                 Product::create([
@@ -277,7 +277,7 @@ class ProductController extends Controller
                     'warranty_period' => trim($data[11] ?? ''),
                     'is_active' => true,
                     'is_featured' => false,
-                    'colors' => (!empty($data[12])) ? array_map('trim', explode(',', $data[12])) : [],
+                    'colors' => ! empty($data[12]) ? array_map('trim', explode(',', $data[12])) : [],
                 ]);
                 $importedCount++;
             }
@@ -296,10 +296,10 @@ class ProductController extends Controller
     public function downloadSample()
     {
         $filePath = base_path('sample_products_100.csv');
-        if (!file_exists($filePath)) {
+        if (! file_exists($filePath)) {
             return redirect()->back()->with('error', 'File mẫu không tồn tại. Vui lòng liên hệ quản trị viên.');
         }
-        
+
         return response()->download($filePath, 'TechFlow_Sample_Products.csv');
     }
 

@@ -36,11 +36,19 @@ class Coupon extends Model
 
     public function isValid()
     {
-        if (!$this->is_active) return false;
-        if ($this->isExpired()) return false;
-        if ($this->isFull()) return false;
-        if ($this->valid_from && $this->valid_from->isFuture()) return false;
-        
+        if (! $this->is_active) {
+            return false;
+        }
+        if ($this->isExpired()) {
+            return false;
+        }
+        if ($this->isFull()) {
+            return false;
+        }
+        if ($this->valid_from && $this->valid_from->isFuture()) {
+            return false;
+        }
+
         return true;
     }
 }

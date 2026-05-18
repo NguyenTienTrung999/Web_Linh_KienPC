@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Category;
+use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
-use App\Models\Product;
-use App\Models\Category;
 
 class ChatbotController extends Controller
 {
@@ -17,18 +17,18 @@ class ChatbotController extends Controller
         $userMessage = $request->input('message');
         $apiKey = config('services.gemini.key');
 
-        if (!$apiKey) {
+        if (! $apiKey) {
             return response()->json([
                 'success' => false,
-                'reply' => 'Hệ thống AI chưa được cấu hình API Key.'
+                'reply' => 'Hệ thống AI chưa được cấu hình API Key.',
             ]);
         }
 
         try {
             // Lấy toàn bộ danh mục để AI biết cửa hàng có những gì
             $categories = Category::withCount('products')->get();
-            $categoryList = $categories->map(function($cat) {
-                return "- {$cat->name} (" . ($cat->products_count > 0 ? "Đang có hàng" : "Sắp về hàng") . ")";
+            $categoryList = $categories->map(function ($cat) {
+                return "- {$cat->name} (" . ($cat->products_count > 0 ? 'Đang có hàng' : 'Sắp về hàng') . ')';
             })->implode("\n");
 
             // Lấy 30 sản phẩm có giá tốt nhất và CÒN HÀNG
@@ -37,8 +37,8 @@ class ChatbotController extends Controller
                 ->orderByRaw('COALESCE(sale_price, price) ASC')
                 ->limit(30)
                 ->get(['name', 'slug', 'price', 'sale_price']);
-            
-            $productInfo = $products->map(function($p) {
+
+            $productInfo = $products->map(function ($p) {
                 $finalPrice = number_format($p->sale_price ?: $p->price, 0, ',', '.') . 'đ';
                 return "Sản phẩm: {$p->name} | Giá: {$finalPrice} | Đường dẫn: /products/{$p->slug}";
             })->implode("\n");
@@ -65,16 +65,16 @@ class ChatbotController extends Controller
                 ])->post("https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key={$apiKey}", [
                     'system_instruction' => [
                         'parts' => [
-                            ['text' => $systemPrompt]
-                        ]
+                            ['text' => $systemPrompt],
+                        ],
                     ],
                     'contents' => [
                         [
                             'role' => 'user',
                             'parts' => [
-                                ['text' => $userMessage]
-                            ]
-                        ]
+                                ['text' => $userMessage],
+                            ],
+                        ],
                     ],
                     'generationConfig' => [
                         'temperature' => 0.8,
@@ -85,42 +85,41 @@ class ChatbotController extends Controller
                         ['category' => 'HARM_CATEGORY_HARASSMENT', 'threshold' => 'BLOCK_NONE'],
                         ['category' => 'HARM_CATEGORY_HATE_SPEECH', 'threshold' => 'BLOCK_NONE'],
                         ['category' => 'HARM_CATEGORY_SEXUALLY_EXPLICIT', 'threshold' => 'BLOCK_NONE'],
-                        ['category' => 'HARM_CATEGORY_DANGEROUS_CONTENT', 'threshold' => 'BLOCK_NONE']
-                    ]
+                        ['category' => 'HARM_CATEGORY_DANGEROUS_CONTENT', 'threshold' => 'BLOCK_NONE'],
+                    ],
                 ]);
 
             if ($response->successful()) {
                 $data = $response->json();
                 $finishReason = $data['candidates'][0]['finishReason'] ?? '';
                 $reply = $data['candidates'][0]['content']['parts'][0]['text'] ?? 'Tôi đang suy nghĩ, bạn có thể hỏi lại được không?';
-                
+
                 if ($finishReason === 'SAFETY') {
                     $reply .= "\n\n(Lưu ý: Một phần câu trả lời bị ẩn do chính sách an toàn của AI)";
                 }
-                
+
                 return response()->json([
                     'success' => true,
-                    'reply' => $reply
+                    'reply' => $reply,
                 ]);
             }
 
             \Log::error('AI API Error: ' . $response->body());
-            
+
             // Fallback to simpler prompt if system_instruction fails or other 400 error
             if ($response->status() === 400 || $response->status() === 429) {
-                 return $this->fallbackChat($userMessage, $systemPrompt, $apiKey);
+                return $this->fallbackChat($userMessage, $systemPrompt, $apiKey);
             }
 
             return response()->json([
                 'success' => false,
-                'reply' => 'Lỗi từ AI (' . $response->status() . '): ' . ($response->json()['error']['message'] ?? 'Không xác định')
+                'reply' => 'Lỗi từ AI (' . $response->status() . '): ' . ($response->json()['error']['message'] ?? 'Không xác định'),
             ]);
-
         } catch (\Exception $e) {
             \Log::error('Chatbot Exception: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
-                'reply' => 'Lỗi kết nối: ' . $e->getMessage()
+                'reply' => 'Lỗi kết nối: ' . $e->getMessage(),
             ]);
         }
     }
@@ -135,10 +134,10 @@ class ChatbotController extends Controller
                 'contents' => [
                     [
                         'parts' => [
-                            ['text' => "Bạn là trợ lý ảo TechFlow AI. Dựa trên dữ liệu sau:\n{$systemPrompt}\n\nCâu hỏi khách hàng: " . $userMessage]
-                        ]
-                    ]
-                ]
+                            ['text' => "Bạn là trợ lý ảo TechFlow AI. Dựa trên dữ liệu sau:\n{$systemPrompt}\n\nCâu hỏi khách hàng: " . $userMessage],
+                        ],
+                    ],
+                ],
             ]);
 
             if ($response->successful()) {

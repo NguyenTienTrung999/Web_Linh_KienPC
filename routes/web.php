@@ -1,24 +1,25 @@
 <?php
 
-use App\Http\Controllers\HomeController;
-use App\Http\Controllers\Api\SePayWebhookController;
-use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\Admin\BrandController;
 use App\Http\Controllers\Admin\CategoryController;
-use App\Http\Controllers\Admin\ProductController;
-use App\Http\Controllers\CartController;
-use App\Http\Controllers\CheckoutController;
-use App\Http\Controllers\CustomAuthController;
-use App\Http\Controllers\UserProfileController;
-use App\Http\Controllers\CouponController;
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Admin\CouponController as AdminCouponController;
+use App\Http\Controllers\Admin\CustomerController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\OrderController;
-use App\Http\Controllers\Admin\CustomerController;
+use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\ReportController;
-use App\Http\Controllers\Admin\BrandController;
-use App\Http\Controllers\Admin\CouponController as AdminCouponController;
+use App\Http\Controllers\Api\SePayWebhookController;
+use App\Http\Controllers\CartController;
 use App\Http\Controllers\ChatbotController;
+use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\CouponController;
+use App\Http\Controllers\CustomAuthController;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\UserProfileController;
+use Illuminate\Support\Facades\Route;
 // Public routes
+
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/store', [\App\Http\Controllers\StoreController::class, 'index'])->name('store.index');
 Route::post('/chatbot/chat', [ChatbotController::class, 'chat'])->name('chatbot.chat');
@@ -83,8 +84,6 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-
-
 // Auth routes (Breeze)
 Route::get('/dashboard', function () {
     return redirect()->route('home');
@@ -108,3 +107,6 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => ['auth', 'a
 });
 
 require __DIR__.'/auth.php';
+
+// SEO-Friendly Category Route (Must be at the very bottom to avoid conflicting with static routes)
+Route::get('/{slug}', [\App\Http\Controllers\StoreController::class, 'category'])->name('store.category');

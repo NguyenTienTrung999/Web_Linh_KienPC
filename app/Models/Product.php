@@ -4,21 +4,10 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-
 use Illuminate\Support\Str;
 
 class Product extends Model
 {
-    protected static function boot()
-    {
-        parent::boot();
-
-        static::saving(function ($product) {
-            if (empty($product->slug)) {
-                $product->slug = Str::slug($product->name);
-            }
-        });
-    }
 
     protected $fillable = [
         'category_id',
@@ -96,5 +85,25 @@ class Product extends Model
         return $this->where('slug', $value)
             ->orWhere('id', $value)
             ->firstOrFail();
+    }
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::saving(function ($product) {
+            if (empty($product->slug)) {
+                $product->slug = Str::slug($product->name);
+            }
+        });
+
+        // Tự động xóa cache trang chủ khi có sản phẩm được thêm/sửa
+        static::saved(function ($product) {
+            \Illuminate\Support\Facades\Cache::forget('homepage_data');
+        });
+
+        // Tự động xóa cache trang chủ khi có sản phẩm bị xóa
+        static::deleted(function ($product) {
+            \Illuminate\Support\Facades\Cache::forget('homepage_data');
+        });
     }
 }

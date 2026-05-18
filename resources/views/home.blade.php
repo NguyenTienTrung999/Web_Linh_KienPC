@@ -508,7 +508,7 @@
                 </div>
             </div>
             <div class="flex items-center mt-6 md:mt-0 translate-y-3">
-                <a href="{{ route('store.index', ['categories' => [$catSection->id]]) }}" class="group relative flex items-center gap-2 px-6 py-1.5 bg-gradient-to-r from-sky-400 to-blue-700 text-white !font-bold text-sm rounded-full shadow-md hover:shadow-lg hover:scale-105 transition-all duration-300 overflow-hidden">
+                <a href="{{ route('store.category', $catSection->slug) }}" class="group relative flex items-center gap-2 px-6 py-1.5 bg-gradient-to-r from-sky-400 to-blue-700 text-white !font-bold text-sm rounded-full shadow-md hover:shadow-lg hover:scale-105 transition-all duration-300 overflow-hidden">
                     <!-- Shine Effect -->
                     <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out"></div>
                     

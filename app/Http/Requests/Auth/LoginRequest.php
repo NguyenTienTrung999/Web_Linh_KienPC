@@ -44,7 +44,7 @@ class LoginRequest extends FormRequest
 
         $login = $this->input('email');
         $fieldType = filter_var($login, FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
-        
+
         // Merge the proper field for Auth::attempt
         request()->merge([$fieldType => $login]);
 

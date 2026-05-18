@@ -14,7 +14,7 @@ class OrderController extends Controller
     public function index(Request $request)
     {
         $status = $request->get('status');
-        
+
         $orders = Order::query()
             ->when($status, function ($query, $status) {
                 return $query->where('status', $status);
@@ -44,7 +44,7 @@ class OrderController extends Controller
         ]);
 
         $order->update([
-            'status' => $request->status
+            'status' => $request->status,
         ]);
 
         // Send Notification to user if order belongs to a registered user

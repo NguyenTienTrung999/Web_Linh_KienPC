@@ -3,8 +3,6 @@
 namespace App\Notifications;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
 class OrderStatusNotification extends Notification
@@ -53,9 +51,9 @@ class OrderStatusNotification extends Notification
     protected function getMessage()
     {
         if ($this->status === 'pending') {
-            return "Chúc mừng! Bạn đã đặt hàng thành công đơn hàng #" . $this->order->id . ". Vui lòng hoàn tất thanh toán.";
+            return 'Chúc mừng! Bạn đã đặt hàng thành công đơn hàng #' . $this->order->id . '. Vui lòng hoàn tất thanh toán.';
         }
-        
+
         $statusLabels = [
             'processing' => 'đã được xác nhận và đang chờ xử lý',
             'packing' => 'đang được chuẩn bị hàng',
@@ -67,6 +65,6 @@ class OrderStatusNotification extends Notification
         ];
 
         $label = $statusLabels[$this->status] ?? $this->status;
-        return "Đơn hàng #" . $this->order->id . " của bạn " . $label;
+        return 'Đơn hàng #' . $this->order->id . ' của bạn ' . $label;
     }
 }

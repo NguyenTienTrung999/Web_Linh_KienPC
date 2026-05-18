@@ -27,7 +27,7 @@ class OrderTrackingController extends Controller
             ->with(['items.product'])
             ->first();
 
-        if (!$order) {
+        if (! $order) {
             return back()->with('error', 'Không tìm thấy đơn hàng với thông tin đã cung cấp. Vui lòng kiểm tra lại Mã đơn hàng hoặc Email.');
         }
 

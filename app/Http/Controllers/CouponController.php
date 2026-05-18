@@ -3,25 +3,25 @@
 namespace App\Http\Controllers;
 
 use App\Models\Coupon;
-use Illuminate\Http\Request;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
 
 class CouponController extends Controller
 {
     public function apply(Request $request)
     {
         $request->validate([
-            'coupon_code' => 'required|string'
+            'coupon_code' => 'required|string',
         ]);
 
         $code = $request->coupon_code;
         $coupon = Coupon::where('code', $code)->first();
 
-        if (!$coupon) {
+        if (! $coupon) {
             return response()->json(['success' => false, 'message' => 'Mã giảm giá không tồn tại!']);
         }
 
-        if (!$coupon->is_active) {
+        if (! $coupon->is_active) {
             return response()->json(['success' => false, 'message' => 'Mã giảm giá không còn hiệu lực!']);
         }
 
@@ -55,7 +55,7 @@ class CouponController extends Controller
         // Calculate discount amount immediately based on subtotal to return back to frontend if needed
         $discountAmount = 0;
         if ($coupon->discount_type === 'percent') {
-            $discountAmount = $subtotal * ($coupon->discount_value / 100);
+            $discountAmount = $subtotal * $coupon->discount_value / 100;
         } else {
             $discountAmount = $coupon->discount_value;
         }
@@ -71,11 +71,11 @@ class CouponController extends Controller
             'code' => $coupon->code,
             'discount_value' => $coupon->discount_value,
             'discount_type' => $coupon->discount_type,
-            'calculated_discount' => $discountAmount
+            'calculated_discount' => $discountAmount,
         ]);
 
         return response()->json([
-            'success' => true, 
+            'success' => true,
             'message' => 'Áp dụng mã giảm giá thành công!',
         ]);
     }
@@ -84,8 +84,8 @@ class CouponController extends Controller
     {
         session()->forget('coupon');
         return response()->json([
-            'success' => true, 
-            'message' => 'Đã gỡ mã giảm giá!'
+            'success' => true,
+            'message' => 'Đã gỡ mã giảm giá!',
         ]);
     }
 }

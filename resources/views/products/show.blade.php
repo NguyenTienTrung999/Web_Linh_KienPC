@@ -11,7 +11,7 @@
         <a href="{{ route('store.index') }}" class="hover:text-primary transition-colors">Cửa hàng</a>
         <i class="fa-solid fa-chevron-right text-[10px]"></i>
         @if($product->category)
-            <a href="{{ route('store.index', ['categories[]' => $product->category->id]) }}" class="hover:text-primary transition-colors">{{ $product->category->name }}</a>
+            <a href="{{ route('store.category', $product->category->slug) }}" class="hover:text-primary transition-colors">{{ $product->category->name }}</a>
             <i class="fa-solid fa-chevron-right text-[10px]"></i>
         @endif
         <span class="text-slate-900 dark:text-slate-200 font-medium line-clamp-1 max-w-[200px] sm:max-w-md lg:max-w-none">{{ $product->name }}</span>

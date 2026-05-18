@@ -9,16 +9,16 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Order extends Model
 {
     // Happy Path
-    const STATUS_PENDING = 'pending';     // Chờ thanh toán
-    const STATUS_PROCESSING = 'processing'; // Chờ xác nhận
-    const STATUS_PACKING = 'packing';       // Đang chuẩn bị hàng
-    const STATUS_SHIPPING = 'shipping';     // Đang giao hàng
-    const STATUS_COMPLETED = 'completed';   // Hoàn thành
+    public const STATUS_PENDING = 'pending';     // Chờ thanh toán
+    public const STATUS_PROCESSING = 'processing'; // Chờ xác nhận
+    public const STATUS_PACKING = 'packing';       // Đang chuẩn bị hàng
+    public const STATUS_SHIPPING = 'shipping';     // Đang giao hàng
+    public const STATUS_COMPLETED = 'completed';   // Hoàn thành
 
     // Exception Path
-    const STATUS_CANCELLED = 'cancelled';   // Đã hủy
-    const STATUS_FAILED = 'failed';         // Thất bại
-    const STATUS_REFUNDED = 'refunded';     // Hoàn tiền/Trả hàng
+    public const STATUS_CANCELLED = 'cancelled';   // Đã hủy
+    public const STATUS_FAILED = 'failed';         // Thất bại
+    public const STATUS_REFUNDED = 'refunded';     // Hoàn tiền/Trả hàng
 
     protected $fillable = [
         'user_id',

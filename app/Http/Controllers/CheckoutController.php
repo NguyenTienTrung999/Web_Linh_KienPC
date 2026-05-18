@@ -4,16 +4,31 @@ namespace App\Http\Controllers;
 
 use App\Models\Order;
 use App\Models\OrderItem;
-use App\Models\Product;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
-use Barryvdh\DomPDF\Facade\Pdf;
 
 class CheckoutController extends Controller
 {
+    private function authorizeOrderAccess(Order $order)
+    {
+        if (auth()->check()) {
+            if (auth()->user()->isAdmin()) return true;
+            if ($order->user_id === auth()->id()) return true;
+        } else {
+            // For guest orders, we check a specific session key set during checkout
+            if (is_null($order->user_id) && Session::has('guest_order_' . $order->id)) return true;
+        }
+        return false;
+    }
+
     public function invoice(Order $order)
     {
+        if (!$this->authorizeOrderAccess($order)) {
+            abort(403, 'Bạn không có quyền truy cập hóa đơn này.');
+        }
+
         $order->load(['items.product']);
         $pdf = Pdf::loadView('pdf.invoice', compact('order'));
         return $pdf->download('invoice-' . str_pad($order->id, 8, '0', STR_PAD_LEFT) . '.pdf');
@@ -27,7 +42,7 @@ class CheckoutController extends Controller
     public function store(Request $request)
     {
         $cart = session()->get('cart', []);
-        
+
         if (empty($cart)) {
             return redirect()->route('home')->with('error', 'Giỏ hàng trống!');
         }
@@ -44,7 +59,7 @@ class CheckoutController extends Controller
         try {
             DB::beginTransaction();
 
-            $subtotal = array_sum(array_map(function($item) {
+            $subtotal = array_sum(array_map(function ($item) {
                 return $item['price'] * $item['quantity'];
             }, $cart));
 
@@ -58,10 +73,12 @@ class CheckoutController extends Controller
                 $couponId = $coupon['id'];
                 $couponCode = $coupon['code'];
             }
-            
+
             $shipping_fee = $request->shipping_method === 'express' ? 65000 : 30000;
             $total_price = $subtotal + $shipping_fee - $discount;
-            if ($total_price < 0) $total_price = 0;
+            if ($total_price < 0) {
+                $total_price = 0;
+            }
 
             $order = Order::create([
                 'user_id' => auth()->id(),
@@ -108,7 +125,7 @@ class CheckoutController extends Controller
             }
 
             DB::commit();
-            
+
             // Send Notification to user
             if (auth()->check()) {
                 auth()->user()->notify(new \App\Notifications\OrderStatusNotification($order, $order->status));
@@ -121,8 +138,12 @@ class CheckoutController extends Controller
                 Session::forget('coupon');
             }
 
-            return redirect()->route('checkout.confirm', $order->id)->with('success', 'Đặt hàng thành công!');
+            // Set session for guest so they can view confirmation and status
+            if (!auth()->check()) {
+                Session::put('guest_order_' . $order->id, true);
+            }
 
+            return redirect()->route('checkout.confirm', $order->id)->with('success', 'Đặt hàng thành công!');
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->with('error', 'Có lỗi xảy ra: ' . $e->getMessage());
@@ -131,6 +152,10 @@ class CheckoutController extends Controller
 
     public function confirm(Order $order)
     {
+        if (!$this->authorizeOrderAccess($order)) {
+            abort(403, 'Bạn không có quyền xem thông tin đơn hàng này.');
+        }
+
         return view('checkout.confirm', compact('order'));
     }
 
@@ -139,8 +164,12 @@ class CheckoutController extends Controller
      */
     public function getStatus(Order $order)
     {
+        if (!$this->authorizeOrderAccess($order)) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
         return response()->json([
-            'status' => $order->status
+            'status' => $order->status,
         ]);
     }
 
@@ -149,6 +178,10 @@ class CheckoutController extends Controller
      */
     public function clearCartAfterPayment(Order $order)
     {
+        if (!$this->authorizeOrderAccess($order)) {
+            return response()->json(['success' => false, 'error' => 'Unauthorized'], 403);
+        }
+
         if ($order->status !== 'pending') {
             Session::forget('cart');
             Session::forget('coupon');

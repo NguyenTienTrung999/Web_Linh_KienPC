@@ -22,4 +22,4 @@ foreach ($products as $p) {
     }
 }
 
-echo "Đã cập nhật xong $count sản phẩm!";
+echo "Đã cập nhật xong {$count} sản phẩm!";

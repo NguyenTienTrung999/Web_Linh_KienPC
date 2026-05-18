@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\UserAddress;
 use App\Models\Order;
+use App\Models\UserAddress;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
@@ -33,13 +33,13 @@ class UserProfileController extends Controller
         }
 
         $order->load(['items.product']);
-        
+
         return response()->json([
             'order' => array_merge($order->toArray(), [
                 'status_label' => $order->getStatusLabel(),
-                'status_color' => $order->getStatusColor()
+                'status_color' => $order->getStatusColor(),
             ]),
-            'items' => $order->items
+            'items' => $order->items,
         ]);
     }
 
@@ -51,7 +51,7 @@ class UserProfileController extends Controller
         }
 
         // Only allow editing if pending or processing
-        if (!in_array($order->status, ['pending', 'processing'])) {
+        if (! in_array($order->status, ['pending', 'processing'])) {
             return response()->json(['error' => 'Không thể chỉnh sửa đơn hàng ở trạng thái này'], 422);
         }
 
@@ -80,7 +80,7 @@ class UserProfileController extends Controller
         }
 
         // Only allow cancellation if pending, processing, or packing
-        if (!in_array($order->status, [Order::STATUS_PENDING, Order::STATUS_PROCESSING, Order::STATUS_PACKING])) {
+        if (! in_array($order->status, [Order::STATUS_PENDING, Order::STATUS_PROCESSING, Order::STATUS_PACKING])) {
             return response()->json(['error' => 'Không thể hủy đơn hàng ở giai đoạn này'], 422);
         }
 
@@ -117,10 +117,10 @@ class UserProfileController extends Controller
     {
         $user = auth()->user();
         $notifications = $user->notifications()->latest()->paginate(10);
-        
+
         // Mark as read when viewing
         $user->unreadNotifications->markAsRead();
-        
+
         return view('profile.notifications', compact('user', 'notifications'));
     }
 
@@ -142,7 +142,7 @@ class UserProfileController extends Controller
         ]);
 
         $user = auth()->user();
-        
+
         // If this is the first address, make it default regardless
         if ($user->addresses()->count() === 0) {
             $validated['is_default'] = true;
@@ -215,7 +215,7 @@ class UserProfileController extends Controller
     public function update(Request $request)
     {
         $user = auth()->user();
-        
+
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'phone' => ['nullable', 'string', 'max:20'],

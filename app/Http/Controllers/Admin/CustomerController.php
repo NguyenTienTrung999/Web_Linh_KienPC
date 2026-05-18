@@ -15,13 +15,13 @@ class CustomerController extends Controller
     {
         $search = $request->get('search');
         $sort = $request->get('sort', 'newest');
-        
+
         $query = User::where('role', 'user')
             ->when($search, function ($query, $search) {
-                return $query->where(function($q) use ($search) {
+                return $query->where(function ($q) use ($search) {
                     $q->where('name', 'like', "%{$search}%")
-                      ->orWhere('email', 'like', "%{$search}%")
-                      ->orWhere('phone', 'like', "%{$search}%");
+                        ->orWhere('email', 'like', "%{$search}%")
+                        ->orWhere('phone', 'like', "%{$search}%");
                 });
             });
 
@@ -34,14 +34,15 @@ class CustomerController extends Controller
                 $query->withCount('orders')->orderBy('orders_count', 'desc');
                 break;
             case 'highest_spending':
-                $query->withSum(['orders' => function($q) {
+                $query->withSum(['orders' => function ($q) {
                     $q->where('status', 'completed');
-                }], 'total_price')->orderBy('orders_sum_total_price', 'desc');
+                },
+                ], 'total_price')->orderBy('orders_sum_total_price', 'desc');
                 break;
             case 'highest_single_purchase':
                 $query->addSelect(['max_order_price' => \App\Models\Order::selectRaw('max(total_price)')
                     ->whereColumn('user_id', 'users.id')
-                    ->where('status', 'completed')
+                    ->where('status', 'completed'),
                 ])->orderBy('max_order_price', 'desc');
                 break;
             default: // newest
@@ -65,9 +66,10 @@ class CustomerController extends Controller
             }
         }
 
-        $customer->load(['orders' => function($query) {
+        $customer->load(['orders' => function ($query) {
             $query->latest();
-        }, 'addresses']);
+        }, 'addresses',
+        ]);
 
         $totalSpent = $customer->orders()->where('status', 'completed')->sum('total_price');
         $ordersCount = $customer->orders()->count();
@@ -85,7 +87,7 @@ class CustomerController extends Controller
         }
 
         $customer->update([
-            'password' => \Illuminate\Support\Facades\Hash::make('123456')
+            'password' => \Illuminate\Support\Facades\Hash::make('123456'),
         ]);
 
         return back()->with('success', 'Mật khẩu khách hàng ' . $customer->name . ' đã được đặt lại về "123456"!');

@@ -376,7 +376,7 @@
                             class="absolute top-full left-0 w-72 bg-white dark:bg-slate-900 shadow-2xl rounded-xl border border-slate-200 dark:border-slate-800 py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-[2000] transform translate-y-2 group-hover:translate-y-0">
                             @foreach($globalCategories as $cat)
                                 <div class="relative group/sub">
-                                    <a href="{{ route('store.index', ['categories' => [$cat->id]]) }}"
+                                    <a href="{{ route('store.category', $cat->slug) }}"
                                         class="flex items-center justify-between px-5 py-3.5 text-[13px] font-bold text-slate-700 dark:text-slate-300 group-hover/sub:bg-primary group-hover/sub:text-white transition-all">
                                         <span class="flex items-center gap-3">
                                             @php
@@ -412,7 +412,7 @@
                                                 @endphp
 
                                                 @forelse($catBrands as $brand)
-                                                    <a href="{{ route('store.index', ['categories' => [$cat->id], 'brands' => [$brand->id]]) }}"
+                                                    <a href="{{ route('store.category', [$cat->slug, 'brands' => [$brand->id]]) }}"
                                                         class="text-sm text-slate-600 dark:text-slate-400 hover:text-primary hover:translate-x-1 transition-all flex items-center gap-3 group/item">
                                                         <div
                                                             class="w-1.5 h-1.5 rounded-full bg-slate-300 group-hover/item:bg-primary transition-colors">
@@ -434,25 +434,25 @@
                                                 </h4>
                                             </div>
                                             <div class="flex flex-col gap-3">
-                                                <a href="{{ route('store.index', ['categories' => [$cat->id], 'min_price' => 0, 'max_price' => 1000000]) }}"
+                                                <a href="{{ route('store.category', [$cat->slug, 'min_price' => 0, 'max_price' => 1000000]) }}"
                                                     class="text-sm text-slate-600 dark:text-slate-400 hover:text-primary hover:translate-x-1 transition-all flex items-center gap-2 group/p">
                                                     <i
                                                         class="fa-solid fa-tags text-[10px] opacity-0 group-hover/p:opacity-100 transition-all"></i>
                                                     Dưới 1 triệu
                                                 </a>
-                                                <a href="{{ route('store.index', ['categories' => [$cat->id], 'min_price' => 1000000, 'max_price' => 3000000]) }}"
+                                                <a href="{{ route('store.category', [$cat->slug, 'min_price' => 1000000, 'max_price' => 3000000]) }}"
                                                     class="text-sm text-slate-600 dark:text-slate-400 hover:text-primary hover:translate-x-1 transition-all flex items-center gap-2 group/p">
                                                     <i
                                                         class="fa-solid fa-tags text-[10px] opacity-0 group-hover/p:opacity-100 transition-all"></i>
                                                     1 triệu - 3 triệu
                                                 </a>
-                                                <a href="{{ route('store.index', ['categories' => [$cat->id], 'min_price' => 3000000, 'max_price' => 4000000]) }}"
+                                                <a href="{{ route('store.category', [$cat->slug, 'min_price' => 3000000, 'max_price' => 4000000]) }}"
                                                     class="text-sm text-slate-600 dark:text-slate-400 hover:text-primary hover:translate-x-1 transition-all flex items-center gap-2 group/p">
                                                     <i
                                                         class="fa-solid fa-tags text-[10px] opacity-0 group-hover/p:opacity-100 transition-all"></i>
                                                     3 triệu - 4 triệu
                                                 </a>
-                                                <a href="{{ route('store.index', ['categories' => [$cat->id], 'min_price' => 4000000]) }}"
+                                                <a href="{{ route('store.category', [$cat->slug, 'min_price' => 4000000]) }}"
                                                     class="text-sm text-slate-600 dark:text-slate-400 hover:text-primary hover:translate-x-1 transition-all flex items-center gap-2 group/p">
                                                     <i
                                                         class="fa-solid fa-tags text-[10px] opacity-0 group-hover/p:opacity-100 transition-all"></i>
@@ -545,7 +545,7 @@
 
                         @foreach($globalCategories as $cat)
                             <div class="relative group/sub">
-                                <a href="{{ route('store.index', ['categories' => [$cat->id]]) }}"
+                                <a href="{{ route('store.category', $cat->slug) }}"
                                     class="flex items-center justify-between px-5 py-3.5 text-[13px] font-bold text-slate-700 dark:text-slate-300 group-hover/sub:bg-primary group-hover/sub:text-white transition-all">
                                     <span class="flex items-center gap-3">
                                         @php
@@ -581,7 +581,7 @@
                                             @endphp
 
                                             @forelse($catBrands as $brand)
-                                                <a href="{{ route('store.index', ['categories' => [$cat->id], 'brands' => [$brand->id]]) }}"
+                                                <a href="{{ route('store.category', [$cat->slug, 'brands' => [$brand->id]]) }}"
                                                     class="text-sm text-slate-600 dark:text-slate-400 hover:text-primary hover:translate-x-1 transition-all flex items-center gap-3 group/item">
                                                     <div
                                                         class="w-1.5 h-1.5 rounded-full bg-slate-300 group-hover/item:bg-primary transition-colors">
@@ -603,25 +603,25 @@
                                             </h4>
                                         </div>
                                         <div class="flex flex-col gap-3">
-                                            <a href="{{ route('store.index', ['categories' => [$cat->id], 'min_price' => 0, 'max_price' => 1000000]) }}"
+                                            <a href="{{ route('store.category', [$cat->slug, 'min_price' => 0, 'max_price' => 1000000]) }}"
                                                 class="text-sm text-slate-600 dark:text-slate-400 hover:text-primary hover:translate-x-1 transition-all flex items-center gap-2 group/p">
                                                 <i
                                                     class="fa-solid fa-tags text-[10px] opacity-0 group-hover/p:opacity-100 transition-all"></i>
                                                 Dưới 1 triệu
                                             </a>
-                                            <a href="{{ route('store.index', ['categories' => [$cat->id], 'min_price' => 1000000, 'max_price' => 3000000]) }}"
+                                            <a href="{{ route('store.category', [$cat->slug, 'min_price' => 1000000, 'max_price' => 3000000]) }}"
                                                 class="text-sm text-slate-600 dark:text-slate-400 hover:text-primary hover:translate-x-1 transition-all flex items-center gap-2 group/p">
                                                 <i
                                                     class="fa-solid fa-tags text-[10px] opacity-0 group-hover/p:opacity-100 transition-all"></i>
                                                 1 triệu - 3 triệu
                                             </a>
-                                            <a href="{{ route('store.index', ['categories' => [$cat->id], 'min_price' => 3000000, 'max_price' => 4000000]) }}"
+                                            <a href="{{ route('store.category', [$cat->slug, 'min_price' => 3000000, 'max_price' => 4000000]) }}"
                                                 class="text-sm text-slate-600 dark:text-slate-400 hover:text-primary hover:translate-x-1 transition-all flex items-center gap-2 group/p">
                                                 <i
                                                     class="fa-solid fa-tags text-[10px] opacity-0 group-hover/p:opacity-100 transition-all"></i>
                                                 3 triệu - 4 triệu
                                             </a>
-                                            <a href="{{ route('store.index', ['categories' => [$cat->id], 'min_price' => 4000000]) }}"
+                                            <a href="{{ route('store.category', [$cat->slug, 'min_price' => 4000000]) }}"
                                                 class="text-sm text-slate-600 dark:text-slate-400 hover:text-primary hover:translate-x-1 transition-all flex items-center gap-2 group/p">
                                                 <i
                                                     class="fa-solid fa-tags text-[10px] opacity-0 group-hover/p:opacity-100 transition-all"></i>
@@ -647,7 +647,7 @@
                                 }
                             }
                         @endphp
-                        <a href="{{ route('store.index', ['categories' => [$navCat->id]]) }}"
+                        <a href="{{ route('store.category', $navCat->slug) }}"
                             class="text-[14px] font-semibold uppercase tracking-widest text-slate-600 dark:text-slate-400 hover:text-primary transition-colors flex items-center gap-2" style="font-size:14px !important; font-weight:600 !important">
                             <i class="fa-solid {{ $navIconClass }} text-sm opacity-50"></i> {{ $navCat->name }}
                         </a>
