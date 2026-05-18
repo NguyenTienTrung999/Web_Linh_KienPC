@@ -5,6 +5,8 @@ COPY . /var/www/html
 
 # Cấu hình môi trường Webroot cho Nginx trỏ vào thư mục public của Laravel
 ENV WEBROOT /var/www/html/public
+
+COPY default.conf /etc/nginx/sites-available/default.conf
 ENV APP_ENV production
 ENV APP_DEBUG false
 
@@ -24,3 +26,4 @@ EXPOSE 80
 
 # Chỉ định Container chạy file script này khi khởi động
 CMD ["/var/www/html/deploy.sh"]
+
