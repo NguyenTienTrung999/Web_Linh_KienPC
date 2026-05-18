@@ -1,4 +1,4 @@
-#!/sh
+#!/bin/sh
 echo "Hệ thống đang kiểm tra và nạp cấu trúc database mới..."
 php artisan migrate --force
 
