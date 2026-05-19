@@ -10,6 +10,15 @@
 <h2 class="text-3xl font-black text-slate-900 dark:text-white leading-tight tracking-tight">Đăng nhập</h2>
 <p class="text-slate-500 dark:text-slate-400 mt-2">Chào mừng bạn trở lại với hệ sinh thái TechFlow</p>
 </div>
+
+<!-- Session Status -->
+@if (session('status'))
+    <div class="mb-6 p-4 rounded-xl bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-400 text-sm font-semibold flex items-center gap-3">
+        <i class="fa-solid fa-circle-check"></i>
+        <span>{{ session('status') }}</span>
+    </div>
+@endif
+
 <!-- Login Form -->
 <form action="{{ route('login') }}" method="POST" class="space-y-5">
 @csrf
@@ -29,9 +38,9 @@
 <label class="text-sm font-semibold text-slate-700 dark:text-slate-300">Mật khẩu</label>
 <div class="relative">
 <i class="fa-solid fa-lock absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-lg"></i>
-<input name="password" class="w-full pl-11 pr-12 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all text-slate-900 dark:text-white" placeholder="Nhập mật khẩu" type="password" required/>
-<button class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-primary" type="button">
-<i class="fa-solid fa-eye text-lg"></i>
+<input id="password-input" name="password" class="w-full pl-11 pr-12 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all text-slate-900 dark:text-white" placeholder="Nhập mật khẩu" type="password" required/>
+<button id="toggle-password" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-primary transition-colors" type="button">
+<i id="password-icon" class="fa-solid fa-eye text-lg"></i>
 </button>
 </div>
 @error('password')
@@ -62,4 +71,26 @@
 </div>
 </div>
 </main>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const toggleBtn = document.getElementById('toggle-password');
+        const passwordInput = document.getElementById('password-input');
+        const passwordIcon = document.getElementById('password-icon');
+
+        if (toggleBtn && passwordInput && passwordIcon) {
+            toggleBtn.addEventListener('click', function() {
+                if (passwordInput.type === 'password') {
+                    passwordInput.type = 'text';
+                    passwordIcon.classList.remove('fa-eye');
+                    passwordIcon.classList.add('fa-eye-slash');
+                } else {
+                    passwordInput.type = 'password';
+                    passwordIcon.classList.remove('fa-eye-slash');
+                    passwordIcon.classList.add('fa-eye');
+                }
+            });
+        }
+    });
+</script>
 @endsection

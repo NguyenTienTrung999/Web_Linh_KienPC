@@ -20,12 +20,7 @@
     </a>
 </div>
 
-@if(session('success'))
-<div class="bg-green-50 text-green-600 p-4 rounded-lg mb-6 text-sm font-semibold flex items-center gap-2">
-    <i class="fa-solid fa-check-circle"></i>
-    {{ session('success') }}
-</div>
-@endif
+
 
 <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-sm">
     <div class="overflow-x-auto">

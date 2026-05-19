@@ -190,7 +190,7 @@
 
 <!-- Deal Hot Every Day -->
 @if($flashSales->count() > 0)
-<section class="py-12 bg-gradient-to-b from-[#0c4a6e] via-[#2badee] to-white transition-all duration-700">
+<section class="py-12 bg-gradient-to-b from-[#0c4a6e] via-[#2badee] to-white transition-all duration-700 reveal-on-scroll">
     <div class="max-w-[1600px] mx-auto border border-slate-300 dark:border-slate-700 rounded-2xl p-8 bg-white/40 dark:bg-slate-900/40 backdrop-blur-md shadow-sm mb-[22px] relative overflow-hidden">
         <div class="flex flex-col md:flex-row md:items-center justify-between mb-10 gap-6 relative z-10 -mt-[33px] -ml-[33px] -mr-[32px] pr-8">
             <div class="flex">
@@ -278,7 +278,7 @@
                 <!-- Image Area: 240px -->
                 <div class="h-[240px] bg-white relative overflow-hidden shrink-0 rounded-t-xl product-trigger">
                     <a href="{{ route('products.show', $product->slug ?? $product->id) }}" class="block h-full">
-                        <img alt="{{ $product->name }}" class="w-full h-full object-contain p-6 group-hover:scale-110 transition-transform duration-700" src="{{ $product->image ? asset('storage/' . $product->image) : 'https://placehold.co/400x400?text=No+Image' }}" onerror="this.onerror=null; this.src='https://placehold.co/400x400?text=No+Image';"/>
+                        <img loading="lazy" alt="{{ $product->name }}" class="w-full h-full object-contain p-6 group-hover:scale-110 transition-transform duration-700" src="{{ $product->image ? asset('storage/' . $product->image) : 'https://placehold.co/400x400?text=No+Image' }}" onerror="this.onerror=null; this.src='https://placehold.co/400x400?text=No+Image';"/>
                     </a>
                 </div>
 
@@ -341,7 +341,7 @@
 @endif
 
 <!-- Featured Products -->
-<section id="featured" class="pb-4 pt-16">
+<section id="featured" class="pb-4 pt-16 reveal-on-scroll">
     <div class="max-w-[1600px] mx-auto border border-slate-300 dark:border-slate-700 rounded-2xl p-8 bg-white dark:bg-slate-900 shadow-sm mb-[22px] relative overflow-hidden">
         <div class="flex items-center justify-between mb-8 -mt-[33px] -ml-[33px] -mr-[32px] pr-8">
             <div class="flex">
@@ -411,7 +411,7 @@
                 <!-- Image Area: 240px -->
                 <div class="h-[240px] bg-white relative overflow-hidden shrink-0 rounded-t-xl product-trigger">
                     <a href="{{ route('products.show', $product->slug ?? $product->id) }}" class="block h-full">
-                        <img alt="{{ $product->name }}" class="w-full h-full object-contain p-6 group-hover:scale-110 transition-transform duration-700" src="{{ $product->image ? asset('storage/' . $product->image) : 'https://placehold.co/400x400?text=No+Image' }}" onerror="this.onerror=null; this.src='https://placehold.co/400x400?text=No+Image';"/>
+                        <img loading="lazy" alt="{{ $product->name }}" class="w-full h-full object-contain p-6 group-hover:scale-110 transition-transform duration-700" src="{{ $product->image ? asset('storage/' . $product->image) : 'https://placehold.co/400x400?text=No+Image' }}" onerror="this.onerror=null; this.src='https://placehold.co/400x400?text=No+Image';"/>
                     </a>
                 </div>
 
@@ -480,7 +480,7 @@
 <!-- Dynamic Category Sections -->
 @foreach($categoryProducts as $catData)
 @php $catSection = $catData['category']; $catProducts = $catData['products']; @endphp
-<section class="py-4">
+<section class="py-4 reveal-on-scroll">
     <div class="max-w-[1600px] mx-auto border border-slate-300 dark:border-slate-700 rounded-2xl p-8 bg-white dark:bg-slate-900 shadow-sm mb-[22px] relative overflow-hidden">
         <div class="flex flex-col md:flex-row md:items-center justify-between mb-8 -mt-[33px] -ml-[33px] -mr-[32px] pr-8">
             <div class="flex">
@@ -559,7 +559,7 @@
 
                 <div class="h-[240px] bg-white relative overflow-hidden shrink-0 rounded-t-xl product-trigger">
                     <a href="{{ route('products.show', $product->slug ?? $product->id) }}" class="block h-full">
-                        <img alt="{{ $product->name }}" class="w-full h-full object-contain p-6 group-hover:scale-110 transition-transform duration-700" src="{{ $product->image ? asset('storage/' . $product->image) : 'https://placehold.co/400x400?text=No+Image' }}" onerror="this.onerror=null; this.src='https://placehold.co/400x400?text=No+Image';"/>
+                        <img loading="lazy" alt="{{ $product->name }}" class="w-full h-full object-contain p-6 group-hover:scale-110 transition-transform duration-700" src="{{ $product->image ? asset('storage/' . $product->image) : 'https://placehold.co/400x400?text=No+Image' }}" onerror="this.onerror=null; this.src='https://placehold.co/400x400?text=No+Image';"/>
                     </a>
                 </div>
                 <div class="p-4 flex flex-col gap-[6px] border-t border-slate-50 dark:border-slate-800 flex-grow">

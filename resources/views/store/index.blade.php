@@ -198,7 +198,7 @@
     <div class="grid grid-cols-5 gap-[12px] justify-items-center">
         @forelse($products as $index => $product)
             <!-- Product Card (Same as before) -->
-            <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-300 dark:border-slate-700 hover:z-[50] group hover:shadow-2xl transition-all duration-300 flex flex-col w-[250px] h-[400px] relative product-card">
+            <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-300 dark:border-slate-700 hover:z-[50] group hover:shadow-2xl transition-all duration-300 flex flex-col w-[250px] h-[400px] relative product-card reveal-on-scroll">
                 <!-- ... existing product card code ... -->
                 <!-- Copying the full card content to ensure it's not lost -->
                 <!-- Product Preview Popover -->
@@ -256,7 +256,7 @@
                 <!-- Image Area -->
                 <div class="h-[240px] bg-white relative overflow-hidden shrink-0 rounded-t-xl product-trigger">
                     <a href="{{ route('products.show', $product->slug ?? $product->id) }}" class="block h-full">
-                        <img alt="{{ $product->name }}" class="w-full h-full object-contain group-hover:scale-110 transition-transform duration-700 p-6" src="{{ $product->image ? asset('storage/' . $product->image) : 'https://placehold.co/400x300?text=No+Image' }}"/>
+                        <img loading="lazy" alt="{{ $product->name }}" class="w-full h-full object-contain group-hover:scale-110 transition-transform duration-700 p-6" src="{{ $product->image ? asset('storage/' . $product->image) : 'https://placehold.co/400x300?text=No+Image' }}"/>
                     </a>
                 </div>
 

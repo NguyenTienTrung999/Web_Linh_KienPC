@@ -17,6 +17,15 @@
                             Nhập email của bạn để nhận liên kết khôi phục mật khẩu
                         </p>
 </div>
+
+<!-- Session Status -->
+@if (session('status'))
+    <div class="mb-6 p-4 rounded-xl bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-400 text-sm font-semibold flex items-center gap-3">
+        <i class="fa-solid fa-circle-check"></i>
+        <span>{{ session('status') }}</span>
+    </div>
+@endif
+
 <!-- Input Section -->
 <form method="POST" action="{{ route('password.email') }}">
 @csrf

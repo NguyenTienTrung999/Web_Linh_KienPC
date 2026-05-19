@@ -144,6 +144,17 @@
             animation: bounce-subtle 2s infinite ease-in-out;
         }
 
+        /* Reveal on Scroll */
+        .reveal-on-scroll {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+        .reveal-on-scroll.is-revealed {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
         /* Compact Header Styles */
         header {
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -523,6 +534,32 @@
                                         <span class="text-xs font-bold text-slate-900 dark:text-white line-clamp-1 max-w-[80px]">{{ Auth::user()->name }}</span>
                                     </div>
                                 </button>
+                                <!-- Missing Dropdown Menu Added Here -->
+                                <div class="absolute right-0 top-full mt-2 w-56 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-2xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-[9999] overflow-hidden transform translate-y-2 group-hover:translate-y-0">
+                                    <div class="px-5 py-4 bg-slate-50 dark:bg-slate-700/50 border-b border-slate-100 dark:border-slate-600">
+                                        <p class="text-xs font-bold text-slate-400 uppercase mb-1">Quản lý tài khoản</p>
+                                        <p class="text-sm font-bold text-slate-900 dark:text-white truncate">{{ Auth::user()->email }}</p>
+                                    </div>
+                                    <div class="p-2">
+                                        <a href="{{ route('profile.index') }}" class="flex items-center gap-3 px-3 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-primary hover:text-white rounded-lg transition-colors group/item">
+                                            <i class="fa-solid fa-id-card text-slate-400 group-hover/item:text-white"></i> Hồ sơ của tôi
+                                        </a>
+                                        @if(Auth::user()->role === 'admin')
+                                            <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-3 px-3 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-primary hover:text-white rounded-lg transition-colors group/item">
+                                                <i class="fa-solid fa-gauge text-slate-400 group-hover/item:text-white"></i> Trang quản trị
+                                            </a>
+                                        @endif
+                                        <a href="{{ route('order.tracking') }}" class="flex items-center gap-3 px-3 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-primary hover:text-white rounded-lg transition-colors group/item">
+                                            <i class="fa-solid fa-box text-slate-400 group-hover/item:text-white"></i> Đơn hàng của tôi
+                                        </a>
+                                    </div>
+                                    <form method="POST" action="{{ route('logout') }}" class="m-0 border-t border-slate-100 dark:border-slate-700 p-2">
+                                        @csrf
+                                        <button type="submit" class="w-full flex items-center gap-3 px-3 py-2 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg font-bold transition-colors">
+                                            <i class="fa-solid fa-right-from-bracket text-red-400"></i> Đăng xuất
+                                        </button>
+                                    </form>
+                                </div>
                             </div>
                         @endguest
                     </div>
@@ -1242,6 +1279,29 @@
             function scrollToBottom() {
                 chatMessages.scrollTop = chatMessages.scrollHeight;
             }
+        });
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Reveal on Scroll Logic
+            const observerOptions = {
+                root: null,
+                rootMargin: '0px',
+                threshold: 0.1
+            };
+
+            const observer = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('is-revealed');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, observerOptions);
+
+            document.querySelectorAll('.reveal-on-scroll').forEach(el => {
+                observer.observe(el);
+            });
         });
     </script>
 </body>

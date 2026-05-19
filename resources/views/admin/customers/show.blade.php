@@ -38,12 +38,6 @@
         </div>
     </div>
 
-    @if(session('success'))
-    <div class="bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 p-4 rounded-2xl flex items-center gap-3 animate-in fade-in slide-in-from-top-4 duration-300">
-        <i class="fa-solid fa-circle-check"></i>
-        <p class="text-xs font-black uppercase tracking-wider">{{ session('success') }}</p>
-    </div>
-    @endif
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <!-- Left Col: Profile Info -->

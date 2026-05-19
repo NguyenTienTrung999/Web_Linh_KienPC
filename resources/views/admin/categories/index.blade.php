@@ -88,20 +88,7 @@
     </div>
 </div>
 
-<!-- Flash Messages -->
-@if(session('success'))
-    <div class="mb-6 p-4 rounded-xl bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-400 flex items-center gap-3">
-        <i class="fa-solid fa-circle-check text-lg"></i>
-        <span class="font-medium">{{ session('success') }}</span>
-    </div>
-@endif
 
-@if(session('error'))
-    <div class="mb-6 p-4 rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 flex items-center gap-3">
-        <i class="fa-solid fa-triangle-exclamation text-lg"></i>
-        <span class="font-medium">{{ session('error') }}</span>
-    </div>
-@endif
 
 <!-- Table Container -->
 <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 overflow-hidden">

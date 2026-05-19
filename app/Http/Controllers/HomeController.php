@@ -20,6 +20,7 @@ class HomeController extends Controller
             $categoryProducts = [];
 
             foreach ($categories as $cat) {
+                /** @var \App\Models\Category $cat */
                 // Chấp nhận N queries (nhưng có Cache nên chỉ chạy 1 lần mỗi giờ)
                 $products = $cat->products()
                     ->where('stock_quantity', '>', 0)
