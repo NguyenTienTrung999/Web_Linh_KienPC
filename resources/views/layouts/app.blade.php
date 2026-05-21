@@ -230,7 +230,7 @@
         class="fixed top-0 w-full z-[1000] bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 shadow-sm antialiased">
         <!-- Top Row -->
         <div id="top-row" class="h-[90px] border-b border-slate-100 dark:border-slate-800 transition-all duration-300">
-            <div class="max-w-[1600px] mx-auto h-full px-4 flex items-center justify-between gap-8">
+            <div class="max-w-[1600px] mx-auto h-full px-4 sm:px-6 lg:px-8 flex items-center justify-between gap-8">
                 <!-- Logo -->
                 <a href="{{ route('home') }}" class="shrink-0 flex items-center">
                     <img src="{{ asset('images/logo-weblinhkien-Photoroom.png') }}" alt="TechFlow Logo"
@@ -370,7 +370,7 @@
         <!-- Bottom Row -->
         <div id="bottom-row"
             class="h-[60px] bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 hidden md:block transition-all duration-300">
-            <div class="max-w-[1600px] mx-auto h-full px-4 flex items-center">
+            <div class="max-w-[1600px] mx-auto h-full px-4 sm:px-6 lg:px-8 flex items-center">
                 
                 <!-- Compact Content (Matches Full Design Styling) -->
                 <div id="compact-content" class="hidden w-full items-center justify-between gap-4">
@@ -673,7 +673,7 @@
                 </div>
 
                 <!-- Quick Category Links -->
-                <div class="flex items-center gap-8 h-[48px]">
+                <div class="flex items-center gap-4 xl:gap-8 h-[48px]">
                     @foreach($globalCategories as $navCat)
                         @php
                             $navIconClass = 'fa-cube';

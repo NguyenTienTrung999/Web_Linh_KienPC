@@ -44,3 +44,158 @@
     }
 }
 
+/* Proportional Scaling Product Card System */
+.product-card {
+    container-type: inline-size;
+}
+
+.product-card-body {
+    font-size: clamp(10.5px, 5.25cqw, 14px) !important;
+    padding: 1.25em 1.14em !important;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between !important;
+    flex-grow: 1;
+}
+
+.product-card-title {
+    font-size: 1.14em !important;
+    line-height: 1.35em !important;
+    height: 2.7em !important;
+    max-height: 2.7em !important;
+}
+.product-card-title h3 {
+    font-weight: 500 !important; /* Thinner font weight for premium look */
+}
+
+.product-card-price-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 2.875em !important;
+    max-height: 2.875em !important;
+}
+
+.product-card-sale-price {
+    font-size: 1.285em !important;
+    line-height: 1.33em !important;
+    font-weight: 700;
+    color: #2badee !important; /* Website theme primary color (sky blue) */
+}
+
+.product-card-original-price {
+    font-size: 0.857em !important;
+    line-height: 1.5em !important;
+    font-weight: 700;
+    text-decoration: line-through;
+}
+
+.product-card-discount-badge {
+    font-size: 0.785em !important;
+    font-weight: 700;
+    padding: 0.18em 0.5em !important;
+    border-radius: 0.28em !important;
+}
+
+.product-card-action-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 1.95em !important;
+    max-height: 1.95em !important;
+}
+
+.product-card-btn {
+    position: relative;
+    display: flex;
+    align-items: center;
+    height: 100% !important; /* Inherit full height from parent */
+    border-radius: 9999px !important;
+    overflow: hidden;
+    padding-right: 0.75em !important;
+    padding-left: 0px !important;
+    background-color: transparent !important;
+    border: none !important; /* Remove outer border as requested */
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    flex-shrink: 0;
+}
+.dark .product-card-btn {
+    border: none !important;
+}
+
+.product-card-btn:hover {
+    box-shadow: 0 4px 12px rgba(30, 58, 138, 0.1) !important;
+}
+.dark .product-card-btn:hover {
+    box-shadow: 0 4px 12px rgba(43, 173, 238, 0.2) !important;
+}
+
+.product-card-btn-icon-wrapper {
+    width: 1.85em !important;
+    height: 1.85em !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    flex-shrink: 0;
+}
+
+.product-card-btn-text {
+    font-weight: 700;
+    font-size: 0.857em !important;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    white-space: nowrap;
+    color: #0f172a !important;
+    transition: color 0.3s ease;
+}
+.dark .product-card-btn-text {
+    color: #f1f5f9 !important;
+}
+
+.product-card-stock-badge {
+    font-size: 0.92em !important; /* Made larger and more readable as requested */
+    font-weight: 700;
+    padding: 0px 1em !important; /* Balanced pill padding */
+    height: 100% !important; /* Inherit full height from parent */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 9999px !important;
+    white-space: nowrap;
+    flex-shrink: 0;
+    margin-left: 0.28em !important;
+    background-color: #d1fae5 !important; /* Soft emerald background */
+    color: #065f46 !important; /* Crisp forest green text */
+    border: none !important;
+}
+.dark .product-card-stock-badge {
+    background-color: rgba(16, 185, 129, 0.15) !important;
+    color: #34d399 !important;
+}
+
+.product-card-btn div.absolute {
+    background-color: #1e3a8a !important;
+}
+.dark .product-card-btn div.absolute {
+    background-color: #2badee !important;
+}
+
+/* Hover transition effect for add to cart button using Vanilla CSS */
+.product-card-btn:hover div.absolute {
+    width: 100% !important;
+}
+
+.product-card-btn:hover .product-card-btn-text {
+    color: #ffffff !important;
+}
+
+/* Fallback Gap Utilities to prevent elements from sticking together when Tailwind CDN is offline or purged */
+.gap-1 { gap: 0.25rem !important; }
+.gap-2 { gap: 0.5rem !important; }
+.gap-3 { gap: 0.75rem !important; }
+.gap-4 { gap: 1rem !important; }
+.gap-5 { gap: 1.25rem !important; }
+.gap-6 { gap: 1.5rem !important; }
+.gap-8 { gap: 2rem !important; }
+
