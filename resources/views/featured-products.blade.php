@@ -37,7 +37,7 @@
     <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-3 justify-items-center w-full">
         @forelse($products as $product)
             <!-- Standard Product Card (Synchronized with Store) -->
-            <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-800 hover:z-[50] group hover:shadow-2xl transition-all duration-300 flex flex-col w-full max-w-[250px] h-[400px] relative product-card">
+            <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-800 hover:z-[50] group hover:shadow-2xl transition-all duration-300 flex flex-col w-full max-w-[250px] h-[290px] sm:h-[350px] md:h-[400px] relative product-card">
                 
                 <!-- Product Preview Popover -->
                 <div class="product-popover fixed left-0 top-0 w-[350px] bg-white dark:bg-slate-900 rounded-xl shadow-[0_20px_50px_rgba(0,0,0,0.3)] border border-slate-200 dark:border-slate-700 z-[9999] hidden flex-col overflow-hidden pointer-events-none transition-opacity duration-200 opacity-0">
@@ -92,7 +92,7 @@
                 </div>
 
                 <!-- Image Area -->
-                <div class="h-[240px] bg-white relative overflow-hidden shrink-0 rounded-t-xl product-trigger">
+                <div class="h-[140px] sm:h-[180px] md:h-[240px] bg-white relative overflow-hidden shrink-0 rounded-t-xl product-trigger">
                     <a href="{{ route('products.show', $product->slug ?? $product->id) }}" class="block h-full">
                         <img alt="{{ $product->name }}" class="w-full h-full object-contain group-hover:scale-110 transition-transform duration-700 p-6" src="{{ $product->image ? asset('storage/' . $product->image) : 'https://placehold.co/400x300?text=No+Image' }}"/>
                     </a>
@@ -100,6 +100,13 @@
 
                 <!-- Info Area -->
                 <div class="product-card-body border-t border-slate-50 dark:border-slate-800">
+                    <!-- Stock Badge (Relocated to top) -->
+                    <div class="mb-1 lg:hidden">
+                        <span class="inline-flex items-center px-2 py-0.5 rounded text-[9px] font-bold bg-emerald-50 text-emerald-600 dark:bg-emerald-950/20 dark:text-emerald-400">
+                            Còn hàng
+                        </span>
+                    </div>
+
                     <!-- Block 1: Name (max 40px) -->
                     <a href="{{ route('products.show', $product->slug ?? $product->id) }}" class="block product-card-title">
                         <h3 class="text-slate-900 dark:text-white font-bold group-hover:text-primary transition-colors line-clamp-2 overflow-hidden">{{ $product->name }}</h3>
@@ -109,10 +116,10 @@
                     <div class="product-card-price-row">
                         <div class="flex flex-col justify-center h-full">
                             @if($product->sale_price)
-                                <span class="text-primary !font-bold product-card-sale-price">{{ number_format($product->sale_price, 0, ',', '.') }} VNĐ</span>
-                                <span class="product-card-original-price text-slate-400 font-bold">{{ number_format($product->price, 0, ',', '.') }} VNĐ</span>
+                                <span class="text-primary !font-bold product-card-sale-price">{{ number_format($product->sale_price, 0, ',', '.') }}<span class="lg:hidden"><u>đ</u></span><span class="hidden lg:inline"> VNĐ</span></span>
+                                <span class="product-card-original-price text-slate-400 font-bold">{{ number_format($product->price, 0, ',', '.') }}<span class="lg:hidden"><u>đ</u></span><span class="hidden lg:inline"> VNĐ</span></span>
                             @else
-                                <span class="text-primary !font-bold product-card-sale-price">{{ number_format($product->price, 0, ',', '.') }} VNĐ</span>
+                                <span class="text-primary !font-bold product-card-sale-price">{{ number_format($product->price, 0, ',', '.') }}<span class="lg:hidden"><u>đ</u></span><span class="hidden lg:inline"> VNĐ</span></span>
                             @endif
                         </div>
                         @if($product->sale_price)
@@ -123,7 +130,7 @@
                     </div>
 
                     <!-- Block 3: Action (max 26px) -->
-                    <div class="product-card-action-row">
+                    <div class="product-card-action-row justify-start lg:justify-between">
                         <button type="button" onclick="handleAddToCart({{ $product->id }}, {{ json_encode($product->colors) }}, '{{ addslashes($product->name) }}', {{ $product->sale_price ?: $product->price }}, '{{ $product->image ? asset('storage/' . $product->image) : 'https://placehold.co/400x400?text=No+Image' }}')" class="product-card-btn dark:bg-slate-700/50 hover:shadow-md">
                             <div class="absolute left-0 top-0 w-[1.85em] h-[1.85em] bg-primary rounded-full transition-all duration-300 ease-in-out z-0"></div>
                             <div class="relative z-10 flex items-center gap-[0.28em] h-full">
@@ -133,7 +140,7 @@
                                 <span class="product-card-btn-text text-slate-800 dark:text-slate-200 transition-colors duration-300">Thêm vào giỏ</span>
                             </div>
                         </button>
-                        <div class="product-card-stock-badge bg-emerald-50 text-emerald-500 border border-emerald-200 dark:bg-emerald-950/20 dark:border-emerald-800">
+                        <div class="product-card-stock-badge hidden lg:inline-flex bg-emerald-50 text-emerald-500 border border-emerald-200 dark:bg-emerald-950/20 dark:border-emerald-800">
                             Còn hàng
                         </div>
                     </div>

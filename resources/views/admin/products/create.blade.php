@@ -4,7 +4,7 @@
 
 @section('content')
 <!-- Header Area inside content -->
-<div class="flex items-center justify-between mb-8">
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
     <div class="flex items-center gap-4">
         <div class="text-primary">
             <i class="fa-solid fa-square-plus text-3xl"></i>
@@ -12,12 +12,12 @@
         <h2 class="text-slate-900 dark:text-white text-xl font-bold tracking-tight">Thêm sản phẩm mới</h2>
     </div>
     
-    <div class="flex items-center gap-3">
-        <button type="button" onclick="document.getElementById('excel-import-input').click()" class="bg-emerald-600 text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 hover:bg-emerald-700 transition-colors shadow-sm">
+    <div class="flex flex-wrap items-center gap-3 w-full md:w-auto">
+        <button type="button" onclick="document.getElementById('excel-import-input').click()" class="flex-1 md:flex-initial justify-center bg-emerald-600 text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 hover:bg-emerald-700 transition-colors shadow-sm">
             <i class="fa-solid fa-file-excel text-lg"></i>
             Nhập từ Excel
         </button>
-        <button type="submit" form="product-create-form" class="bg-primary text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 hover:bg-primary/90 transition-colors shadow-sm">
+        <button type="submit" form="product-create-form" class="flex-1 md:flex-initial justify-center bg-primary text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 hover:bg-primary/90 transition-colors shadow-sm">
             <i class="fa-solid fa-floppy-disk text-lg"></i>
             Lưu sản phẩm
         </button>

@@ -10,7 +10,7 @@
                 <i class="fa-solid fa-arrow-left"></i>
             </a>
             <div>
-                <h2 class="text-3xl font-black text-slate-900 dark:text-white uppercase tracking-tighter">Đơn hàng #{{ str_pad($order->id, 6, '0', STR_PAD_LEFT) }}</h2>
+                <h2 class="text-2xl md:text-3xl font-black text-slate-900 dark:text-white uppercase tracking-tighter">Đơn hàng #{{ str_pad($order->id, 6, '0', STR_PAD_LEFT) }}</h2>
                 <p class="text-slate-500 text-sm font-medium">Đặt lúc {{ $order->created_at->format('H:i, d/m/Y') }}</p>
             </div>
         </div>
@@ -31,7 +31,7 @@
                 <div class="p-6 border-b border-slate-50 dark:border-slate-800">
                     <h3 class="font-black text-slate-900 dark:text-white uppercase tracking-tighter text-lg">Chi tiết sản phẩm</h3>
                 </div>
-                <div class="overflow-x-auto">
+                <div class="hidden md:block overflow-x-auto">
                     <table class="w-full text-left">
                         <thead>
                             <tr class="bg-slate-50/50 dark:bg-slate-800/30 text-slate-400 text-[10px] font-black uppercase tracking-widest">
@@ -86,6 +86,42 @@
                             </tr>
                         </tfoot>
                     </table>
+                </div>
+
+                <!-- Mobile List view of items -->
+                <div class="block md:hidden divide-y divide-slate-100 dark:divide-slate-800">
+                    @foreach($order->items as $item)
+                    <div class="p-5 flex gap-4">
+                        <img src="{{ $item->product->image ? asset('storage/' . $item->product->image) : 'https://placehold.co/200x200?text=Product' }}" alt="{{ $item->product->name }}" class="w-16 h-16 rounded-xl object-contain bg-slate-50 dark:bg-slate-800 p-1 border border-slate-100 dark:border-slate-800 shrink-0">
+                        <div class="flex-1 min-w-0 flex flex-col justify-between">
+                            <div>
+                                <span class="text-sm font-bold text-slate-700 dark:text-slate-200 block truncate leading-tight">{{ $item->product->name }}</span>
+                                <div class="flex items-center gap-2 mt-1">
+                                    <span class="text-[10px] text-slate-400">SKU: {{ $item->product->sku ?? 'N/A' }}</span>
+                                    @if($item->color)
+                                        <span class="text-[10px] font-black text-primary uppercase">Màu: {{ $item->color }}</span>
+                                    @endif
+                                </div>
+                            </div>
+                            <div class="flex justify-between items-center mt-3">
+                                <span class="text-xs text-slate-500 font-bold">x{{ $item->quantity }}</span>
+                                <span class="text-sm font-black text-slate-900 dark:text-white font-mono">{{ number_format($item->price * $item->quantity, 0, ',', '.') }}₫</span>
+                            </div>
+                        </div>
+                    </div>
+                    @endforeach
+
+                    @php $shipping = $order->total_price - $order->items->sum(fn($i) => $i->price * $i->quantity); @endphp
+                    <div class="p-5 bg-slate-50/50 dark:bg-slate-800/10 space-y-3">
+                        <div class="flex justify-between items-center text-xs">
+                            <span class="text-slate-400 font-bold uppercase tracking-wider text-[10px]">Phí vận chuyển</span>
+                            <span class="font-bold text-slate-700 dark:text-slate-350 font-mono">{{ number_format($shipping, 0, ',', '.') }}₫</span>
+                        </div>
+                        <div class="flex justify-between items-center pt-3 border-t border-slate-100 dark:border-slate-800">
+                            <span class="text-slate-900 dark:text-white font-black uppercase tracking-wider text-[10px]">Tổng cộng</span>
+                            <span class="text-lg font-black text-primary font-mono">{{ number_format($order->total_price, 0, ',', '.') }}₫</span>
+                        </div>
+                    </div>
                 </div>
             </div>
 

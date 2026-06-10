@@ -14,15 +14,32 @@ class OrderController extends Controller
     public function index(Request $request)
     {
         $status = $request->get('status');
+        $sort = $request->get('sort', 'newest');
+        $search = $request->get('search');
 
         $orders = Order::query()
             ->when($status, function ($query, $status) {
                 return $query->where('status', $status);
             })
-            ->latest()
-            ->paginate(15);
+            ->when($search, function ($query, $search) {
+                $cleanSearch = ltrim(trim($search), '#');
+                return $query->where(function ($q) use ($cleanSearch, $search) {
+                    if (is_numeric($cleanSearch)) {
+                        $q->where('id', intval($cleanSearch));
+                    }
+                    $q->orWhere('customer_name', 'like', "%$search%")
+                      ->orWhere('customer_phone', 'like', "%$search%");
+                });
+            })
+            ->when($sort === 'oldest', function ($query) {
+                return $query->oldest();
+            }, function ($query) {
+                return $query->latest();
+            })
+            ->paginate(15)
+            ->withQueryString();
 
-        return view('admin.orders.index', compact('orders'));
+        return view('admin.orders.index', compact('orders', 'status', 'sort', 'search'));
     }
 
     /**

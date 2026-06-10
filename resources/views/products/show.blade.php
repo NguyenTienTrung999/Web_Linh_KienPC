@@ -3,18 +3,17 @@
 @section('title', 'Chi tiết sản phẩm')
 
 @section('content')
-<div class="max-w-[1600px] mx-auto py-8 px-4">
-    <!-- Breadcrumbs -->
-    <nav class="flex items-center gap-2 text-sm text-slate-500 mb-6" aria-label="Breadcrumb">
-        <a href="{{ route('home') }}" class="hover:text-primary transition-colors">Trang chủ</a>
-        <i class="fa-solid fa-chevron-right text-[10px]"></i>
-        <a href="{{ route('store.index') }}" class="hover:text-primary transition-colors">Cửa hàng</a>
-        <i class="fa-solid fa-chevron-right text-[10px]"></i>
+<div class="max-w-[1600px] mx-auto py-4 sm:py-8 px-4">
+    <nav class="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs sm:text-sm text-slate-500 mb-3 sm:mb-6" aria-label="Breadcrumb">
+        <a href="{{ route('home') }}" class="hover:text-primary transition-colors whitespace-nowrap">Trang chủ</a>
+        <i class="fa-solid fa-chevron-right text-[10px] shrink-0"></i>
+        <a href="{{ route('store.index') }}" class="hover:text-primary transition-colors whitespace-nowrap">Cửa hàng</a>
+        <i class="fa-solid fa-chevron-right text-[10px] shrink-0"></i>
         @if($product->category)
-            <a href="{{ route('store.category', $product->category->slug) }}" class="hover:text-primary transition-colors">{{ $product->category->name }}</a>
-            <i class="fa-solid fa-chevron-right text-[10px]"></i>
+            <a href="{{ route('store.category', $product->category->slug) }}" class="hover:text-primary transition-colors whitespace-nowrap">{{ $product->category->name }}</a>
+            <i class="fa-solid fa-chevron-right text-[10px] shrink-0"></i>
         @endif
-        <span class="text-slate-900 dark:text-slate-200 font-medium line-clamp-1 max-w-[200px] sm:max-w-md lg:max-w-none">{{ $product->name }}</span>
+        <span class="text-slate-900 dark:text-slate-200 font-medium sm:line-clamp-1 sm:max-w-md lg:max-w-none">{{ $product->name }}</span>
     </nav>
     <!-- Product Section -->
     <div class="flex flex-col lg:flex-row gap-12 mb-16 items-start justify-between">
@@ -82,26 +81,26 @@
                         <span class="px-2 py-0.5 bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300 text-xs font-bold uppercase tracking-wider rounded">{{ $product->brand->name }}</span>
                     @endif
                 </div>
-                <h1 class="text-slate-900 dark:text-white text-4xl font-black leading-tight tracking-tight mb-2 break-words max-w-[740px]">{{ $product->name }}</h1>
+                <h1 class="text-slate-900 dark:text-white text-2xl sm:text-4xl font-black leading-tight tracking-tight mb-2 break-words max-w-[740px]">{{ $product->name }}</h1>
                 <div class="flex items-center gap-4">
                     @if($product->sale_price)
                         <div class="flex flex-col">
                             <div class="flex items-center gap-3">
-                                <p class="text-[24px] font-bold text-primary">{{ number_format($product->sale_price, 0, ',', '.') }}đ</p>
-                                <span class="px-2 py-1 bg-red-500 text-white text-[12px] font-black rounded shadow-sm group-hover:scale-110 transition-transform tracking-wider">-{{ round((($product->price - $product->sale_price) / $product->price) * 100) }}%</span>
+                                <p class="text-xl sm:text-[24px] font-bold text-primary">{{ number_format($product->sale_price, 0, ',', '.') }}đ</p>
+                                <span class="px-2 py-1 bg-red-500 text-white text-[10px] sm:text-[12px] font-black rounded shadow-sm group-hover:scale-110 transition-transform tracking-wider">-{{ round((($product->price - $product->sale_price) / $product->price) * 100) }}%</span>
                             </div>
-                            <p class="text-slate-400 line-through text-base font-medium">Giá niêm yết: {{ number_format($product->price, 0, ',', '.') }}đ</p>
+                            <p class="text-slate-400 line-through text-xs sm:text-base font-medium">Giá niêm yết: {{ number_format($product->price, 0, ',', '.') }}đ</p>
                         </div>
                     @else
-                        <p class="text-[24px] font-bold text-primary">{{ number_format($product->price, 0, ',', '.') }}₫</p>
+                        <p class="text-xl sm:text-[24px] font-bold text-primary">{{ number_format($product->price, 0, ',', '.') }}₫</p>
                     @endif
-                    <span class="flex items-center gap-1 {{ $product->stock_quantity > 0 ? 'text-emerald-600' : 'text-red-500' }} font-medium text-sm">
-                        <i class="fa-solid fa-circle-check text-[14px]"></i> 
+                    <span class="flex items-center gap-1 {{ $product->stock_quantity > 0 ? 'text-emerald-600' : 'text-red-500' }} font-medium text-xs sm:text-sm">
+                        <i class="fa-solid fa-circle-check text-[12px] sm:text-[14px]"></i> 
                         {{ $product->stock_quantity > 0 ? 'Còn hàng (' . $product->stock_quantity . ')' : 'Hết hàng' }}
                     </span>
                 </div>
                 @if($product->warranty_period)
-                    <div class="mt-2 text-primary text-[15px] font-bold flex items-center gap-2">
+                    <div class="mt-2 text-primary text-xs sm:text-[15px] font-bold flex items-center gap-2">
                         <i class="fa-solid fa-shield-halved"></i>
                         <span>Bảo hành: {{ $product->warranty_period }}</span>
                     </div>
@@ -128,7 +127,7 @@
             </div>
             
             <div class="prose dark:prose-invert max-w-none">
-                <p class="text-slate-600 dark:text-slate-400 text-lg leading-relaxed">{!! nl2br(e(str_replace(';', '', $product->description ?? 'Đang cập nhật mô tả...'))) !!}</p>
+                <p class="text-slate-600 dark:text-slate-400 text-sm sm:text-lg leading-relaxed">{!! nl2br(e(str_replace(';', '', $product->description ?? 'Đang cập nhật mô tả...'))) !!}</p>
             </div>
 
             <!-- Features -->
@@ -164,8 +163,8 @@
         </div>
     </div>
 <!-- Specs Table -->
-<div class="mb-20">
-<h3 class="text-2xl font-bold mb-8 flex items-center gap-3"><span class="w-2 h-8 bg-primary rounded-full"></span> Thông số kỹ thuật</h3>
+<div class="mb-10 sm:mb-20">
+<h3 class="text-xl sm:text-2xl font-bold mb-4 sm:mb-8 flex items-center gap-3"><span class="w-1.5 h-6 sm:w-2 sm:h-8 bg-primary rounded-full"></span> Thông số kỹ thuật</h3>
 <div class="overflow-hidden rounded-xl border border-slate-200 dark:border-slate-800">
 @if($product->specs && is_array($product->specs) && count($product->specs) > 0)
 <table class="w-full text-left border-collapse">
@@ -173,8 +172,8 @@
     @foreach($product->specs as $index => $spec)
     @if(!empty($spec['key']) || !empty($spec['value']))
     <tr class="{{ $index % 2 == 0 ? 'bg-white dark:bg-background-dark' : 'bg-slate-50/50 dark:bg-slate-800/20' }}">
-    <td class="py-4 px-6 font-semibold text-slate-500 w-1/3">{{ $spec['key'] ?? '' }}</td>
-    <td class="py-4 px-6">{{ $spec['value'] ?? '' }}</td>
+    <td class="py-2.5 px-4 sm:py-4 sm:px-6 text-xs sm:text-sm font-semibold text-slate-500 w-1/3">{{ $spec['key'] ?? '' }}</td>
+    <td class="py-2.5 px-4 sm:py-4 sm:px-6 text-xs sm:text-sm text-slate-800 dark:text-slate-200">{{ $spec['value'] ?? '' }}</td>
     </tr>
     @endif
     @endforeach
@@ -188,10 +187,10 @@
 </div>
 </div>
 <!-- Related Products -->
-<div class="mt-16 border border-slate-200 dark:border-slate-800 p-8 bg-white dark:bg-slate-900 rounded-2xl shadow-sm mb-8">
+<div class="mt-8 sm:mt-16 border-0 sm:border border-slate-200 dark:border-slate-800 p-0 py-4 sm:p-8 bg-transparent sm:bg-white sm:dark:bg-slate-900 rounded-none sm:rounded-2xl shadow-none sm:shadow-sm mb-8">
     <div class="flex items-center justify-between mb-8">
         <h2 class="slash-header text-2xl font-black uppercase tracking-tighter text-on-surface">Sản phẩm liên quan</h2>
-        <div class="flex gap-2">
+        <div class="hidden gap-2">
             <button onclick="document.getElementById('related-slider').scrollBy({left: -320, behavior: 'smooth'})" class="w-10 h-10 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-slate-400 hover:text-primary hover:border-primary transition-colors hover:shadow-lg">
                 <i class="fa-solid fa-chevron-left text-sm"></i>
             </button>
@@ -203,7 +202,7 @@
     <div id="related-slider" class="flex gap-3 overflow-x-auto snap-x snap-mandatory pb-4 scroll-smooth [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
         @forelse($relatedProducts as $related)
         <!-- Standard Product Card (Synchronized with Featured/Store) -->
-        <div class="shrink-0 snap-start w-full sm:w-[calc((100%-12px)/2)] lg:w-[calc((100%-36px)/4)] xl:w-[calc((100%-60px)/6)] bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-800 hover:z-[50] group hover:shadow-2xl transition-all duration-300 flex flex-col h-[400px] relative product-card">
+        <div class="shrink-0 snap-start w-[calc((100%-16px)/2.3)] sm:w-[calc((100%-12px)/2)] lg:w-[calc((100%-36px)/4)] xl:w-[calc((100%-60px)/6)] bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-800 hover:z-[50] group hover:shadow-2xl transition-all duration-300 flex flex-col h-[290px] sm:h-[350px] md:h-[400px] relative product-card">
             
             <!-- Product Preview Popover -->
             <div class="product-popover fixed left-0 top-0 w-[350px] bg-white dark:bg-slate-900 rounded-xl shadow-[0_20px_50px_rgba(0,0,0,0.3)] border border-slate-200 dark:border-slate-700 z-[9999] hidden flex-col overflow-hidden pointer-events-none transition-opacity duration-200 opacity-0">
@@ -257,8 +256,8 @@
                 </div>
             </div>
 
-            <!-- Image Area: 240px -->
-            <div class="h-[240px] bg-white relative overflow-hidden shrink-0 rounded-t-xl product-trigger">
+            <!-- Image Area -->
+            <div class="h-[140px] sm:h-[180px] md:h-[240px] bg-white relative overflow-hidden shrink-0 rounded-t-xl product-trigger">
                 <a href="{{ route('products.show', $related->slug ?? $related->id) }}" class="block h-full">
                     <img alt="{{ $related->name }}" class="w-full h-full object-contain p-6 group-hover:scale-110 transition-transform duration-700" src="{{ $related->image ? asset('storage/' . $related->image) : 'https://placehold.co/400x400?text=No+Image' }}" onerror="this.onerror=null; this.src='https://placehold.co/400x400?text=No+Image';"/>
                 </a>
@@ -266,6 +265,13 @@
 
             <!-- Info Area -->
             <div class="product-card-body border-t border-slate-50 dark:border-slate-800">
+                <!-- Stock Badge (Relocated to top) -->
+                <div class="mb-1 lg:hidden">
+                    <span class="inline-flex items-center px-2 py-0.5 rounded text-[9px] font-bold bg-emerald-50 text-emerald-600 dark:bg-emerald-950/20 dark:text-emerald-400">
+                        Còn hàng
+                    </span>
+                </div>
+
                 <!-- Block 1: Name (max 40px) -->
                 <a href="{{ route('products.show', $related->slug ?? $related->id) }}" class="block product-card-title">
                     <h3 class="font-bold text-slate-900 dark:text-slate-100 group-hover:text-primary transition-colors line-clamp-2 overflow-hidden">{{ $related->name }}</h3>
@@ -275,10 +281,10 @@
                 <div class="product-card-price-row">
                     <div class="flex flex-col justify-center h-full">
                         @if($related->sale_price)
-                            <span class="text-primary !font-bold product-card-sale-price">{{ number_format($related->sale_price, 0, ',', '.') }} VNĐ</span>
-                            <span class="product-card-original-price text-slate-400 font-bold">{{ number_format($related->price, 0, ',', '.') }} VNĐ</span>
+                            <span class="text-primary !font-bold product-card-sale-price">{{ number_format($related->sale_price, 0, ',', '.') }}<span class="lg:hidden"><u>đ</u></span><span class="hidden lg:inline"> VNĐ</span></span>
+                            <span class="product-card-original-price text-slate-400 font-bold">{{ number_format($related->price, 0, ',', '.') }}<span class="lg:hidden"><u>đ</u></span><span class="hidden lg:inline"> VNĐ</span></span>
                         @else
-                            <span class="text-primary !font-bold product-card-sale-price">{{ number_format($related->price, 0, ',', '.') }} VNĐ</span>
+                            <span class="text-primary !font-bold product-card-sale-price">{{ number_format($related->price, 0, ',', '.') }}<span class="lg:hidden"><u>đ</u></span><span class="hidden lg:inline"> VNĐ</span></span>
                         @endif
                     </div>
                     @if($related->sale_price)
@@ -288,7 +294,8 @@
                     @endif
                 </div>
 
-                <div class="product-card-action-row">
+                <!-- Block 3: Action -->
+                <div class="product-card-action-row justify-start lg:justify-between">
                     <button type="button" onclick="handleAddToCart({{ $related->id }}, {{ json_encode($related->colors) }}, '{{ addslashes($related->name) }}', {{ $related->sale_price ?: $related->price }}, '{{ $related->image ? asset('storage/' . $related->image) : 'https://placehold.co/400x400?text=No+Image' }}')" class="product-card-btn dark:bg-slate-700/50 hover:shadow-md">
                         <div class="absolute left-0 top-0 w-[1.85em] h-[1.85em] bg-primary rounded-full transition-all duration-300 ease-in-out z-0"></div>
                         <div class="relative z-10 flex items-center gap-[0.28em] h-full">
@@ -298,7 +305,7 @@
                             <span class="product-card-btn-text text-slate-800 dark:text-slate-200 transition-colors duration-300">Thêm vào giỏ</span>
                         </div>
                     </button>
-                    <div class="product-card-stock-badge bg-emerald-50 text-emerald-500 border border-emerald-200 dark:bg-emerald-950/20 dark:border-emerald-800">
+                    <div class="product-card-stock-badge hidden lg:inline-flex bg-emerald-50 text-emerald-500 border border-emerald-200 dark:bg-emerald-950/20 dark:border-emerald-800">
                         Còn hàng
                     </div>
                 </div>
@@ -427,6 +434,86 @@
         element.classList.remove('border-slate-200', 'dark:border-slate-700', 'text-slate-700', 'dark:text-slate-300');
         element.classList.add('border-primary', 'bg-primary/5', 'text-primary');
     }
+
+    // Unified mouse and touch drag scroll helper
+    const initDragScroll = (s) => {
+        if (!s) return;
+        let isDown = false;
+        let startX;
+        let scrollLeft;
+        let hasMoved = false;
+
+        // Mouse Events
+        s.addEventListener('mousedown', (e) => {
+            isDown = true;
+            hasMoved = false;
+            startX = e.pageX - s.offsetLeft;
+            scrollLeft = s.scrollLeft;
+            s.style.cursor = 'grabbing';
+            s.style.userSelect = 'none';
+        });
+
+        s.addEventListener('mouseleave', () => {
+            if (isDown) {
+                isDown = false;
+                s.style.cursor = 'grab';
+                s.style.removeProperty('user-select');
+            }
+        });
+
+        s.addEventListener('mouseup', () => {
+            isDown = false;
+            s.style.cursor = 'grab';
+            s.style.removeProperty('user-select');
+        });
+
+        s.addEventListener('mousemove', (e) => {
+            if (!isDown) return;
+            e.preventDefault();
+            const x = e.pageX - s.offsetLeft;
+            const walk = (x - startX) * 1.5;
+            if (Math.abs(walk) > 5) {
+                hasMoved = true;
+                s.scrollLeft = scrollLeft - walk;
+            }
+        });
+
+        // Touch Events
+        s.addEventListener('touchstart', (e) => {
+            isDown = true;
+            hasMoved = false;
+            startX = e.touches[0].pageX - s.offsetLeft;
+            scrollLeft = s.scrollLeft;
+        }, { passive: true });
+
+        s.addEventListener('touchend', () => {
+            isDown = false;
+        });
+
+        s.addEventListener('touchmove', (e) => {
+            if (!isDown) return;
+            const x = e.touches[0].pageX - s.offsetLeft;
+            const walk = (x - startX) * 1.5;
+            if (Math.abs(walk) > 5) {
+                hasMoved = true;
+                s.scrollLeft = scrollLeft - walk;
+            }
+        }, { passive: true });
+
+        // Prevent clicking child items if drag occurred
+        s.querySelectorAll('a, button, .product-trigger').forEach(item => {
+            item.addEventListener('click', (e) => {
+                if (hasMoved) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                }
+            }, true);
+        });
+        
+        s.style.cursor = 'grab';
+    };
+
+    initDragScroll(document.getElementById('related-slider'));
 </script>
 @endsection
 @endsection

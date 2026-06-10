@@ -17,6 +17,14 @@ class Category extends Model
         return $this->hasMany(Product::class);
     }
 
+    /**
+     * Get the slug attribute. Fallback to slugified name if empty.
+     */
+    public function getSlugAttribute($value)
+    {
+        return $value ?: \Illuminate\Support\Str::slug($this->name);
+    }
+
     protected static function boot()
     {
         parent::boot();

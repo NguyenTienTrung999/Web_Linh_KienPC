@@ -88,12 +88,12 @@
             </div>
         </div>
 
-        <div class="mt-8 pt-6 border-t border-slate-200 dark:border-slate-800 flex gap-4">
-            <button type="submit" class="bg-primary hover:bg-primary/90 text-white font-bold py-3 px-8 rounded-lg shadow-lg shadow-primary/20 transition-all flex items-center gap-2">
+        <div class="mt-8 pt-6 border-t border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row gap-3">
+            <button type="submit" class="w-full sm:w-auto justify-center bg-primary hover:bg-primary/90 text-white font-bold py-2.5 px-6 sm:py-3 sm:px-8 rounded-lg shadow-lg shadow-primary/20 transition-all flex items-center gap-2 text-sm sm:text-base">
                 <i class="fa-solid fa-save"></i>
                 Lưu mã giảm giá
             </button>
-            <a href="{{ route('admin.coupons.index') }}" class="bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold py-3 px-8 rounded-lg transition-all">
+            <a href="{{ route('admin.coupons.index') }}" class="w-full sm:w-auto text-center bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold py-2.5 px-6 sm:py-3 sm:px-8 rounded-lg transition-all text-sm sm:text-base">
                 Hủy bỏ
             </a>
         </div>

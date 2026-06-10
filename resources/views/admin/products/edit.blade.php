@@ -4,7 +4,7 @@
 
 @section('content')
 <!-- Header Area inside content -->
-<div class="flex items-center justify-between mb-8">
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
     <div class="flex items-center gap-4">
         <div class="text-primary">
             <i class="fa-solid fa-pen-to-square text-3xl"></i>
@@ -12,8 +12,8 @@
         <h2 class="text-slate-900 dark:text-white text-xl font-bold tracking-tight">Sửa sản phẩm</h2>
     </div>
     
-    <div class="flex items-center gap-4">
-        <button type="submit" form="product-edit-form" class="bg-primary text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 hover:bg-primary/90 transition-colors">
+    <div class="w-full md:w-auto">
+        <button type="submit" form="product-edit-form" class="w-full md:w-auto justify-center bg-primary text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 hover:bg-primary/90 transition-colors">
             <i class="fa-solid fa-floppy-disk text-lg"></i>
             Lưu thay đổi
         </button>

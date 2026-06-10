@@ -217,8 +217,8 @@
 
 <!-- Deal Hot Every Day -->
 @if($flashSales->count() > 0)
-<section class="py-12 bg-gradient-to-b from-[#0c4a6e] via-[#2badee] to-white transition-all duration-700 reveal-on-scroll px-4 sm:px-6 lg:px-8">
-    <div class="max-w-[1600px] mx-auto bg-white/40 dark:bg-slate-950/40 backdrop-blur-xl border border-white/20 dark:border-slate-800/30 rounded-2xl shadow-[0_20px_50px_rgba(239,68,68,0.15)] mb-[22px] relative overflow-hidden">
+<section class="py-6 sm:py-12 bg-gradient-to-b from-[#0c4a6e] via-[#2badee] to-white transition-all duration-700 reveal-on-scroll px-2 sm:px-6 lg:px-8">
+    <div class="max-w-[1600px] mx-auto bg-transparent sm:bg-white/40 sm:dark:bg-slate-950/40 sm:backdrop-blur-xl border-0 sm:border border-transparent sm:border-white/20 sm:dark:border-slate-800/30 rounded-none sm:rounded-2xl shadow-none sm:shadow-[0_20px_50px_rgba(239,68,68,0.15)] mb-2 sm:mb-[22px] relative overflow-hidden">
         <!-- Ambient 3D Neon Glow Spots -->
         <div class="absolute -left-20 -top-20 w-80 h-80 bg-red-500/20 dark:bg-red-500/10 rounded-full blur-3xl pointer-events-none z-0"></div>
         <div class="absolute -right-20 -bottom-20 w-80 h-80 bg-orange-500/20 dark:bg-orange-500/10 rounded-full blur-3xl pointer-events-none z-0"></div>
@@ -239,31 +239,22 @@
         <!-- Section Header -->
         <div class="flex items-center justify-between pr-6 bg-transparent border-none outline-none relative z-10">
             <div class="flex">
-                <h2 class="relative flex items-center h-14 bg-gradient-to-r from-red-500 to-red-600 pr-12 pl-6 text-white font-bold uppercase text-lg tracking-wider" style="clip-path: polygon(0 0, 100% 0, calc(100% - 20px) 100%, 0 100%);">
-                    <div class="flex items-center gap-3">
-                        <i class="fa-solid fa-fire-flame-curved text-lg animate-pulse"></i>
-                        <span class="tracking-widest font-black text-xl">HOT SALE</span>
-                    </div>
-                </h2>
-            </div>
-            
-            <div class="flex items-center gap-4">
-                <!-- Navigation -->
-                <div class="hidden md:flex gap-1.5">
-                    <button onclick="document.getElementById('deal-hot-slider').scrollBy({left: -320, behavior: 'smooth'})" class="w-8 h-8 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-slate-400 hover:text-primary hover:border-primary transition-all shadow-sm">
-                        <i class="fa-solid fa-chevron-left text-xs"></i>
-                    </button>
-                    <button onclick="document.getElementById('deal-hot-slider').scrollBy({left: 320, behavior: 'smooth'})" class="w-8 h-8 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-slate-400 hover:text-primary hover:border-primary transition-all shadow-sm">
-                        <i class="fa-solid fa-chevron-right text-xs"></i>
-                    </button>
+                <div class="rounded-tl-2xl rounded-bl-2xl overflow-hidden">
+                    <h2 class="relative flex items-center h-14 bg-gradient-to-r from-red-500 to-red-600 pr-12 pl-6 text-white font-bold uppercase text-lg tracking-wider" style="clip-path: polygon(0 0, 100% 0, calc(100% - 20px) 100%, 0 100%);">
+                        <div class="flex items-center gap-3">
+                            <i class="fa-solid fa-fire-flame-curved text-lg animate-pulse"></i>
+                            <span class="tracking-widest font-black text-xl">HOT SALE</span>
+                        </div>
+                    </h2>
                 </div>
             </div>
         </div>
 
-        <div class="p-6 relative z-10">
-            <div id="deal-hot-slider" class="flex gap-3 overflow-x-auto snap-x snap-mandatory pb-2 scroll-smooth [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+        <div class="p-0 py-4 sm:p-6 relative z-10">
+            <div class="relative">
+                <div id="deal-hot-slider" class="flex gap-3 overflow-x-auto snap-x snap-mandatory pb-2 scroll-smooth [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
                 @foreach($flashSales as $product)
-                <div class="shrink-0 snap-start w-[260px] sm:w-[calc((100%-12px)/2)] md:w-[calc((100%-24px)/3)] lg:w-[calc((100%-36px)/4)] xl:w-[calc((100%-48px)/5)] 2xl:w-[calc((100%-60px)/6)] bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-800 hover:z-[50] group hover:shadow-2xl transition-all duration-300 flex flex-col h-[400px] relative product-card">
+                <div class="shrink-0 snap-start w-[calc((100%-16px)/2.3)] sm:w-[calc((100%-12px)/2)] md:w-[calc((100%-24px)/3)] lg:w-[calc((100%-36px)/4)] xl:w-[calc((100%-48px)/5)] 2xl:w-[calc((100%-60px)/6)] bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-800 hover:z-[50] group hover:shadow-2xl transition-all duration-300 flex flex-col h-[290px] sm:h-[350px] md:h-[400px] relative product-card">
                     <!-- Product Preview Popover -->
                     <div class="product-popover fixed left-0 top-0 w-[350px] bg-white dark:bg-slate-900 rounded-xl shadow-[0_20px_50px_rgba(0,0,0,0.3)] border border-slate-200 dark:border-slate-700 z-[9999] hidden flex-col overflow-hidden pointer-events-none transition-opacity duration-200 opacity-0">
                         <div class="bg-primary p-3">
@@ -316,8 +307,8 @@
                         </div>
                     </div>
 
-                    <!-- Image Area: 240px -->
-                    <div class="h-[240px] bg-white relative overflow-hidden shrink-0 rounded-t-xl product-trigger">
+                    <!-- Image Area -->
+                    <div class="h-[140px] sm:h-[180px] md:h-[240px] bg-white relative overflow-hidden shrink-0 rounded-t-xl product-trigger">
                         <a href="{{ route('products.show', $product->slug ?? $product->id) }}" class="block h-full">
                             <img loading="lazy" alt="{{ $product->name }}" class="w-full h-full object-contain p-6 group-hover:scale-110 transition-transform duration-700" src="{{ $product->image ? asset('storage/' . $product->image) : 'https://placehold.co/400x400?text=No+Image' }}" onerror="this.onerror=null; this.src='https://placehold.co/400x400?text=No+Image';"/>
                         </a>
@@ -325,6 +316,13 @@
 
                     <!-- Info Area -->
                     <div class="product-card-body border-t border-slate-50 dark:border-slate-800">
+                        <!-- Stock Badge (Relocated to top) -->
+                        <div class="mb-1 lg:hidden">
+                            <span class="inline-flex items-center px-2 py-0.5 rounded text-[9px] font-bold bg-emerald-50 text-emerald-600 dark:bg-emerald-950/20 dark:text-emerald-400">
+                                Còn hàng
+                            </span>
+                        </div>
+
                         <!-- Block 1: Name (max 40px) -->
                         <a href="{{ route('products.show', $product->slug ?? $product->id) }}" class="block product-card-title">
                             <h3 class="font-bold text-slate-900 dark:text-slate-100 group-hover:text-primary transition-colors line-clamp-2 overflow-hidden">{{ $product->name }}</h3>
@@ -334,10 +332,10 @@
                         <div class="product-card-price-row">
                             <div class="flex flex-col justify-center h-full">
                                 @if($product->sale_price)
-                                    <span class="text-primary !font-bold product-card-sale-price">{{ number_format($product->sale_price, 0, ',', '.') }} VNĐ</span>
-                                    <span class="product-card-original-price text-slate-400 font-bold">{{ number_format($product->price, 0, ',', '.') }} VNĐ</span>
+                                    <span class="text-primary !font-bold product-card-sale-price">{{ number_format($product->sale_price, 0, ',', '.') }}<span class="lg:hidden"><u>đ</u></span><span class="hidden lg:inline"> VNĐ</span></span>
+                                    <span class="product-card-original-price text-slate-400 font-bold">{{ number_format($product->price, 0, ',', '.') }}<span class="lg:hidden"><u>đ</u></span><span class="hidden lg:inline"> VNĐ</span></span>
                                 @else
-                                    <span class="text-primary !font-bold product-card-sale-price">{{ number_format($product->price, 0, ',', '.') }} VNĐ</span>
+                                    <span class="text-primary !font-bold product-card-sale-price">{{ number_format($product->price, 0, ',', '.') }}<span class="lg:hidden"><u>đ</u></span><span class="hidden lg:inline"> VNĐ</span></span>
                                 @endif
                             </div>
                             @if($product->sale_price)
@@ -348,7 +346,7 @@
                         </div>
 
                         <!-- Block 3: Action (max 26px) - Synchronized with standard cards -->
-                        <div class="product-card-action-row">
+                        <div class="product-card-action-row justify-start lg:justify-between">
                             <button type="button" onclick="handleAddToCart({{ $product->id }}, {{ json_encode($product->colors) }}, '{{ addslashes($product->name) }}', {{ $product->sale_price ?: $product->price }}, '{{ $product->image ? asset('storage/' . $product->image) : 'https://placehold.co/400x400?text=No+Image' }}')" class="product-card-btn dark:bg-slate-700/50 hover:shadow-md">
                                 <div class="absolute left-0 top-0 w-[1.85em] h-[1.85em] bg-primary rounded-full transition-all duration-300 ease-in-out z-0"></div>
                                 <div class="relative z-10 flex items-center gap-[0.28em] h-full">
@@ -358,7 +356,7 @@
                                     <span class="product-card-btn-text text-slate-800 dark:text-slate-200 transition-colors duration-300">Thêm vào giỏ</span>
                                 </div>
                             </button>
-                            <div class="product-card-stock-badge bg-emerald-50 text-emerald-500 border border-emerald-200 dark:bg-emerald-950/20 dark:border-emerald-800">
+                            <div class="product-card-stock-badge hidden lg:inline-flex bg-emerald-50 text-emerald-500 border border-emerald-200 dark:bg-emerald-950/20 dark:border-emerald-800">
                                 Còn hàng
                             </div>
                         </div>
@@ -366,6 +364,16 @@
                 </div>
                 @endforeach
             </div>
+
+            <!-- Left Overlay Button -->
+            <button onclick="document.getElementById('deal-hot-slider').scrollBy({left: -200, behavior: 'smooth'})" class="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white/90 dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700 shadow-md hidden items-center justify-center text-slate-550 hover:text-primary hover:bg-white transition-all z-40">
+                <i class="fa-solid fa-chevron-left text-xs"></i>
+            </button>
+            <!-- Right Overlay Button -->
+            <button onclick="document.getElementById('deal-hot-slider').scrollBy({left: 200, behavior: 'smooth'})" class="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white/90 dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700 shadow-md hidden items-center justify-center text-slate-550 hover:text-primary hover:bg-white transition-all z-40">
+                <i class="fa-solid fa-chevron-right text-xs"></i>
+            </button>
+        </div>
             
             <!-- See All Deal Hot Button -->
             <div class="flex justify-center mt-6 relative z-10">
@@ -382,36 +390,27 @@
 @endif
 
 <!-- Featured Products -->
-<section id="featured" class="pb-4 pt-16 reveal-on-scroll px-4 sm:px-6 lg:px-8">
-    <div class="max-w-[1600px] mx-auto bg-white dark:bg-slate-900 rounded-2xl shadow-sm mb-[22px] relative overflow-hidden">
+<section id="featured" class="pb-2 sm:pb-4 pt-6 sm:pt-16 reveal-on-scroll px-2 sm:px-6 lg:px-8">
+    <div class="max-w-[1600px] mx-auto bg-transparent sm:bg-white sm:dark:bg-slate-900 border-0 sm:border border-transparent sm:border-slate-200 sm:dark:border-slate-800 rounded-none sm:rounded-2xl shadow-none sm:shadow-sm mb-2 sm:mb-[22px] relative overflow-hidden">
         <!-- Section Header -->
-        <div class="flex items-center justify-between pr-6 bg-white dark:bg-slate-900 border-none outline-none">
+        <div class="flex items-center justify-between pr-6 bg-transparent sm:bg-white sm:dark:bg-slate-900 border-none outline-none">
             <div class="flex">
-                <h2 class="relative flex items-center h-14 bg-gradient-to-r from-sky-400 to-blue-700 pr-12 pl-6 text-white font-bold uppercase text-lg tracking-wider" style="clip-path: polygon(0 0, 100% 0, calc(100% - 20px) 100%, 0 100%);">
-                    <div class="flex items-center gap-3">
-                        <i class="fa-solid fa-star text-lg animate-pulse"></i>
-                        <span class="tracking-widest font-black text-xl">SẢN PHẨM NỔI BẬT</span>
-                    </div>
-                </h2>
-            </div>
-            
-            <div class="flex items-center gap-4">
-                <!-- Navigation -->
-                <div class="hidden md:flex gap-1.5">
-                    <button onclick="document.getElementById('featured-slider').scrollBy({left: -320, behavior: 'smooth'})" class="w-8 h-8 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-slate-400 hover:text-primary hover:border-primary transition-all shadow-sm">
-                        <i class="fa-solid fa-chevron-left text-xs"></i>
-                    </button>
-                    <button onclick="document.getElementById('featured-slider').scrollBy({left: 320, behavior: 'smooth'})" class="w-8 h-8 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-slate-400 hover:text-primary hover:border-primary transition-all shadow-sm">
-                        <i class="fa-solid fa-chevron-right text-xs"></i>
-                    </button>
+                <div class="rounded-tl-2xl rounded-bl-2xl overflow-hidden">
+                    <h2 class="relative flex items-center h-14 bg-gradient-to-r from-sky-400 to-blue-700 pr-12 pl-6 text-white font-bold uppercase text-lg tracking-wider" style="clip-path: polygon(0 0, 100% 0, calc(100% - 20px) 100%, 0 100%);">
+                        <div class="flex items-center gap-3">
+                            <i class="fa-solid fa-star text-lg animate-pulse"></i>
+                            <span class="tracking-widest font-black text-xl">SẢN PHẨM NỔI BẬT</span>
+                        </div>
+                    </h2>
                 </div>
             </div>
         </div>
         
-        <div class="p-6">
-            <div id="featured-slider" class="flex gap-3 overflow-x-auto snap-x snap-mandatory pb-2 scroll-smooth [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+        <div class="p-0 py-4 sm:p-6">
+            <div class="relative">
+                <div id="featured-slider" class="flex gap-3 overflow-x-auto snap-x snap-mandatory pb-2 scroll-smooth [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
                 @forelse($featuredProducts as $product)
-                <div class="shrink-0 snap-start w-[260px] sm:w-[calc((100%-12px)/2)] md:w-[calc((100%-24px)/3)] lg:w-[calc((100%-36px)/4)] xl:w-[calc((100%-48px)/5)] 2xl:w-[calc((100%-60px)/6)] bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-800 hover:z-[50] group hover:shadow-2xl transition-all duration-300 flex flex-col h-[400px] relative product-card">
+                <div class="shrink-0 snap-start w-[calc((100%-16px)/2.3)] sm:w-[calc((100%-12px)/2)] md:w-[calc((100%-24px)/3)] lg:w-[calc((100%-36px)/4)] xl:w-[calc((100%-48px)/5)] 2xl:w-[calc((100%-60px)/6)] bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-800 hover:z-[50] group hover:shadow-2xl transition-all duration-300 flex flex-col h-[290px] sm:h-[350px] md:h-[400px] relative product-card">
                     <!-- Product Preview Popover -->
                     <div class="product-popover fixed left-0 top-0 w-[350px] bg-white dark:bg-slate-900 rounded-xl shadow-[0_20px_50px_rgba(0,0,0,0.3)] border border-slate-200 dark:border-slate-700 z-[9999] hidden flex-col overflow-hidden pointer-events-none transition-opacity duration-200 opacity-0">
                         <div class="bg-primary p-3">
@@ -448,8 +447,8 @@
                         </div>
                     </div>
 
-                    <!-- Image Area: 240px -->
-                    <div class="h-[240px] bg-white relative overflow-hidden shrink-0 rounded-t-xl product-trigger">
+                    <!-- Image Area -->
+                    <div class="h-[140px] sm:h-[180px] md:h-[240px] bg-white relative overflow-hidden shrink-0 rounded-t-xl product-trigger">
                         <a href="{{ route('products.show', $product->slug ?? $product->id) }}" class="block h-full">
                             <img loading="lazy" alt="{{ $product->name }}" class="w-full h-full object-contain p-6 group-hover:scale-110 transition-transform duration-700" src="{{ $product->image ? asset('storage/' . $product->image) : 'https://placehold.co/400x400?text=No+Image' }}" onerror="this.onerror=null; this.src='https://placehold.co/400x400?text=No+Image';"/>
                         </a>
@@ -457,6 +456,13 @@
 
                     <!-- Info Area -->
                     <div class="product-card-body border-t border-slate-50 dark:border-slate-800">
+                        <!-- Stock Badge (Relocated to top) -->
+                        <div class="mb-1 lg:hidden">
+                            <span class="inline-flex items-center px-2 py-0.5 rounded text-[9px] font-bold bg-emerald-50 text-emerald-600 dark:bg-emerald-950/20 dark:text-emerald-400">
+                                Còn hàng
+                            </span>
+                        </div>
+
                         <!-- Block 1: Name (max 40px) -->
                         <a href="{{ route('products.show', $product->slug ?? $product->id) }}" class="block product-card-title">
                             <h3 class="font-bold text-slate-900 dark:text-slate-100 group-hover:text-primary transition-colors line-clamp-2 overflow-hidden">{{ $product->name }}</h3>
@@ -466,10 +472,10 @@
                         <div class="product-card-price-row">
                             <div class="flex flex-col justify-center h-full">
                                 @if($product->sale_price)
-                                    <span class="text-primary !font-bold product-card-sale-price">{{ number_format($product->sale_price, 0, ',', '.') }} VNĐ</span>
-                                    <span class="product-card-original-price text-slate-400 font-bold">{{ number_format($product->price, 0, ',', '.') }} VNĐ</span>
+                                    <span class="text-primary !font-bold product-card-sale-price">{{ number_format($product->sale_price, 0, ',', '.') }}<span class="lg:hidden"><u>đ</u></span><span class="hidden lg:inline"> VNĐ</span></span>
+                                    <span class="product-card-original-price text-slate-400 font-bold">{{ number_format($product->price, 0, ',', '.') }}<span class="lg:hidden"><u>đ</u></span><span class="hidden lg:inline"> VNĐ</span></span>
                                 @else
-                                    <span class="text-primary !font-bold product-card-sale-price">{{ number_format($product->price, 0, ',', '.') }} VNĐ</span>
+                                    <span class="text-primary !font-bold product-card-sale-price">{{ number_format($product->price, 0, ',', '.') }}<span class="lg:hidden"><u>đ</u></span><span class="hidden lg:inline"> VNĐ</span></span>
                                 @endif
                             </div>
                             @if($product->sale_price)
@@ -480,7 +486,7 @@
                         </div>
 
                         <!-- Block 3: Action (max 26px) -->
-                        <div class="product-card-action-row">
+                        <div class="product-card-action-row justify-start lg:justify-between">
                             <button type="button" onclick="handleAddToCart({{ $product->id }}, {{ json_encode($product->colors) }}, '{{ addslashes($product->name) }}', {{ $product->sale_price ?: $product->price }}, '{{ $product->image ? asset('storage/' . $product->image) : 'https://placehold.co/400x400?text=No+Image' }}')" class="product-card-btn dark:bg-slate-700/50 hover:shadow-md">
                                 <div class="absolute left-0 top-0 w-[1.85em] h-[1.85em] bg-primary rounded-full transition-all duration-300 ease-in-out z-0"></div>
                                 <div class="relative z-10 flex items-center gap-[0.28em] h-full">
@@ -490,7 +496,7 @@
                                     <span class="product-card-btn-text text-slate-800 dark:text-slate-200 transition-colors duration-300">Thêm vào giỏ</span>
                                 </div>
                             </button>
-                            <div class="product-card-stock-badge bg-emerald-50 text-emerald-500 border border-emerald-200 dark:bg-emerald-950/20 dark:border-emerald-800">
+                            <div class="product-card-stock-badge hidden lg:inline-flex bg-emerald-50 text-emerald-500 border border-emerald-200 dark:bg-emerald-950/20 dark:border-emerald-800">
                                 Còn hàng
                             </div>
                         </div>
@@ -503,6 +509,16 @@
                     </div>
                 @endforelse
             </div>
+
+            <!-- Left Overlay Button -->
+            <button onclick="document.getElementById('featured-slider').scrollBy({left: -200, behavior: 'smooth'})" class="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white/90 dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700 shadow-md hidden items-center justify-center text-slate-550 hover:text-primary hover:bg-white transition-all z-40">
+                <i class="fa-solid fa-chevron-left text-xs"></i>
+            </button>
+            <!-- Right Overlay Button -->
+            <button onclick="document.getElementById('featured-slider').scrollBy({left: 200, behavior: 'smooth'})" class="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white/90 dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700 shadow-md hidden items-center justify-center text-slate-550 hover:text-primary hover:bg-white transition-all z-40">
+                <i class="fa-solid fa-chevron-right text-xs"></i>
+            </button>
+        </div>
             
             <!-- See All Featured Products Button -->
             <div class="flex justify-center mt-6 relative z-10">
@@ -520,10 +536,10 @@
 <!-- Dynamic Category Sections -->
 @foreach($categoryProducts as $catData)
 @php $catSection = $catData['category']; $catProducts = $catData['products']; @endphp
-<section class="py-4 reveal-on-scroll px-4 sm:px-6 lg:px-8">
-    <div class="max-w-[1600px] mx-auto bg-white dark:bg-slate-900 rounded-2xl shadow-sm mb-[22px] relative overflow-hidden">
+<section class="py-1 sm:py-4 reveal-on-scroll px-2 sm:px-6 lg:px-8">
+    <div class="max-w-[1600px] mx-auto bg-transparent sm:bg-white sm:dark:bg-slate-900 border-0 sm:border border-transparent sm:border-slate-200 sm:dark:border-slate-800 rounded-none sm:rounded-2xl shadow-none sm:shadow-sm mb-2 sm:mb-[22px] relative overflow-hidden">
         <!-- Section Header -->
-        <div class="flex items-center justify-between pr-6 bg-white dark:bg-slate-900 border-none outline-none">
+        <div class="flex items-center justify-between pr-6 bg-transparent sm:bg-white sm:dark:bg-slate-900 border-none outline-none">
             <div class="flex">
                 @php
                     $iconClass = 'fa-microchip';
@@ -534,14 +550,16 @@
                         }
                     }
                 @endphp
-                <h2 class="relative flex items-center h-14 bg-gradient-to-r from-sky-400 to-blue-700 pr-12 pl-6 text-white font-bold uppercase text-lg tracking-wider" style="clip-path: polygon(0 0, 100% 0, calc(100% - 20px) 100%, 0 100%);">
-                    <div class="flex items-center gap-3">
-                        <i class="fa-solid {{ $iconClass }} text-lg animate-pulse"></i>
-                        <span class="tracking-widest font-black text-xl">{{ $catSection->name }}</span>
-                    </div>
-                </h2>
+                <div class="rounded-tl-2xl rounded-bl-2xl overflow-hidden">
+                    <h2 class="relative flex items-center h-14 bg-gradient-to-r from-sky-400 to-blue-700 pr-12 pl-6 text-white font-bold uppercase text-lg tracking-wider" style="clip-path: polygon(0 0, 100% 0, calc(100% - 20px) 100%, 0 100%);">
+                        <div class="flex items-center gap-3">
+                            <i class="fa-solid {{ $iconClass }} text-lg animate-pulse"></i>
+                            <span class="tracking-widest font-black text-xl">{{ $catSection->name }}</span>
+                        </div>
+                    </h2>
+                </div>
             </div>
-            <div class="flex items-center pr-2">
+            <div class="hidden sm:flex items-center pr-2">
                 <a href="{{ route('store.category', $catSection->slug) }}" class="group relative flex items-center gap-2 px-5 py-1.5 bg-gradient-to-r from-sky-400 to-blue-700 text-white !font-bold text-xs rounded-full shadow-md hover:shadow-lg hover:scale-105 transition-all duration-300 overflow-hidden">
                     <!-- Shine Effect -->
                     <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out"></div>
@@ -551,93 +569,123 @@
             </div>
         </div>
         
-        <div class="p-6">
-            <div class="flex gap-3 overflow-x-auto snap-x snap-mandatory pb-2 scroll-smooth [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-                @foreach($catProducts as $product)
-                <div class="shrink-0 snap-start w-[260px] sm:w-[calc((100%-12px)/2)] md:w-[calc((100%-24px)/3)] lg:w-[calc((100%-36px)/4)] xl:w-[calc((100%-48px)/5)] 2xl:w-[calc((100%-60px)/6)] bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-800 hover:z-[50] group hover:shadow-2xl transition-all duration-300 flex flex-col h-[400px] relative product-card">
-                    <!-- Product Preview Popover -->
-                    <div class="product-popover fixed left-0 top-0 w-[350px] bg-white dark:bg-slate-900 rounded-xl shadow-[0_20px_50px_rgba(0,0,0,0.3)] border border-slate-200 dark:border-slate-700 z-[9999] hidden flex-col overflow-hidden pointer-events-none transition-opacity duration-200 opacity-0">
-                        <div class="bg-primary p-3">
-                            <h4 class="text-white font-bold text-sm leading-tight uppercase line-clamp-2">{{ $product->name }}</h4>
+        <div class="p-0 py-4 sm:p-6">
+            <div class="relative">
+                <div id="cat-slider-{{ $catSection->id }}" class="flex gap-3 overflow-x-auto snap-x snap-mandatory pb-2 scroll-smooth [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+                    @foreach($catProducts as $product)
+                    <div class="shrink-0 snap-start w-[calc((100%-16px)/2.3)] sm:w-[calc((100%-12px)/2)] md:w-[calc((100%-24px)/3)] lg:w-[calc((100%-36px)/4)] xl:w-[calc((100%-48px)/5)] 2xl:w-[calc((100%-60px)/6)] bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-800 hover:z-[50] group hover:shadow-2xl transition-all duration-300 flex flex-col h-[290px] sm:h-[350px] md:h-[400px] relative product-card">
+                        <!-- Product Preview Popover -->
+                        <div class="product-popover fixed left-0 top-0 w-[350px] bg-white dark:bg-slate-900 rounded-xl shadow-[0_20px_50px_rgba(0,0,0,0.3)] border border-slate-200 dark:border-slate-700 z-[9999] hidden flex-col overflow-hidden pointer-events-none transition-opacity duration-200 opacity-0">
+                            <div class="bg-primary p-3">
+                                <h4 class="text-white font-bold text-sm leading-tight uppercase line-clamp-2">{{ $product->name }}</h4>
+                            </div>
+                            <div class="p-4 space-y-3">
+                                <div class="flex items-center gap-2">
+                                    <span class="font-bold text-slate-900 dark:text-slate-100 text-sm">Giá bán:</span>
+                                    <span class="text-primary font-black text-lg">{{ number_format($product->sale_price ?: $product->price, 0, ',', '.') }} VNĐ</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <span class="font-bold text-slate-900 dark:text-slate-100 text-sm">Bảo hành:</span>
+                                    <span class="text-slate-600 dark:text-slate-400 text-sm font-medium">{{ $product->warranty_period }}</span>
+                                </div>
+                                <div class="pt-2 border-t border-slate-100 dark:border-slate-800">
+                                    <span class="inline-block bg-primary text-white px-2 py-0.5 rounded text-[10px] font-black mb-3 uppercase tracking-wider">Mô tả tóm tắt:</span>
+                                    <ul class="space-y-2">
+                                        @if($product->specs && is_array($product->specs))
+                                            @foreach(array_slice($product->specs, 0, 6) as $spec)
+                                                <li class="flex items-start gap-2 text-[12px] leading-tight text-slate-700 dark:text-slate-300">
+                                                    <i class="fa-solid fa-circle-check text-emerald-500 mt-0.5 shrink-0"></i>
+                                                    <span>
+                                                        @if(is_array($spec))
+                                                            {{ implode(': ', $spec) }}
+                                                        @else
+                                                            {{ $spec }}
+                                                        @endif
+                                                    </span>
+                                                </li>
+                                            @endforeach
+                                        @endif
+                                    </ul>
+                                </div>
+                            </div>
                         </div>
-                        <div class="p-4 space-y-3">
-                            <div class="flex items-center gap-2">
-                                <span class="font-bold text-slate-900 dark:text-slate-100 text-sm">Giá bán:</span>
-                                <span class="text-primary font-black text-lg">{{ number_format($product->sale_price ?: $product->price, 0, ',', '.') }} VNĐ</span>
-                            </div>
-                            <div class="flex items-center gap-2">
-                                <span class="font-bold text-slate-900 dark:text-slate-100 text-sm">Bảo hành:</span>
-                                <span class="text-slate-600 dark:text-slate-400 text-sm font-medium">{{ $product->warranty_period }}</span>
-                            </div>
-                            <div class="pt-2 border-t border-slate-100 dark:border-slate-800">
-                                <span class="inline-block bg-primary text-white px-2 py-0.5 rounded text-[10px] font-black mb-3 uppercase tracking-wider">Mô tả tóm tắt:</span>
-                                <ul class="space-y-2">
-                                    @if($product->specs && is_array($product->specs))
-                                        @foreach(array_slice($product->specs, 0, 6) as $spec)
-                                            <li class="flex items-start gap-2 text-[12px] leading-tight text-slate-700 dark:text-slate-300">
-                                                <i class="fa-solid fa-circle-check text-emerald-500 mt-0.5 shrink-0"></i>
-                                                <span>
-                                                    @if(is_array($spec))
-                                                        {{ implode(': ', $spec) }}
-                                                    @else
-                                                        {{ $spec }}
-                                                    @endif
-                                                </span>
-                                            </li>
-                                        @endforeach
-                                    @endif
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
 
-                    <div class="h-[240px] bg-white relative overflow-hidden shrink-0 rounded-t-xl product-trigger">
-                        <a href="{{ route('products.show', $product->slug ?? $product->id) }}" class="block h-full">
-                            <img loading="lazy" alt="{{ $product->name }}" class="w-full h-full object-contain p-6 group-hover:scale-110 transition-transform duration-700" src="{{ $product->image ? asset('storage/' . $product->image) : 'https://placehold.co/400x400?text=No+Image' }}" onerror="this.onerror=null; this.src='https://placehold.co/400x400?text=No+Image';"/>
-                        </a>
-                    </div>
-                    <div class="product-card-body border-t border-slate-50 dark:border-slate-800">
-                        <!-- Block 1: Name (max 40px) -->
-                        <a href="{{ route('products.show', $product->slug ?? $product->id) }}" class="block product-card-title">
-                            <h3 class="font-bold text-slate-900 dark:text-slate-100 group-hover:text-primary transition-colors line-clamp-2 overflow-hidden">{{ $product->name }}</h3>
-                        </a>
-                        
-                        <!-- Block 2: Price (max 46px) -->
-                        <div class="product-card-price-row">
-                            <div class="flex flex-col justify-center h-full">
+                        <!-- Image Area -->
+                        <div class="h-[140px] sm:h-[180px] md:h-[240px] bg-white relative overflow-hidden shrink-0 rounded-t-xl product-trigger">
+                            <a href="{{ route('products.show', $product->slug ?? $product->id) }}" class="block h-full">
+                                <img loading="lazy" alt="{{ $product->name }}" class="w-full h-full object-contain p-6 group-hover:scale-110 transition-transform duration-700" src="{{ $product->image ? asset('storage/' . $product->image) : 'https://placehold.co/400x400?text=No+Image' }}" onerror="this.onerror=null; this.src='https://placehold.co/400x400?text=No+Image';"/>
+                            </a>
+                        </div>
+                        <div class="product-card-body border-t border-slate-50 dark:border-slate-800">
+                            <!-- Stock Badge (Relocated to top) -->
+                            <div class="mb-1 lg:hidden">
+                                <span class="inline-flex items-center px-2 py-0.5 rounded text-[9px] font-bold bg-emerald-50 text-emerald-600 dark:bg-emerald-950/20 dark:text-emerald-400">
+                                    Còn hàng
+                                </span>
+                            </div>
+
+                            <!-- Block 1: Name (max 40px) -->
+                            <a href="{{ route('products.show', $product->slug ?? $product->id) }}" class="block product-card-title">
+                                <h3 class="font-bold text-slate-900 dark:text-slate-100 group-hover:text-primary transition-colors line-clamp-2 overflow-hidden">{{ $product->name }}</h3>
+                            </a>
+                            
+                            <!-- Block 2: Price (max 46px) -->
+                            <div class="product-card-price-row">
+                                <div class="flex flex-col justify-center h-full">
+                                    @if($product->sale_price)
+                                        <span class="text-primary !font-bold product-card-sale-price">{{ number_format($product->sale_price, 0, ',', '.') }}<span class="lg:hidden"><u>đ</u></span><span class="hidden lg:inline"> VNĐ</span></span>
+                                        <span class="product-card-original-price text-slate-400 font-bold">{{ number_format($product->price, 0, ',', '.') }}<span class="lg:hidden"><u>đ</u></span><span class="hidden lg:inline"> VNĐ</span></span>
+                                    @else
+                                        <span class="text-primary !font-bold product-card-sale-price">{{ number_format($product->price, 0, ',', '.') }}<span class="lg:hidden"><u>đ</u></span><span class="hidden lg:inline"> VNĐ</span></span>
+                                    @endif
+                                </div>
                                 @if($product->sale_price)
-                                    <span class="text-primary !font-bold product-card-sale-price">{{ number_format($product->sale_price, 0, ',', '.') }} VNĐ</span>
-                                    <span class="product-card-original-price text-slate-400 font-bold">{{ number_format($product->price, 0, ',', '.') }} VNĐ</span>
-                                @else
-                                    <span class="text-primary !font-bold product-card-sale-price">{{ number_format($product->price, 0, ',', '.') }} VNĐ</span>
+                                    <div class="bg-red-500 text-white product-card-discount-badge whitespace-nowrap shrink-0">
+                                        -{{ round((($product->price - $product->sale_price) / $product->price) * 100) }}%
+                                    </div>
                                 @endif
                             </div>
-                            @if($product->sale_price)
-                                <div class="bg-red-500 text-white product-card-discount-badge whitespace-nowrap shrink-0">
-                                    -{{ round((($product->price - $product->sale_price) / $product->price) * 100) }}%
-                                </div>
-                            @endif
-                        </div>
 
-                        <!-- Block 3: Action (max 26px) -->
-                        <div class="product-card-action-row">
-                            <button type="button" onclick="handleAddToCart({{ $product->id }}, {{ json_encode($product->colors) }}, '{{ addslashes($product->name) }}', {{ $product->sale_price ?: $product->price }}, '{{ $product->image ? asset('storage/' . $product->image) : 'https://placehold.co/400x400?text=No+Image' }}')" class="product-card-btn dark:bg-slate-700/50 hover:shadow-md">
-                                <div class="absolute left-0 top-0 w-[1.85em] h-[1.85em] bg-primary rounded-full transition-all duration-300 ease-in-out z-0"></div>
-                                <div class="relative z-10 flex items-center gap-[0.28em] h-full">
-                                    <div class="product-card-btn-icon-wrapper text-white">
-                                        <i class="fa-solid fa-cart-shopping text-[0.857em]"></i>
+                            <!-- Block 3: Action (max 26px) -->
+                            <div class="product-card-action-row justify-start lg:justify-between">
+                                <button type="button" onclick="handleAddToCart({{ $product->id }}, {{ json_encode($product->colors) }}, '{{ addslashes($product->name) }}', {{ $product->sale_price ?: $product->price }}, '{{ $product->image ? asset('storage/' . $product->image) : 'https://placehold.co/400x400?text=No+Image' }}')" class="product-card-btn dark:bg-slate-700/50 hover:shadow-md">
+                                    <div class="absolute left-0 top-0 w-[1.85em] h-[1.85em] bg-primary rounded-full transition-all duration-300 ease-in-out z-0"></div>
+                                    <div class="relative z-10 flex items-center gap-[0.28em] h-full">
+                                        <div class="product-card-btn-icon-wrapper text-white">
+                                            <i class="fa-solid fa-cart-shopping text-[0.857em]"></i>
+                                        </div>
+                                        <span class="product-card-btn-text text-slate-800 dark:text-slate-200 transition-colors duration-300">Thêm vào giỏ</span>
                                     </div>
-                                    <span class="product-card-btn-text text-slate-800 dark:text-slate-200 transition-colors duration-300">Thêm vào giỏ</span>
+                                </button>
+                                <div class="product-card-stock-badge hidden lg:inline-flex bg-emerald-50 text-emerald-500 border border-emerald-200 dark:bg-emerald-950/20 dark:border-emerald-800">
+                                    Còn hàng
                                 </div>
-                            </button>
-                            <div class="product-card-stock-badge bg-emerald-50 text-emerald-500 border border-emerald-200 dark:bg-emerald-950/20 dark:border-emerald-800">
-                                Còn hàng
                             </div>
                         </div>
                     </div>
+                    @endforeach
                 </div>
-                @endforeach
+
+                <!-- Left Overlay Button -->
+                <button onclick="document.getElementById('cat-slider-{{ $catSection->id }}').scrollBy({left: -200, behavior: 'smooth'})" class="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white/90 dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700 shadow-md hidden items-center justify-center text-slate-550 hover:text-primary hover:bg-white transition-all z-40">
+                    <i class="fa-solid fa-chevron-left text-xs"></i>
+                </button>
+                <!-- Right Overlay Button -->
+                <button onclick="document.getElementById('cat-slider-{{ $catSection->id }}').scrollBy({left: 200, behavior: 'smooth'})" class="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white/90 dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700 shadow-md hidden items-center justify-center text-slate-550 hover:text-primary hover:bg-white transition-all z-40">
+                    <i class="fa-solid fa-chevron-right text-xs"></i>
+                </button>
             </div>
+            
+            <!-- See All for Mobile -->
+            <div class="flex sm:hidden justify-center mt-4 relative z-10">
+                <a href="{{ route('store.category', $catSection->slug) }}" class="group relative flex items-center gap-2 px-5 py-1.5 bg-gradient-to-r from-sky-400 to-blue-700 text-white !font-bold text-xs rounded-full shadow-md hover:shadow-lg hover:scale-105 transition-all duration-300 overflow-hidden">
+                    <!-- Shine Effect -->
+                    <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out"></div>
+                    <span class="relative z-10">Xem tất cả</span>
+                    <i class="fa-solid fa-angles-right text-[10px] relative z-10"></i>
+                </a>
+            </div>
+        </div>
         </div>
     </div>
 </section>
@@ -648,7 +696,7 @@
 <section class="pt-0 pb-8 bg-slate-50/50 dark:bg-slate-900/50 overflow-hidden">
     <div class="max-w-[1500px] mx-auto px-10">
         <div class="bg-white dark:bg-slate-800 shadow-[0_15px_50px_-15px_rgba(0,0,0,0.1)] py-8 px-8 md:px-20 -skew-x-6 border border-slate-100 dark:border-slate-700 relative group transition-all duration-700 hover:shadow-primary/5">
-            <div class="skew-x-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8">
+            <div class="skew-x-6 grid grid-cols-2 lg:grid-cols-4 gap-6 md:gap-12 lg:gap-8">
                 <!-- Giao hàng -->
                 <div class="flex flex-col items-center text-center group/item">
                     <div class="w-16 h-16 flex items-center justify-center mb-4 transition-transform duration-500 group-hover/item:-translate-y-2">
@@ -739,6 +787,91 @@ document.addEventListener('DOMContentLoaded', function() {
     };
 
     setInterval(autoSlide, 5000);
+
+    // Unified mouse and touch drag scroll helper
+    const initDragScroll = (s) => {
+        if (!s) return;
+        let isDown = false;
+        let startX;
+        let scrollLeft;
+        let hasMoved = false;
+
+        // Mouse Events
+        s.addEventListener('mousedown', (e) => {
+            isDown = true;
+            hasMoved = false;
+            startX = e.pageX - s.offsetLeft;
+            scrollLeft = s.scrollLeft;
+            s.style.cursor = 'grabbing';
+            s.style.userSelect = 'none';
+        });
+
+        s.addEventListener('mouseleave', () => {
+            if (isDown) {
+                isDown = false;
+                s.style.cursor = 'grab';
+                s.style.removeProperty('user-select');
+            }
+        });
+
+        s.addEventListener('mouseup', () => {
+            isDown = false;
+            s.style.cursor = 'grab';
+            s.style.removeProperty('user-select');
+        });
+
+        s.addEventListener('mousemove', (e) => {
+            if (!isDown) return;
+            e.preventDefault();
+            const x = e.pageX - s.offsetLeft;
+            const walk = (x - startX) * 1.5;
+            if (Math.abs(walk) > 5) {
+                hasMoved = true;
+                s.scrollLeft = scrollLeft - walk;
+            }
+        });
+
+        // Touch Events
+        s.addEventListener('touchstart', (e) => {
+            isDown = true;
+            hasMoved = false;
+            startX = e.touches[0].pageX - s.offsetLeft;
+            scrollLeft = s.scrollLeft;
+        }, { passive: true });
+
+        s.addEventListener('touchend', () => {
+            isDown = false;
+        });
+
+        s.addEventListener('touchmove', (e) => {
+            if (!isDown) return;
+            const x = e.touches[0].pageX - s.offsetLeft;
+            const walk = (x - startX) * 1.5;
+            if (Math.abs(walk) > 5) {
+                hasMoved = true;
+                s.scrollLeft = scrollLeft - walk;
+            }
+        }, { passive: true });
+
+        // Prevent clicking child items if drag occurred
+        s.querySelectorAll('a, button, .product-trigger').forEach(item => {
+            item.addEventListener('click', (e) => {
+                if (hasMoved) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                }
+            }, true);
+        });
+        
+        s.style.cursor = 'grab';
+    };
+
+    // Initialize drag scroll for all sliders
+    initDragScroll(slider);
+    initDragScroll(document.getElementById('featured-slider'));
+    document.querySelectorAll('[id^="cat-slider-"]').forEach(s => {
+        initDragScroll(s);
+    });
 });
 </script>
 @endsection

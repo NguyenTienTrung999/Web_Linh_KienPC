@@ -4,15 +4,17 @@
 
 @section('content')
 <!-- Title & Action -->
-<div class="flex items-center justify-between mb-8">
+<div class="flex flex-col gap-4 md:flex-row md:items-center justify-between mb-8">
     <div>
-        <h2 class="text-3xl font-bold tracking-tight">Quản lý Danh mục</h2>
-        <p class="text-slate-500 mt-1">Thêm, sửa, xóa các danh mục sản phẩm.</p>
+        <h2 class="text-2xl md:text-3xl font-bold tracking-tight">Quản lý Danh mục</h2>
+        <p class="text-slate-500 mt-1 text-sm md:text-base">Thêm, sửa, xóa các danh mục sản phẩm.</p>
     </div>
-    <button onclick="openAddModal()" class="bg-primary text-white px-6 py-2.5 rounded-xl font-semibold flex items-center gap-2 hover:bg-primary/90 transition-shadow shadow-lg shadow-primary/20">
-        <i class="fa-solid fa-plus text-sm"></i>
-        Thêm danh mục
-    </button>
+    <div class="w-full md:w-auto">
+        <button onclick="openAddModal()" class="w-full md:w-auto justify-center bg-primary text-white px-6 py-2.5 rounded-xl font-semibold flex items-center gap-2 hover:bg-primary/90 transition-shadow shadow-lg shadow-primary/20 text-sm">
+            <i class="fa-solid fa-plus text-sm"></i>
+            Thêm danh mục
+        </button>
+    </div>
 </div>
 
 <!-- Modal Thêm Danh Mục -->
@@ -91,34 +93,40 @@
 
 
 <!-- Table Container -->
-<div class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 overflow-hidden">
+<div class="w-full max-w-full bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 overflow-hidden">
     <div class="overflow-x-auto">
         <table class="w-full text-left">
             <thead class="bg-slate-50 dark:bg-slate-800/50 text-slate-500 text-xs uppercase tracking-wider font-semibold">
                 <tr>
-                    <th class="px-6 py-4">#</th>
+                    <th class="hidden md:table-cell px-6 py-4">#</th>
                     <th class="px-6 py-4">Tên danh mục</th>
-                    <th class="px-6 py-4">Mô tả</th>
-                    <th class="px-6 py-4">Số sản phẩm</th>
-                    <th class="px-6 py-4 text-right">Thao tác</th>
+                    <th class="hidden md:table-cell px-6 py-4">Mô tả</th>
+                    <th class="hidden md:table-cell px-6 py-4">Số sản phẩm</th>
+                    <th class="hidden md:table-cell px-6 py-4 text-right">Thao tác</th>
                 </tr>
             </thead>
             <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
                 @forelse($categories as $index => $category)
-                    <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors group">
-                        <td class="px-6 py-4 text-slate-500 font-medium">{{ $index + 1 }}</td>
+                    <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors group cursor-pointer md:cursor-default" onclick="handleCategoryRowClick(event, {
+                        id: '{{ $category->id }}',
+                        name: '{{ addslashes($category->name) }}',
+                        description: '{{ addslashes($category->description ?? '—') }}',
+                        productsCount: '{{ $category->products_count }} sản phẩm',
+                        deleteUrl: '{{ route('admin.categories.destroy', $category) }}'
+                    })">
+                        <td class="hidden md:table-cell px-6 py-4 text-slate-500 font-medium">{{ $index + 1 }}</td>
                         <td class="px-6 py-4">
-                            <span class="font-semibold text-slate-900 dark:text-slate-100">{{ $category->name }}</span>
+                            <span class="font-semibold text-slate-900 dark:text-slate-100 text-sm md:text-base">{{ $category->name }}</span>
                         </td>
-                        <td class="px-6 py-4 text-slate-500 text-sm max-w-[300px] truncate">
+                        <td class="hidden md:table-cell px-6 py-4 text-slate-500 text-sm max-w-[300px] truncate">
                             {{ Str::limit($category->description, 60) ?: '—' }}
                         </td>
-                        <td class="px-6 py-4">
+                        <td class="hidden md:table-cell px-6 py-4">
                             <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium {{ $category->products_count > 0 ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400' : 'bg-slate-100 dark:bg-slate-800 text-slate-500' }}">
                                 {{ $category->products_count }} sản phẩm
                             </span>
                         </td>
-                        <td class="px-6 py-4 text-right">
+                        <td class="hidden md:table-cell px-6 py-4 text-right">
                             <div class="flex items-center justify-end gap-2">
                                 <button type="button" 
                                     onclick="openEditModal({{ $category->id }}, '{{ addslashes($category->name) }}', '{{ addslashes($category->description) }}')" 
@@ -153,6 +161,97 @@
         </table>
     </div>
 </div>
+
+<!-- Mobile Category Detail Modal -->
+<div id="category-detail-modal" class="fixed inset-0 z-[10000] hidden items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm" onclick="if(event.target === this) closeCategoryModal()">
+    <div class="bg-white dark:bg-slate-900 rounded-2xl max-w-sm w-full overflow-hidden shadow-2xl border border-slate-100 dark:border-slate-800 transform scale-95 opacity-0 transition-all duration-300" id="cat-modal-card">
+        <!-- Header -->
+        <div class="p-5 pb-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
+            <h3 class="font-bold text-base text-slate-900 dark:text-white">Chi tiết danh mục</h3>
+            <button onclick="closeCategoryModal()" class="text-slate-400 hover:text-slate-650 p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800">
+                <i class="fa-solid fa-xmark text-base"></i>
+            </button>
+        </div>
+        <!-- Body -->
+        <div class="p-5 space-y-4">
+            <div>
+                <h4 id="cat-modal-name" class="font-bold text-base text-slate-900 dark:text-white leading-snug"></h4>
+                <p class="text-xs text-slate-500 mt-1">ID: <span id="cat-modal-id"></span></p>
+            </div>
+            
+            <div class="divide-y divide-slate-100 dark:divide-slate-800 text-xs">
+                <div class="py-2.5">
+                    <span class="text-slate-500 block mb-1">Mô tả:</span>
+                    <p id="cat-modal-desc" class="text-slate-900 dark:text-slate-100 leading-relaxed"></p>
+                </div>
+                <div class="py-2.5 flex justify-between">
+                    <span class="text-slate-500">Số sản phẩm:</span>
+                    <span id="cat-modal-count" class="font-semibold text-slate-900 dark:text-white"></span>
+                </div>
+            </div>
+        </div>
+        <!-- Footer / Actions -->
+        <div class="p-5 bg-slate-50 dark:bg-slate-800/50 border-t border-slate-100 dark:border-slate-800 flex items-center gap-3">
+            <button id="cat-modal-edit-btn" onclick="" class="flex-1 justify-center bg-primary text-white py-2.5 rounded-xl font-bold flex items-center gap-2 hover:bg-primary/90 transition-colors text-xs shadow-md shadow-primary/10">
+                <i class="fa-solid fa-pen-to-square"></i>
+                Chỉnh sửa
+            </button>
+            <form id="cat-modal-delete-form" action="" method="POST" class="flex-1" onsubmit="return confirm('Bạn có chắc chắn muốn xóa danh mục này?');">
+                @csrf
+                @method('DELETE')
+                <button type="submit" class="w-full justify-center bg-red-500 hover:bg-red-650 text-white py-2.5 rounded-xl font-bold flex items-center gap-2 transition-colors text-xs shadow-md shadow-red-500/10 cursor-pointer">
+                    <i class="fa-solid fa-trash-can"></i>
+                    Xóa danh mục
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    function handleCategoryRowClick(event, data) {
+        if (event.target.closest('button') || event.target.closest('form') || event.target.closest('a')) {
+            return;
+        }
+        if (window.innerWidth >= 768) return;
+
+        const modal = document.getElementById('category-detail-modal');
+        const card = document.getElementById('cat-modal-card');
+
+        document.getElementById('cat-modal-name').textContent = data.name;
+        document.getElementById('cat-modal-id').textContent = data.id;
+        document.getElementById('cat-modal-desc').textContent = data.description || '—';
+        document.getElementById('cat-modal-count').textContent = data.productsCount;
+
+        // Hook edit action to open the edit modal (native functionality of page)
+        document.getElementById('cat-modal-edit-btn').onclick = function() {
+            closeCategoryModal();
+            setTimeout(() => {
+                openEditModal(data.id, data.name, data.description);
+            }, 300);
+        };
+        
+        document.getElementById('cat-modal-delete-form').action = data.deleteUrl;
+
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        setTimeout(() => {
+            card.classList.remove('scale-95', 'opacity-0');
+            card.classList.add('scale-100', 'opacity-100');
+        }, 10);
+    }
+
+    function closeCategoryModal() {
+        const modal = document.getElementById('category-detail-modal');
+        const card = document.getElementById('cat-modal-card');
+        card.classList.remove('scale-100', 'opacity-100');
+        card.classList.add('scale-95', 'opacity-0');
+        setTimeout(() => {
+            modal.classList.remove('flex');
+            modal.classList.add('hidden');
+        }, 300);
+    }
+</script>
 @endsection
 
 @push('scripts')

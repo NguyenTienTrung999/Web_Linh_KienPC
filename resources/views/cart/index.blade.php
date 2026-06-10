@@ -20,7 +20,8 @@
 
     @if(count($cart) > 0)
     <div class="bg-white dark:bg-slate-800 rounded-lg shadow-sm border border-slate-200 dark:border-slate-700 mb-8 overflow-hidden">
-        <div class="overflow-x-auto">
+        <!-- Desktop Table: Visible on md screens and up -->
+        <div class="hidden md:block overflow-x-auto">
             <table class="w-full text-left min-w-[700px]">
                 <tbody class="divide-y divide-slate-100 dark:divide-slate-700">
                     @foreach($cart as $id => $details)
@@ -68,9 +69,59 @@
                 </tbody>
             </table>
         </div>
-        <div class="bg-slate-50 dark:bg-slate-800/50 p-4 border-t border-slate-100 dark:border-slate-700 flex justify-end items-center gap-4">
-            <span class="font-bold text-slate-900 dark:text-white">Tổng tiền:</span>
-            <span class="font-bold text-primary text-xl cart-subtotal">{{ number_format($subtotal, 0, ',', '.') }} VNĐ</span>
+
+        <!-- Mobile Layout: Visible only on mobile screens -->
+        <div class="block md:hidden divide-y divide-slate-100 dark:divide-slate-700">
+            @foreach($cart as $id => $details)
+            <div class="p-4 flex gap-4 cart-item" data-id="{{ $id }}">
+                <div class="h-16 w-16 border border-slate-100 dark:border-slate-700 p-1 flex-shrink-0 bg-white dark:bg-slate-900 rounded-lg">
+                    <img src="{{ $details['image'] ? asset('storage/' . $details['image']) : 'https://placehold.co/200x200?text=No+Image' }}" class="h-full w-full object-contain">
+                </div>
+                
+                <div class="flex-grow min-w-0 flex flex-col justify-between">
+                    <div>
+                        <div class="flex justify-between items-start gap-2">
+                            <p class="font-bold text-slate-900 dark:text-slate-100 text-sm line-clamp-2 leading-snug">{{ $details['name'] }}</p>
+                            <button onclick="removeFromCart('{{ $id }}')" class="text-slate-400 hover:text-red-500 transition-colors p-1 shrink-0">
+                                <i class="fa-regular fa-trash-can text-sm"></i>
+                            </button>
+                        </div>
+                        <div class="flex flex-col gap-0.5 mt-1">
+                            @if(isset($details['color']) && $details['color'])
+                                <p class="text-[11px] text-slate-500">Màu sắc: <span class="text-primary font-bold">{{ $details['color'] }}</span></p>
+                            @endif
+                            <p class="text-[11px] text-slate-500">Bảo hành: <span class="text-primary font-medium">36 Tháng</span></p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex justify-between items-center mt-3 gap-2">
+                        <!-- Quantity Controller -->
+                        <div class="flex items-center border border-slate-200 dark:border-slate-700 rounded bg-slate-50 dark:bg-slate-900 h-7">
+                            <button onclick="updateQuantity('{{ $id }}', -1)" class="w-7 h-full text-slate-500 hover:text-slate-700 flex items-center justify-center">
+                                <i class="fa-solid fa-minus text-[9px]"></i>
+                            </button>
+                            <input type="text" class="w-7 text-center text-xs bg-transparent border-none focus:ring-0 item-quantity p-0 font-bold text-slate-900 dark:text-white pointer-events-none" value="{{ $details['quantity'] }}" readonly>
+                            <button onclick="updateQuantity('{{ $id }}', 1)" class="w-7 h-full text-slate-500 hover:text-slate-700 flex items-center justify-center">
+                                <i class="fa-solid fa-plus text-[9px]"></i>
+                            </button>
+                        </div>
+                        
+                        <!-- Price -->
+                        <span class="font-bold text-slate-900 dark:text-slate-100 text-sm whitespace-nowrap">
+                            {{ number_format($details['price'] * $details['quantity'], 0, ',', '.') }}<span class="text-xs font-semibold ml-0.5 underline">đ</span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+            @endforeach
+        </div>
+
+        <!-- Foot summary block -->
+        <div class="bg-slate-50 dark:bg-slate-800/50 p-4 border-t border-slate-100 dark:border-slate-700 flex justify-between md:justify-end items-center gap-4">
+            <span class="font-bold text-slate-900 dark:text-white text-sm md:text-base">Tổng tiền:</span>
+            <span class="font-bold text-primary text-lg md:text-xl cart-subtotal">
+                {{ number_format($subtotal, 0, ',', '.') }}<span class="text-sm font-semibold ml-0.5 underline">đ</span>
+            </span>
         </div>
     </div>
 
@@ -161,8 +212,8 @@
                                 <i class="fa-solid fa-xmark"></i> GỠ MÃ
                             </button>
                             @else
-                            <button type="button" onclick="applyCoupon()" class="px-4 h-10 bg-[#283655] hover:bg-[#1d273d] text-white text-sm font-bold rounded flex items-center gap-2">
-                                <i class="fa-solid fa-tag"></i> Chọn mã voucher
+                            <button type="button" onclick="applyCoupon()" class="px-4 h-10 bg-[#283655] hover:bg-[#1d273d] text-white text-xs sm:text-sm font-bold rounded flex items-center gap-1.5 shrink-0">
+                                <i class="fa-solid fa-tag"></i> Áp dụng
                             </button>
                             @endif
                         </div>

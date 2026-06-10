@@ -77,6 +77,14 @@ class Product extends Model
     }
 
     /**
+     * Get the slug attribute. Fallback to slugified name if empty.
+     */
+    public function getSlugAttribute($value)
+    {
+        return $value ?: \Illuminate\Support\Str::slug($this->name);
+    }
+
+    /**
      * Retrieve the model for a bound value.
      * Support both ID and Slug.
      */

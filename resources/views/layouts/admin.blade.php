@@ -54,6 +54,9 @@
 </head>
 <body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 min-h-screen flex">
 
+    <!-- Backdrop for Mobile Sidebar -->
+    <div id="admin-sidebar-backdrop" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[9998] hidden opacity-0 transition-opacity duration-300" onclick="toggleAdminSidebar()"></div>
+
     <!-- Sidebar -->
     @include('admin.partials.sidebar')
 
@@ -127,6 +130,25 @@
                 @endif
             @endif
         });
+    </script>
+
+    <script>
+        function toggleAdminSidebar() {
+            const sidebar = document.getElementById('admin-sidebar');
+            const backdrop = document.getElementById('admin-sidebar-backdrop');
+            if (!sidebar || !backdrop) return;
+            
+            const isOpen = !sidebar.classList.contains('-translate-x-full');
+            if (isOpen) {
+                sidebar.classList.add('-translate-x-full');
+                backdrop.classList.add('opacity-0');
+                setTimeout(() => backdrop.classList.add('hidden'), 300);
+            } else {
+                backdrop.classList.remove('hidden');
+                setTimeout(() => backdrop.classList.remove('opacity-0'), 10);
+                sidebar.classList.remove('-translate-x-full');
+            }
+        }
     </script>
 
     @stack('scripts')

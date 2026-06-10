@@ -1,8 +1,11 @@
-<aside class="w-64 flex-shrink-0 border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex flex-col">
-    <div class="p-6 flex items-center justify-center border-b border-slate-100 dark:border-slate-800">
+<aside id="admin-sidebar" class="w-64 flex-shrink-0 border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex flex-col h-screen fixed lg:sticky top-0 left-0 z-[9999] transition-transform duration-300 -translate-x-full lg:translate-x-0">
+    <div class="p-6 flex items-center justify-between border-b border-slate-100 dark:border-slate-800">
         <a href="{{ route('admin.dashboard') }}" class="block flex items-center">
-            <img src="{{ asset('images/logo-weblinhkien-Photoroom.png') }}" alt="TechFlow Admin Logo" class="w-[200px] h-[71px] object-contain">
+            <img src="{{ asset('images/logo-weblinhkien-Photoroom.png') }}?v=2" alt="TechFlow Admin Logo" class="w-[160px] h-[57px] object-contain">
         </a>
+        <button type="button" onclick="toggleAdminSidebar()" class="lg:hidden text-slate-400 hover:text-slate-600 flex items-center justify-center w-8 h-8 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-250 dark:border-slate-700">
+            <i class="fa-solid fa-xmark text-base"></i>
+        </button>
     </div>
 
     <nav class="flex-1 px-4 space-y-1 overflow-y-auto">
@@ -61,7 +64,9 @@
             
             <form method="POST" action="{{ route('logout') }}">
                 @csrf
-                <button type="submit" class="fa-solid fa-right-from-bracket text-slate-400 hover:text-red-500 transition-colors text-sm cursor-pointer" title="Đăng xuất"></button>
+                <button type="submit" class="text-slate-400 hover:text-red-500 transition-colors cursor-pointer" title="Đăng xuất">
+                    <i class="fa-solid fa-right-from-bracket text-sm"></i>
+                </button>
             </form>
         </div>
     </div>

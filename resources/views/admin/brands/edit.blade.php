@@ -3,7 +3,7 @@
 @section('title', 'Sửa Thương Hiệu - TechFlow Admin')
 
 @section('content')
-<div class="flex items-center justify-between mb-8">
+<div class="flex flex-col gap-4 sm:flex-row sm:items-center justify-between mb-8">
     <div class="flex items-center gap-4">
         <div class="text-primary">
             <i class="fa-solid fa-pen-to-square text-3xl"></i>
@@ -58,11 +58,11 @@
                 </div>
             </div>
         </div>
-        <div class="p-6 bg-slate-50 dark:bg-slate-800/50 border-t border-slate-200 dark:border-slate-800 flex justify-end gap-3">
-            <a href="{{ route('admin.brands.index') }}" class="px-6 py-2.5 rounded-lg text-sm font-bold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+        <div class="p-6 bg-slate-50 dark:bg-slate-800/50 border-t border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row justify-end gap-3">
+            <a href="{{ route('admin.brands.index') }}" class="w-full sm:w-auto text-center px-6 py-2.5 rounded-lg text-sm font-bold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
                 Hủy bỏ
             </a>
-            <button type="submit" class="bg-primary text-white px-8 py-2.5 rounded-lg text-sm font-bold hover:bg-primary/90 transition-colors shadow-lg shadow-primary/20">
+            <button type="submit" class="w-full sm:w-auto bg-primary text-white px-8 py-2.5 rounded-lg text-sm font-bold hover:bg-primary/90 transition-colors shadow-lg shadow-primary/20">
                 Cập nhật thương hiệu
             </button>
         </div>
